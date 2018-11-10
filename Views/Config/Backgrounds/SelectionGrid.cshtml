@@ -1,0 +1,75 @@
+@using InfoScreenPi.Entities
+@model List<Background>
+<div id="backgroundSelectionGrid">
+    @{
+        for(int i = 0; i <= Model.Count()-1; i++)
+        {
+            Background b = null;
+            if(i < Model.Count()){
+                b = Model.ElementAt(i);
+            }
+            if(i == 0){
+                @:<div class="row">
+            }
+            else if((i % 4) == 0){
+                @:<div class="row">
+            }
+            if(i == 0){
+                if(b.Url.StartsWith("http://"))
+                {
+                    @:
+                    <div class="col-xs-6 col-md-3 demo-item">
+                        <a class="thumbnail selectedBg">
+                            <img id="@b.Id" src="@b.Url">
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    string thumb = "images/backgrounds/thumbnails/" + b.Url;
+                    @:
+                    <div class="col-xs-6 col-md-3 demo-item">
+                        <a class="thumbnail selectedBg">
+                            <img id="@b.Id" src="@thumb">
+                        </a>
+                    </div>
+                }
+            }
+            else{
+                if(b.Url.StartsWith("http://"))
+                {
+                    @:
+                    <div class="col-xs-6 col-md-3 demo-item">
+                        <a class="thumbnail">
+                            <img id="@b.Id" src="@b.Url">
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    string url = "images/backgrounds/thumbnails/" + b.Url;
+                    @:
+                    <div class="col-xs-6 col-md-3 demo-item">
+                        <a class="thumbnail">
+                            <img id="@b.Id" src="@url">
+                        </a>
+                    </div>
+                }
+            }
+
+            if(i == Model.Count()-1){
+                @:</div>
+            }
+            else if((((i+1) % 4) == 0) ){
+                @:</div>
+            }
+        }
+    }
+</div>
+<script>
+    $(".thumbnail").click(function(){
+                        console.log("test");
+                        $(".selectedBg").removeClass("selectedBg");
+                        $(this).addClass("selectedBg");
+    });
+    </script>

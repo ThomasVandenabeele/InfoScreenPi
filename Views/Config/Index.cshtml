@@ -1,0 +1,125 @@
+@using InfoScreenPi.Entities
+@model IEnumerable<User>
+
+@{
+    ViewData["Title"] = "Configuratie";
+}
+
+<hr/>
+@**************************** ACTIVE ITEMS ****************************@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h2>
+            <i class="fa fa-tv" aria-hidden="true"></i>
+            Items
+            <div class="btn-group pull-right" role="group" aria-label="...">
+                <button type="button" id="openArchive" class="btn btn-default"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span> &nbsp;&nbsp;&nbsp;Archief</button>
+                <button type="button" id="nieuwItem" class="btn btn-default"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> &nbsp;Nieuw</button>
+            </div>
+        </h2>
+    </div>@*
+    <div class="panel-body">
+        <p>...</p>
+    </div>*@
+    <div id="itemsTable">
+        @{Html.RenderPartial("Items/Table", (List<Item>)ViewBag.ActiveItems);}
+    </div>
+</div>
+
+<hr/>
+@**************************** BACKGROUNDS ****************************@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h2>
+            <i class="fa fa-picture-o" aria-hidden="true"></i>
+            Achtergronden
+        </h2>
+    </div>
+    <div class="panel-body">
+        <div class="media">
+            <div class="media-left media-top">
+                <span class="glyphicon glyphicon-question-sign text-muted" aria-hidden="true"></span> 
+            </div>
+            <div class="media-body">
+                <p class="text-muted">
+                    Bekijk de huidig beschikbare achtergronden of voeg een nieuwe achtergrond toe.<br />
+                    Verwijder een achtergrond via de rechtermuisknop.
+                </p>
+            </div>
+        </div><br/>
+        <div class="input-group">
+            <label class="input-group-btn">
+                <span class="btn btn-primary">
+                    Browse &hellip; <input type="file" class="upload"  id="f_UploadImage" style="display: none;" multiple>
+                </span>
+            </label>
+            <input type="text" class="form-control" placeholder="Upload nieuwe achtergrond" id="placeholderUpload" readonly>
+        </div><br />
+        <div id='backgroundGrid'>
+            @{Html.RenderPartial("Backgrounds/Grid", (List<Background>)ViewBag.Backgrounds);}
+        </div>
+    </div>
+</div>
+
+<hr/>
+@**************************** RSS ****************************@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h2>
+            <i class="fa fa-rss" aria-hidden="true"></i>
+            RSS Abonnementen
+            <div class="btn-group pull-right" role="group" aria-label="...">
+                <button type="button" id="RenewRssFeedItems" class="btn btn-default"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> &nbsp;Refresh Items</button>
+                <button type="button" id="registerRSS" class="btn btn-default"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> &nbsp;Nieuw</button>
+            </div>
+        </h2>
+    </div>
+    <div class="panel-body">
+        <div class="media">
+            <div class="media-left media-top">
+                <span class="glyphicon glyphicon-question-sign text-muted" aria-hidden="true"></span> 
+            </div>
+            <div class="media-body">
+                <p class="text-muted">
+                    Hier kan u RSS abonnementen toevoegen.<br />
+                    Voor alle artikels uit actieve RSS abonnementen zullen slides toegevoegd worden aan het scherm.
+                </p>
+            </div>
+        </div><br />
+    </div>
+    <div id="rssFeedsTable">
+        @{Html.RenderPartial("RSS/Table", (List<RssFeed>)ViewBag.RssAbo);}
+    </div>
+</div>
+
+<hr/>
+@**************************** TICKER ITEMS ****************************@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h2>
+            <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+            Ticker Items
+        </h2>
+    </div>
+    <div class="panel-body" id="parentTickerArea">
+        <div class="media">
+            <div class="media-left media-top">
+                <span class="glyphicon glyphicon-question-sign text-muted" aria-hidden="true"></span> 
+            </div>
+            <div class="media-body">
+                <p class="text-muted">
+                    Pas de inhoud aan door iedere rij aan te passen.
+                    Voeg een nieuwe rij toe voor een extra tickerveld.<br />
+                </p>
+            </div>
+        </div><br />
+        <textarea class="form-control" id="TickerData" rows="5">
+            @foreach (string dataLine in ViewBag.TickerItems as List<string>) {
+                @Html.Raw(dataLine + "\n")
+            }
+        </textarea> 
+    </div>
+</div>
+
+
+

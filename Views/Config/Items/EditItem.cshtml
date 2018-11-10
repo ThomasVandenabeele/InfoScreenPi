@@ -1,0 +1,69 @@
+@using InfoScreenPi.Entities
+@model Item
+
+<form>
+    <div class="form-group">
+        <label for="title">Title</label>
+        <input type="text" class="form-control" id="EditItemTitle" placeholder="Titel">
+    </div>
+    <div class="form-group">
+        <label for="content">Inhoud</label>
+        <textarea name="editorEditItem" id="editorEditItem" rows="20" cols="80">
+            @Html.Raw(Model.Content)
+        </textarea>
+    </div>
+    <div class="form-group">
+        <label for="background">Achtergrond</label>
+        @{Html.RenderPartial("~/Views/Config/Backgrounds/SelectionGrid.cshtml", (List<Background>)ViewBag.SelectionGrid);}
+    </div>
+</form>
+<hr>
+<button class="btn btn-primary" id="editItem">Wijzig</button>
+
+<script>
+        CKEDITOR.replace( 'editorEditItem' , {
+            language: 'nl'
+        });
+
+        $(function () {
+            $('#EditItemTitle').val('@Model.Title');
+            var selectedImgId = parseInt(@Model.Background.Id);
+            var img = ($( "#backgroundSelectionGrid" ).find( "#" + selectedImgId ))[0];
+            var thumbnail = ($(img).closest('a'))[0];
+            $(".selectedBg").removeClass("selectedBg");
+            $(thumbnail).addClass("selectedBg");
+            
+        });
+          
+
+        $("#editItem").click(function(){
+            var title = $("#EditItemTitle").val();
+            var content = CKEDITOR.instances.editorEditItem.getData();
+            var img = $(".selectedBg").children("img")[0];
+            var bgid = $(img).attr('id');
+            var idi = parseInt(@Model.Id);
+
+            var postData = { itemId: idi, itemTitle: title, itemContent: content, bgId: bgid };
+
+            $.ajax({
+                type: "POST",
+                url: '/Config/Items/EditItem',
+                data: postData,
+                success: function(response, textStatus, jqXHR){
+                    console.log(response);
+                    if(response.success){
+                        renewItemsGrid();
+                        modal.close();
+                        alertify.success(response.message);
+                    }
+                    else{
+                        alertify.error(response.message);
+                    }
+                },
+                dataType: "json",
+                traditional: true
+            });
+
+        });
+
+</script>

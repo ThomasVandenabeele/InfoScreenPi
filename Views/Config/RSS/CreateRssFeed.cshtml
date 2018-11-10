@@ -1,0 +1,48 @@
+@using InfoScreenPi.Entities
+@model List<Background>
+<p>Geef een RSS url in:</p>
+<input type="text" class="form-control" id="newRssFeedUrl" placeholder="RSS feed URL">
+<hr>
+<p>Kies een standaardachtergrond:</p>
+@{Html.RenderPartial("~/Views/Config/Backgrounds/SelectionGrid.cshtml", Model);}
+<hr>
+<button class="btn btn-primary" id="registerNewRssSubmit">Registreer</button>
+<script>
+//$(document).ready(function() {
+    
+
+    $("#registerNewRssSubmit").click(function(){
+        var img = $(".selectedBg").children("img")[0];
+        var bgid = $(img).attr('id');
+        var postData = { uri: $('#newRssFeedUrl').val(), bgId: bgid};
+        $.ajax({
+            type: "POST",
+            url: '/Config/RssFeeds/RegisterRss',
+            data: postData,
+            success: function(response, textStatus, jqXHR){
+                console.log(response);
+                if(response.success){
+                    $.get("/Config/RssFeeds/Table", function (data) {
+                        $("#rssFeedsTable").empty();
+                        $("#rssFeedsTable").html(data);
+                        $('input.stateCheckRss:checkbox').each(function () {
+                            $(this).bootstrapToggle();
+                        });
+                        modal.close();
+                        listenCheckStateRss();
+                        
+                    });
+                    alertify.success(response.message);
+                }
+                else{
+                    alertify.error(response.message);
+                }
+            },
+            dataType: "json",
+            traditional: true
+        });
+    });
+    
+
+//});
+</script>

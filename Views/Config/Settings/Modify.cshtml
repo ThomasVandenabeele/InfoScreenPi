@@ -1,0 +1,98 @@
+@using InfoScreenPi.Entities
+@using System.Linq
+@model List<Setting>
+
+@{
+    int SlideTimeSec = Convert.ToInt32(@Model.First(s => s.SettingName == "SlideTime").SettingValue)/1000;
+    int TickerTimeSec = Convert.ToInt32(@Model.First(s => s.SettingName == "TickerTime").SettingValue)/1000;
+}
+
+<div class="form-horizontal" id="SettingsForm">
+  <h3 class="col-sm-offset-2">Slides</h3>
+  <div class="form-group">
+    <label for="SlideTime" class="col-sm-2 control-label">Slide Intervaltijd</label>
+    <div class="input-group col-md-5">
+        <input type="number" class="form-control" id="SlideTime" value="@SlideTimeSec">
+        <span class="input-group-addon">seconden</span>
+    </div>
+  </div>
+  <hr/>
+  <h3 class="col-sm-offset-2">Ticker</h3>
+  <div class="form-group">
+    <label for="ShowTicker" class="col-sm-2 control-label">Toon Ticker</label>
+    <div class="input-group col-md-5">
+      <input type="checkbox" id="ShowTicker" class="ShowTicker" checked data-toggle="toggle" data-style="ios" data-size="small" data-on="Toon" data-off="Verberg" data-onstyle="success" data-offstyle="danger">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="TickerTime" class="col-sm-2 control-label">Ticker Intervaltijd</label>
+     <div class="input-group col-md-5">
+        <input type="number" class="form-control" id="TickerTime" value="@TickerTimeSec">
+        <span class="input-group-addon">seconden</span>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="TickerTime" class="col-sm-2 control-label">Ticker Effect</label>
+     <div class="input-group col-md-5">
+         @if(@Model.First(s => s.SettingName == "TickerEffect").SettingValue == "fade")
+         { 
+             <select class="form-control" id="TickerEffect">
+                <option value="fade" selected="selected">Fade</option>
+                <option value="slide" >Slide</option>
+                <option value="typing" >Typing</option>
+            </select>
+         }
+         else if(@Model.First(s => s.SettingName == "TickerEffect").SettingValue == "slide")
+         {
+              <select class="form-control" id="TickerEffect">
+                <option value="fade">Fade</option>
+                <option value="slide" selected="selected" >Slide</option>
+                <option value="typing" >Typing</option>
+            </select>
+         }
+         else
+         {
+             <select class="form-control" id="TickerEffect">
+                <option value="fade">Fade</option>
+                <option value="slide" >Slide</option>
+                <option value="typing" selected="selected">Typing</option>
+            </select>
+         }
+    </div>
+  </div>
+  <hr/>
+  <h3 class="col-sm-offset-2">Klok</h3>
+  <div class="form-group">
+    <label for="TickerTime" class="col-sm-2 control-label">Toon</label>
+     <div class="form-group">
+      <div class="input-group col-md-5">
+        <input type="checkbox" id="ShowClock" class="ShowClock" checked data-toggle="toggle" data-style="ios" data-size="small" data-on="Toon" data-off="Verberg" data-onstyle="success" data-offstyle="danger">
+      </div>
+    </div>
+  </div>
+  <hr/>
+  <h3 class="col-sm-offset-2">Weer</h3>
+  <div class="form-group">
+    <label for="TickerTime" class="col-sm-2 control-label">Toon</label>
+     <div class="input-group col-md-5">
+        <input type="checkbox" id="ShowWeather" class="ShowTicker" checked data-toggle="toggle" data-style="ios" data-size="small" data-on="Toon" data-off="Verberg" data-onstyle="success" data-offstyle="danger">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="TickerTime" class="col-sm-2 control-label">Locatie</label>
+     <div class="input-group col-md-5">
+        <input type="text" class="form-control" id="WeatherLocation" value="Alken"></div>
+  </div>
+  <hr/>
+  <div class="form-group">
+    <div class="col-md-5"><br>
+      <button class="btn btn-primary" id="SaveSettings" >Opslaan</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  $('input:checkbox').each(function () {
+            $(this).bootstrapToggle();
+        });
+</script>

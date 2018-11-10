@@ -1,0 +1,282 @@
+@using InfoScreenPi.Entities
+@using InfoScreenPi.ViewModels
+@model IEnumerable<ItemViewModel>
+@{
+    Layout = null;
+    int index = 0;
+ }
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Infoscherm</title>
+
+    <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.6/css/bootstrap.min.css"
+              asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
+              asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
+
+    <!-- Custom CSS -->
+    <link href="~/css/full-slider.css" rel="stylesheet">
+    <link href="~/css/site.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body onload="startTime()" style="padding-top: 0px; padding-bottom: 0px; overflow:hidden;">
+    <div class="loader"></div>
+
+    <!-- Full Page Image Background Carousel Header -->
+    <div id="myCarousel" class="carousel slide">
+
+        <!-- Wrapper for Slides -->
+        <div class="carousel-inner">
+
+            @{
+                foreach(ItemViewModel item in Model){
+                    string url = "";
+                    if(item.BackgroundUrl.StartsWith("http://") || item.BackgroundUrl.StartsWith("https://"))
+                    {
+                        url = item.BackgroundUrl;
+                    }
+                    else
+                    {
+                        url = "images/backgrounds/" + item.BackgroundUrl;
+                    }
+                    if(index == 0){
+                        if(item.KindDescription == "CUSTOM"){
+                            <div class="item active">
+                                <div class="fill" style="background-image:url('@url')"></div>
+                                <div class="carousel-caption customlayout">
+                                    @Html.Raw(item.Content)
+                                </div>
+                            </div>
+                        }
+                        else{
+                            <div class="item active">
+                                <div class="fill" style="background-image:url('@url')"></div>
+                                <div class="carousel-caption" style="font-weight: 900;">
+                                    <div style="display:flex;flex-direction: column;justify-content:center;align-items:center;width:930px;height:450px;">
+                                        <h2 style="font-weight: 900;">@Html.Raw(item.Title)</h2>
+                                        <p>@Html.Raw(item.Content)</p>
+                                    </div>
+                                    <div class="test"><b>BRON:</b> @item.RssSource</div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else{
+                        if(item.KindDescription == "CUSTOM"){
+                            <div class="item">
+                                <div class="fill" style="background-image:url('@url')"></div>
+                                <div class="carousel-caption customlayout">
+                                    @Html.Raw(item.Content)
+                                </div>
+                            </div>
+                        }
+                        else{
+                            <div class="item">
+                                <div class="fill" style="background-image:url('@url')"></div>
+                                <div class="carousel-caption" style="font-weight: 900;">
+                                    <div style="display:flex;flex-direction: column;justify-content:center;align-items:center;width:930px;height:450px;">
+                                        <h2 style="font-weight: 900;">@Html.Raw(item.Title)</h2>
+                                        <p>@Html.Raw(item.Content)</p>
+                                    </div>
+                                    <div class="test"><b>@item.RssSource</b></div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    index++;
+                }
+            }
+        </div>
+
+    </div>
+    <!-- /.container -->
+    @if(!(Boolean)ViewBag.ShowClock && !(Boolean)ViewBag.ShowTicker && !(Boolean)ViewBag.ShowWeather){
+    }
+    else{
+        <footer>
+    	<div class="row">
+            @if((Boolean)ViewBag.ShowClock){
+                <div class="col-md-1">
+                    <h1 id="clock"></h1>
+                </div>  
+            }
+            
+            @if((Boolean)ViewBag.ShowTicker){
+                <div class="col-md-8" id="foot_content">
+                    <ul class="ticker">
+                        @foreach (string dataLine in TempData["TickerData"] as List<string>) {
+                            <li>@dataLine</li>
+                        }
+                    </ul>
+                </div>
+            }
+	    	
+            @if((Boolean)ViewBag.ShowWeather){
+                <div class="col-md-3">
+                    <table class="weer">
+                        <tr>
+                            <th rowspan="2"><img class="weather-icon" height="50px"/></th>
+                            <th class="weather-temperature" width="200px"></th>
+                        </tr>
+                        <tr>
+                            <td class="weather-description"></td>
+                        </tr>
+                    </table>
+                </div>
+            }
+            
+	    </div>
+    	
+    </footer>
+    }
+    
+
+    <!-- jQuery -->
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.3.min.js"
+                asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+                asp-fallback-test="window.jQuery">
+        </script>
+        <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.6/bootstrap.min.js"
+                asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
+                asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal">
+        </script>
+    <script src="~/js/inewsticker.js"></script>
+    <script src="~/js/openWeather.js"></script>
+
+
+
+    <!-- Script to Activate the Carousel -->
+    <script type="text/javascript">
+
+        $(window).load(function() {
+            $(".loader").fadeOut("slow");
+        })
+
+    $(document).ready(function()
+    {
+
+        var ajax_call = function() {
+            //console.log("check refresh:");
+           $.get("/Config/GetRefresh", function (response, textStatus, jqXHR) {
+                if(response.success){
+                    //console.log(response.status);
+                    if(response.status == true){
+                        var postData = { status: false };
+                        $.ajax({
+                            type: "POST",
+                            url: '/Config/SetRefresh',
+                            data: postData,
+                            success: function(response, textStatus, jqXHR){
+                                //console.log(response);
+                                if(response.success){
+                                    location.reload();
+                                }
+                            },
+                            dataType: "json",
+                            traditional: true
+                        });
+                    }
+                }
+            });
+
+        };
+
+        setInterval(ajax_call, 15000);
+
+        var refreshRss = function() {
+            $.get("/Config/RssFeeds/RenewRssFeeds", function (response) {
+                //alertify.success(response.message);
+                location.reload();
+            });
+
+        };
+
+        setInterval(refreshRss, 60000*30);
+
+            getWeather(); //Get the initial weather.
+            setInterval(getWeather, 600000); //Update the weather every 10 minutes.
+
+        function getWeather() {
+            $('.weather-temperature').openWeather({
+                key: '97c37a2e1a695328beacb54db1735880',
+                city: '@ViewBag.WeatherLocation',
+                lang: 'nl',
+                iconTarget: '.weather-icon',
+                descriptionTarget: '.weather-description'
+            });
+        }
+
+    
+    });
+
+    var sign = "&nbsp;";
+	function startTime() {
+	    var today = new Date();
+	    var h = today.getHours();
+	    var m = today.getMinutes();
+	    var s = today.getSeconds();
+	    m = checkTime(m);
+	    s = checkTime(s);
+	    if(sign == "&nbsp;") sign = ":";
+	    else sign = "&nbsp;";
+	    document.getElementById('clock').innerHTML =
+	    h + sign + m;
+	    var t = setTimeout(startTime, 1000);
+	}
+	function checkTime(i) {
+	    if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
+	    return i;
+	}
+
+	$(document).ready(function() {
+	    $('.ticker').inewsticker({
+			speed       : @ViewBag.TickerTime,
+			effect      : '@ViewBag.TickerEffect',
+			dir         : 'ltr',
+			color       : '#fff',
+			font_family : 'arial',
+			delay_after : 1000		
+		});
+	});
+
+
+    </script>
+    <script type="text/javascript">
+    
+        var $ = jQuery.noConflict();
+        $(document).ready(function() { 
+            $('#myCarousel').carousel({ 
+                interval: parseInt(@ViewBag.SlideTime), 
+                cycle: true,
+                pause: "false" 
+            });
+        }); 
+
+        //$('.carousel').carousel('next');
+        //document.getElementById("#myCarousel").focus();
+        
+        //document.body.style.cursor = 'none';
+    
+    </script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,55 @@
+@using InfoScreenPi.Entities
+@model List<Background>
+    @{
+        for(int i = 0; i <= Model.Count(); i++)
+        {
+            Background b = null;
+            if(i < Model.Count()){
+                b = Model.ElementAt(i);
+            }
+            if(i == 0){
+                @:<div class="row">
+            }
+            else if((i % 4) == 0){
+                @:<div class="row">
+            }
+
+            if(i == Model.Count()){
+                @:
+                <div class="col-xs-6 col-md-3 demo-item">
+                    <a id="linkAddBackground" class="thumbnail">
+                        <img id="add" src="~/images/addIcon.svg">
+                    </a>
+                </div>
+            }
+            else{
+                if(b.Url.StartsWith("http://"))
+                {
+                    @:
+                    <div class="col-xs-6 col-md-3 demo-item">
+                        <a href="@b.Url" class="thumbnail">
+                            <img id="@b.Id" src="@b.Url">
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    string url = "images/backgrounds/" + b.Url;
+                    string thumb = "images/backgrounds/thumbnails/" + b.Url;
+                    @:
+                    <div class="col-xs-6 col-md-3 demo-item">
+                        <a href="@url" class="thumbnail">
+                            <img id="@b.Id" src="@thumb">
+                        </a>
+                    </div>
+                }
+            }
+
+            if(i == Model.Count()){
+                @:</div>
+            }
+            else if((((i+1) % 4) == 0) ){
+                @:</div>
+            }
+        }
+    }
