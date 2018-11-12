@@ -67,7 +67,7 @@ namespace InfoScreenPi.Controllers
         [HttpPost]
         public async Task<ActionResult> FileUpload(IFormFile file)
         {
-                // libgdiplus installed ??
+                // libc6-dev and libgdiplus installed ??
 
                 var parsedContentDisposition = ContentDispositionHeaderValue.Parse(file.ContentDisposition);
                 string filename = parsedContentDisposition.FileName.Trim().ToString(); //NAKIJKEN
