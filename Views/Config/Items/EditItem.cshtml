@@ -14,7 +14,7 @@
     </div>
     <div class="form-group">
         <label for="background">Achtergrond</label>
-        @{Html.RenderPartial("~/Views/Config/Backgrounds/SelectionGrid.cshtml", (List<Background>)ViewBag.SelectionGrid);}
+        @await Html.PartialAsync("~/Views/Config/Backgrounds/SelectionGrid.cshtml", (List<Background>)ViewBag.SelectionGrid)
     </div>
 </form>
 <hr>

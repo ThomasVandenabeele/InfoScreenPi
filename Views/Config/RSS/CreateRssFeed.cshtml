@@ -4,7 +4,7 @@
 <input type="text" class="form-control" id="newRssFeedUrl" placeholder="RSS feed URL">
 <hr>
 <p>Kies een standaardachtergrond:</p>
-@{Html.RenderPartial("~/Views/Config/Backgrounds/SelectionGrid.cshtml", Model);}
+@await Html.PartialAsync("~/Views/Config/Backgrounds/SelectionGrid.cshtml", Model)
 <hr>
 <button class="btn btn-primary" id="registerNewRssSubmit">Registreer</button>
 <script>

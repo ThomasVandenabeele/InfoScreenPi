@@ -122,7 +122,7 @@ namespace InfoScreenPi.Controllers
             }
             catch (Exception e)
             {
-                return Json(new {success = false, message = "Er liep iets mis"});
+                return Json(new {success = false, message = e.Message});
             }
             
         }
@@ -146,7 +146,7 @@ namespace InfoScreenPi.Controllers
             }
             catch(Exception e)
             {
-                return Json(new {success = false, message = "Er liep iets mis"});
+                return Json(new {success = false, message = e.Message});
             }
         }
 

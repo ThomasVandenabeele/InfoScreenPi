@@ -8,7 +8,6 @@ using InfoScreenPi.Entities;
 using System.Threading.Tasks;
 using System;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Http;
 
 namespace InfoScreenPi.ViewComponents
 {
