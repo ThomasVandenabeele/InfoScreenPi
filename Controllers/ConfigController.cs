@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Authentication;
 
 namespace InfoScreenPi.Controllers
 {
@@ -85,6 +86,8 @@ namespace InfoScreenPi.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel user)
         {
+            //User _user = _membershipService.CreateUser("TVDA", "thomas.vandenabeele@kuleuven.be", "i1n2f3o4", new int[] { 1 });
+
             IActionResult _result = new ObjectResult(false);
             GenericResult _authenticationResult = null;
 
@@ -94,17 +97,52 @@ namespace InfoScreenPi.Controllers
 
                 if (_userContext.User != null)
                 {
-                    IEnumerable<Role> _roles = _userRepository.GetUserRoles(user.Username);
-                    List<Claim> _claims = new List<Claim>();
-                    foreach (Role role in _roles)
+                    var claims = new List<Claim>
                     {
-                        Claim _claim = new Claim(ClaimTypes.Role, "Admin", ClaimValueTypes.String, user.Username);
-                        _claims.Add(_claim);
-                    }
+                        new Claim(ClaimTypes.Name, _userContext.User.Email),
+                        new Claim("FullName", _userContext.User.LastName + " " + _userContext.User.FirstName),
+                        new Claim("Id", _userContext.User.Id.ToString()),
+                        //new Claim(ClaimTypes.Role, _claims.First().ToString()),
+                        new Claim(ClaimTypes.Role, "Admin", ClaimValueTypes.String, user.Username)
+                    };
 
-                    await HttpContext.Authentication.SignInAsync("MyCookieMiddlewareInstance",
-                        new ClaimsPrincipal(new ClaimsIdentity(_claims, CookieAuthenticationDefaults.AuthenticationScheme)),
-                        new Microsoft.AspNetCore.Http.Authentication.AuthenticationProperties {IsPersistent = user.RememberMe });
+                    var claimsIdentity = new ClaimsIdentity(
+                        claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+                    var authProperties = new AuthenticationProperties
+                    {
+                        AllowRefresh = true,
+                        // Refreshing the authentication session should be allowed.
+
+                        ///ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(20),
+                        // The time at which the authentication ticket expires. A 
+                        // value set here overrides the ExpireTimeSpan option of 
+                        // CookieAuthenticationOptions set with AddCookie.
+
+                        IsPersistent = user.RememberMe,
+                        // Whether the authentication session is persisted across 
+                        // multiple requests. Required when setting the 
+                        // ExpireTimeSpan option of CookieAuthenticationOptions 
+                        // set with AddCookie. Also required when setting 
+                        // ExpiresUtc.
+
+                        ///IssuedUtc = DateTimeOffset.UtcNow,
+                        // The time at which the authentication ticket was issued.
+
+                        RedirectUri = "config"
+                        // The full path or absolute URI to be used as an http 
+                        // redirect response value.
+                    };
+
+                    await HttpContext.SignInAsync(
+                        CookieAuthenticationDefaults.AuthenticationScheme, 
+                        new ClaimsPrincipal(claimsIdentity), 
+                        authProperties);
+                    
+
+                    // await HttpContext.Authentication.SignInAsync("MyCookieMiddlewareInstance",
+                        // new ClaimsPrincipal(new ClaimsIdentity(_claims, CookieAuthenticationDefaults.AuthenticationScheme)),
+                        // new Microsoft.AspNetCore.Http.Authentication.AuthenticationProperties {IsPersistent = user.RememberMe });
 
 
                     _authenticationResult = new GenericResult()
@@ -114,7 +152,7 @@ namespace InfoScreenPi.Controllers
                     };
 
                     User loggedUser = _userRepository.GetSingleByUsername(user.Username);
-                    HttpContext.Response.Cookies.Append("YU2ert-gert24-59HEHF-thtyyE-87R23!", _protector.Protect(loggedUser.Id.ToString()), new CookieOptions { Expires = DateTimeOffset.Now.AddDays(15) });
+                    //HttpContext.Response.Cookies.Append("YU2ert-gert24-59HEHF-thtyyE-87R23!", _protector.Protect(loggedUser.Id.ToString()), new CookieOptions { Expires = DateTimeOffset.Now.AddDays(15) });
 
                     loggedUser.LastLogin = DateTime.Now;
                     _userRepository.Edit(loggedUser);
@@ -152,9 +190,10 @@ namespace InfoScreenPi.Controllers
         {
             try
             {
-                await HttpContext.Authentication.SignOutAsync("MyCookieMiddlewareInstance");
+                await HttpContext.SignOutAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme);
                 HttpContext.Session.Clear();
-                return RedirectToAction("Login","Config");
+                return RedirectToAction("login","config");
             }
             catch (Exception ex)
             {
@@ -169,7 +208,12 @@ namespace InfoScreenPi.Controllers
         [HttpGet]
         public async Task<IActionResult> UserDetails()
         {
-            string idString = _protector.Unprotect(HttpContext.Request.Cookies["YU2ert-gert24-59HEHF-thtyyE-87R23!"]); // id
+            //string idString = _protector.Unprotect(HttpContext.Request.Cookies["YU2ert-gert24-59HEHF-thtyyE-87R23!"]); // id
+            string idString = "";
+            if(HttpContext.User.Identity.IsAuthenticated)
+            {
+                idString = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
+            }
             int? id = Convert.ToInt32(idString);
             User model = null;
             if (id != null && id != 0)

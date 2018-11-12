@@ -8,6 +8,7 @@ using InfoScreenPi.Entities;
 using System.Threading.Tasks;
 using System;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
 
 namespace InfoScreenPi.ViewComponents
 {
@@ -24,7 +25,12 @@ namespace InfoScreenPi.ViewComponents
 
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            string idString = _protector.Unprotect(HttpContext.Request.Cookies["YU2ert-gert24-59HEHF-thtyyE-87R23!"]); // id
+            string idString = "";
+            if(HttpContext.User.Identity.IsAuthenticated)
+            {
+                idString = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
+            }
+            //string idString = _protector.Unprotect(HttpContext.Request.Cookies["YU2ert-gert24-59HEHF-thtyyE-87R23!"]); // id
             int? id = Convert.ToInt32(idString);
          
             if (id != null && id != 0)

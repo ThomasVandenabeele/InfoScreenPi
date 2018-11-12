@@ -55,24 +55,27 @@ namespace InfoScreenPi
             services.AddScoped<IEncryptionService, EncryptionService>();
 
             services.AddDataProtection();
+            //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
                 {
-                    options.LoginPath = new PathString("/Config/Login");
+                    options.LoginPath = new PathString("/config/login");
+                    options.LogoutPath = new PathString("/config/LogOut");
                 });
  
-            // Polices
+            //Polices
             services.AddAuthorization(options =>
             {
                 // inline policies
                 options.AddPolicy("AdminOnly", policy =>
                 {
-                    policy.RequireClaim(ClaimTypes.Role, "Admin");
+                    policy.RequireRole("Admin");
                 });
  
             });
 
-            services.AddSession(/* options go here */);
+            // services.AddSession(/* options go here */);
+            services.AddSession();
 
         }
 
@@ -93,15 +96,16 @@ namespace InfoScreenPi
             app.UseStaticFiles();
             app.UseSession();
 
-            var cookiePolicyOptions = new CookiePolicyOptions
-            {
-                MinimumSameSitePolicy = SameSiteMode.Strict,
-            };
-            app.UseCookiePolicy(cookiePolicyOptions);
+            // var cookiePolicyOptions = new CookiePolicyOptions
+            // {
+            //     MinimumSameSitePolicy = SameSiteMode.Strict,
+            // };
+            // app.UseCookiePolicy(cookiePolicyOptions);
+            app.UseCookiePolicy();
 
-
+            app.UseAuthentication();
             
-
+            app.UseSession();
 
 
             app.UseMvc(routes =>
