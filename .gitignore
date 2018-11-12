@@ -1,0 +1,4 @@
+# ignore all vscode files
+*.vscode
+obj
+bin
