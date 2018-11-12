@@ -13,7 +13,6 @@ using InfoScreenPi;
 using InfoScreenPi.Hubs;
 using InfoScreenPi.Infrastructure.Repositories;
 using InfoScreenPi.Infrastructure.Services;
-using InfoScreenPi.Infrastructure.WebSocketManager;
 
 using InfoScreenPi.Infrastructure;
 using System.Reflection;
@@ -67,16 +66,6 @@ namespace InfoScreenPi
                     options.LoginPath = new PathString("/config/login");
                     options.LogoutPath = new PathString("/config/LogOut");
                 });
- 
-            services.AddTransient<WebSocketConnectionManager>();
-
-            foreach(var type in Assembly.GetEntryAssembly().ExportedTypes)
-            {
-                if(type.GetTypeInfo().BaseType == typeof(WebSocketHandler))
-                {
-                    services.AddSingleton(type);
-                }
-            }
 
             //Polices
             services.AddAuthorization(options =>
@@ -123,17 +112,6 @@ namespace InfoScreenPi
             app.UseAuthentication();
             
             app.UseSession();
-
-            // var webSocketOptions = new WebSocketOptions()
-            // {
-            //     KeepAliveInterval = TimeSpan.FromSeconds(120),
-            //     ReceiveBufferSize = 4 * 1024
-            // };
-            // app.UseWebSockets(webSocketOptions);
-            //IServiceProvider serviceProvider = Microsoft.Extensions.DependencyInjection.ServiceProvider;
-            //app.MapWebSocketManager("/ws", serviceProvider.GetService<TestMessageHandler>());
-            //WebSocketHandler handler = new TestMessageHandler();
-            //app.Map("/ws", (_app) => _app.UseMiddleware<WebSocketManagerMiddleware>());
 
             app.UseSignalR(routes =>
             {
