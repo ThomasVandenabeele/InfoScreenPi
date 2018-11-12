@@ -67,6 +67,7 @@ namespace InfoScreenPi.Controllers
         [HttpPost]
         public async Task<ActionResult> FileUpload(IFormFile file)
         {
+                // libgdiplus installed ??
 
                 var parsedContentDisposition = ContentDispositionHeaderValue.Parse(file.ContentDisposition);
                 string filename = parsedContentDisposition.FileName.Trim().ToString(); //NAKIJKEN
@@ -88,7 +89,9 @@ namespace InfoScreenPi.Controllers
                     _backgroundRepository.Add(b);
                     _backgroundRepository.Commit();
 
-                    /* thumbs *//*
+                    /* thumbs */
+                    
+
                     MemoryStream ms = new MemoryStream(); 
                     file.OpenReadStream().CopyTo(ms); 
                     
@@ -96,7 +99,7 @@ namespace InfoScreenPi.Controllers
                     System.Drawing.Image inputImage = System.Drawing.Image.FromStream(ms); 
                     Image thumb = GetReducedImage(inputImage);
                     thumb.Save(Path.Combine(imageRootThumb, filename));
-                    */
+                    
 
                     return Json(new { success = true, message = ("Nieuwe achtergrond geupload") });
                 }
