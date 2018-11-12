@@ -7,11 +7,16 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using System;
 
+using InfoScreenPi;
+using InfoScreenPi.Hubs;
 using InfoScreenPi.Infrastructure.Repositories;
 using InfoScreenPi.Infrastructure.Services;
+using InfoScreenPi.Infrastructure.WebSocketManager;
 
 using InfoScreenPi.Infrastructure;
+using System.Reflection;
 
 namespace InfoScreenPi
 {
@@ -63,6 +68,16 @@ namespace InfoScreenPi
                     options.LogoutPath = new PathString("/config/LogOut");
                 });
  
+            services.AddTransient<WebSocketConnectionManager>();
+
+            foreach(var type in Assembly.GetEntryAssembly().ExportedTypes)
+            {
+                if(type.GetTypeInfo().BaseType == typeof(WebSocketHandler))
+                {
+                    services.AddSingleton(type);
+                }
+            }
+
             //Polices
             services.AddAuthorization(options =>
             {
@@ -76,6 +91,8 @@ namespace InfoScreenPi
 
             // services.AddSession(/* options go here */);
             services.AddSession();
+
+            services.AddSignalR();
 
         }
 
@@ -107,6 +124,21 @@ namespace InfoScreenPi
             
             app.UseSession();
 
+            // var webSocketOptions = new WebSocketOptions()
+            // {
+            //     KeepAliveInterval = TimeSpan.FromSeconds(120),
+            //     ReceiveBufferSize = 4 * 1024
+            // };
+            // app.UseWebSockets(webSocketOptions);
+            //IServiceProvider serviceProvider = Microsoft.Extensions.DependencyInjection.ServiceProvider;
+            //app.MapWebSocketManager("/ws", serviceProvider.GetService<TestMessageHandler>());
+            //WebSocketHandler handler = new TestMessageHandler();
+            //app.Map("/ws", (_app) => _app.UseMiddleware<WebSocketManagerMiddleware>());
+
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<SignalRHub>("/signalr");
+            });
 
             app.UseMvc(routes =>
             {
@@ -114,6 +146,7 @@ namespace InfoScreenPi
                     name: "default",
                     template: "{controller=Screen}/{action=Index}/{id?}");
             });
+            
         }
     }
 }

@@ -529,22 +529,23 @@ $(document).ready(function() {
             });
         });
 
-        $(document).on('click', '#RefreshScreen', function(){
-            var postData = { status: true };
-            $.ajax({
-                type: "POST",
-                url: '/Config/SetRefresh',
-                data: postData,
-                success: function(response, textStatus, jqXHR){
-                    //console.log(response);
-                    if(response.success){
-                        alertify.success(response.message);
-                    }
-                },
-                dataType: "json",
-                traditional: true
-            });
-        });
+        // $(document).on('click', '#RefreshScreen', function(){
+
+            // var postData = { status: true };
+            // $.ajax({
+            //     type: "POST",
+            //     url: '/Config/SetRefresh',
+            //     data: postData,
+            //     success: function(response, textStatus, jqXHR){
+            //         //console.log(response);
+            //         if(response.success){
+            //             alertify.success(response.message);
+            //         }
+            //     },
+            //     dataType: "json",
+            //     traditional: true
+            // });
+        // });
 
         $(document).on('click', '#SaveSettings', function(){
 
