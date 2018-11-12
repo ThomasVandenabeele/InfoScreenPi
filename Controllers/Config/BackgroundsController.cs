@@ -203,10 +203,10 @@ namespace InfoScreenPi.Controllers
             {
                 var imageRoot = Path.Combine(_hostEnvironment.WebRootPath, "images/backgrounds");
                 FileInfo file = new FileInfo(imageRoot + "/" + b.Url);
-                if (file.Exists)
-                {
-                    file.Delete();
-                }
+                if (file.Exists) file.Delete();
+                FileInfo thumb = new FileInfo(imageRoot + "/thumbnails/" + b.Url);
+                if (thumb.Exists) thumb.Delete();
+                
                 _backgroundRepository.Delete(b);
                 _backgroundRepository.Commit();
                 return Json(new { success = true, message = ("Achtergrond verwijderd") });
