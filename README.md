@@ -1,4 +1,4 @@
-# InfoScreen Pi
+# InfoScreenPi
 
 ## Description
 
