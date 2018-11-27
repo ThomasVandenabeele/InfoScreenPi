@@ -171,7 +171,8 @@
 
     $(document).ready(function()
     {
-
+    
+        /*
         var ajax_call = function() {
             //console.log("check refresh:");
            $.get("/Config/GetRefresh", function (response, textStatus, jqXHR) {
@@ -199,7 +200,9 @@
         };
 
         setInterval(ajax_call, 15000);
-
+        */
+        
+        /*
         var refreshRss = function() {
             $.get("/Config/RssFeeds/RenewRssFeeds", function (response) {
                 //alertify.success(response.message);
@@ -209,9 +212,7 @@
         };
 
         setInterval(refreshRss, 60000*30);
-
-            getWeather(); //Get the initial weather.
-            setInterval(getWeather, 600000); //Update the weather every 10 minutes.
+        */
 
         function getWeather() {
             $('.weather-temperature').openWeather({
@@ -222,6 +223,9 @@
                 descriptionTarget: '.weather-description'
             });
         }
+        
+        getWeather(); //Get the initial weather.
+        setInterval(getWeather, 600000); //Update the weather every 10 minutes.
 
     
     });

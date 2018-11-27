@@ -27,6 +27,10 @@ namespace InfoScreenPi.Infrastructure.Repositories
     public interface IRssFeedRepository : IEntityBaseRepository<RssFeed> 
     {
         void DeleteRssFeedItems(int rssFeedId);
+        Task ExtractRssItems(int rssFeedId);
+        Task RegisterRss(string uri, int bgId);
+        Task DeleteRssFeed(int rssFeedId);
+        Task<bool> RenewActiveRssFeeds();
     }
 
     public interface IUserRepository : IEntityBaseRepository<User>

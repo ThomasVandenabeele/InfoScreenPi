@@ -11,6 +11,8 @@
     <PackageReference Include="Microsoft.AspNetCore.WebSockets" Version="2.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.1.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.1.4" />
+    <PackageReference Include="Microsoft.SyndicationFeed.ReaderWriter" Version="1.0.2" />
+    <PackageReference Include="NCrontab" Version="3.3.0" />
     <PackageReference Include="System.Drawing.Common" Version="4.5.1" />
   </ItemGroup>
 

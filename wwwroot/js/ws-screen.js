@@ -9,7 +9,8 @@ connection.on("ReceiveMessage", function (user, message) {
     li.textContent = encodedMsg;
     document.getElementById("messagesList").appendChild(li);
 });
-connection.on("Refresh", function () {
+connection.on("RefreshScreens", function () {
+    console.log("on refresh");
     location.reload();
 });
 

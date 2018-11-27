@@ -16,6 +16,8 @@ using InfoScreenPi.Infrastructure.Services;
 
 using InfoScreenPi.Infrastructure;
 using System.Reflection;
+using Microsoft.Extensions.Hosting;
+using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace InfoScreenPi
 {
@@ -83,6 +85,8 @@ namespace InfoScreenPi
 
             services.AddSignalR();
 
+            services.AddHostedService<RefreshRSSTimedHostedService>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -115,7 +119,7 @@ namespace InfoScreenPi
 
             app.UseSignalR(routes =>
             {
-                routes.MapHub<SignalRHub>("/signalr");
+                routes.MapHub<WebSocketHub>("/signalr");
             });
 
             app.UseMvc(routes =>
