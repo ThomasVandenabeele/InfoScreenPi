@@ -1,11 +1,15 @@
 using System;
+using System.Linq;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Threading;
 using System.Threading.Tasks;
+using InfoScreenPi.Entities;
 using Microsoft.AspNetCore.SignalR;
 using InfoScreenPi.Hubs;
 using InfoScreenPi.Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace InfoScreenPi.Infrastructure.Services
@@ -34,8 +38,8 @@ namespace InfoScreenPi.Infrastructure.Services
         {
             _logger.LogInformation("RSS refresh service is starting.");
 
-            //_timer = new Timer(DoRssRefresh, null, TimeSpan.Zero, TimeSpan.FromSeconds(10));
-            _timer = new Timer(DoRssRefresh, null, TimeSpan.Zero, TimeSpan.FromHours(1));
+            _timer = new Timer(DoRssRefresh, null, TimeSpan.Zero, TimeSpan.FromSeconds(10));
+            //_timer = new Timer(DoRssRefresh, null, TimeSpan.Zero, TimeSpan.FromHours(1));
 
             return Task.CompletedTask;
         }
@@ -49,7 +53,24 @@ namespace InfoScreenPi.Infrastructure.Services
                 var rssFeedRepo = scope.ServiceProvider.GetRequiredService<IRssFeedRepository>();
                 var renewed = rssFeedRepo.RenewActiveRssFeeds().Result;
                 //Enkel refresh indien rssfeeds zijn gewijzigd
-                if(renewed) _hubContext.Clients.All.RefreshScreens();
+
+                var settingsRepo = scope.ServiceProvider.GetRequiredService<ISettingRepository>();
+                var dbChanged = settingsRepo.GetSettingByName("DBChanged") == "True";
+                
+                if(renewed || dbChanged)
+                {
+                    var _context = scope.ServiceProvider.GetRequiredService<InfoScreenContext>();
+                    
+                    Setting s = _context.Settings.ToList().First(setting => setting.SettingName == "DBChanged");
+                    s.SettingValue = false.ToString();
+                    EntityEntry dbEnt = _context.Entry(s);
+                    dbEnt.State = EntityState.Modified;
+            
+                    _context.SaveChanges();
+                    
+                    _hubContext.Clients.All.RefreshScreens();
+                    
+                }
             }
             
             //_rssFeedRepository.RenewActiveRssFeeds();

@@ -103,6 +103,11 @@ namespace InfoScreenPi.Infrastructure.Repositories
 
         public virtual void Commit()
         {
+            Setting s = _context.Settings.ToList().First(setting => setting.SettingName == "DBChanged");
+            s.SettingValue = true.ToString();
+            EntityEntry dbEnt = _context.Entry<Setting>(s);
+            dbEnt.State = EntityState.Modified;
+            
             _context.SaveChanges();
         }
     }
