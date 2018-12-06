@@ -19,17 +19,32 @@ namespace InfoScreenPi.Infrastructure.Repositories
 
         public IEnumerable<Item> GetAllCustomItems()
         {
-            return _context.Items.Include(i => i.Soort).Include(b => b.Background).Where(i => i.Soort.Description == "CUSTOM");
+            return _context.Items.Include(i => i.Soort).Include(b => b.Background).Where(i => (i.Soort.Description == "CUSTOM" || i.Soort.Description == "VIDEO"));
         }
 
         public IEnumerable<Item> GetAllActiveCustomItems()
         {
-            return _context.Items.Include(i => i.Soort).Include(b => b.Background).Where(i => i.Soort.Description == "CUSTOM" && i.Active == true && i.Archieved == false);
+            return _context.Items.Include(i => i.Soort).Include(b => b.Background).Where(i => (i.Soort.Description == "CUSTOM" || i.Soort.Description == "VIDEO") && i.Active == true && i.Archieved == false);
         }
 
         public IEnumerable<Item> GetAllActiveRSSItems()
         {
             return _context.Items.Include(i => i.Soort).Include(b => b.Background).Include(r => r.RssFeed).Where(i => i.Soort.Description == "RSS" && i.Active == true && i.Archieved == false);
+        }
+
+        public bool CheckItemState()
+        {
+ 
+            var itemsToChange = _context.Items.Where(i => i.Active == true && DateTime.Compare(i.ExpireDateTime, DateTime.Now) <= 0).ToList();
+            
+            itemsToChange.ForEach(item =>
+            {
+                item.Active = false;
+                Edit(item);
+                Commit();
+            });
+            
+            return itemsToChange.Any();
         }
     }
 }

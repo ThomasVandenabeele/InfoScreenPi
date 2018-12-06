@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -96,12 +97,12 @@ namespace InfoScreenPi.Controllers
         [HttpGet]
         public ActionResult CreateItem()
         {
-            List<Background> model = _backgroundRepository.GetAllWithoutRSS(true).ToList();
+            List<Background> model = _backgroundRepository.GetAllWithoutRSS(true).Where(b => !b.Url.Equals("black.jpg")).ToList();
             return PartialView("~/Views/Config/Items/CreateItem.cshtml", model);
         }
 
         [HttpPost]
-        public ActionResult RegisterNewItem(string itemTitle, string itemContent, int bgId)
+        public ActionResult RegisterNewItem(string itemTitle, string itemContent, int bgId, string expireDateTime)
         {
             ItemKind soort = _itemKindRepository.GetAll().Where(ik => ik.Description == "CUSTOM").First();
             Background achtergrond = _backgroundRepository.GetSingle(bgId);
@@ -113,7 +114,8 @@ namespace InfoScreenPi.Controllers
                     Content = itemContent,
                     Background = achtergrond,
                     Active = true,
-                    Archieved = false
+                    Archieved = false,
+                    ExpireDateTime = DateTime.Parse(expireDateTime)
                 }
             );
             _itemRepository.Commit();
@@ -143,6 +145,69 @@ namespace InfoScreenPi.Controllers
             _itemRepository.Commit();
 
             return Json(new {success = true, message = "Item '" + itemTitle + "' gewijzigd" }); 
+        }
+        
+        
+        [HttpGet]
+        public ActionResult CreateVideoItem()
+        {
+            return PartialView("~/Views/Config/Items/CreateVideoItem.cshtml");
+        }
+
+        [HttpPost]
+        [RequestSizeLimit(52428800*2)] // 100MB
+        public async Task<IActionResult> UploadVideo(IFormFile video)
+        {
+            //IFormFile videof = video.First();
+            if (video.Length > 0)
+            {
+                using (var stream = new FileStream(Path.GetTempFileName(), FileMode.Create))
+                {
+                    await video.CopyToAsync(stream);
+                }
+            }
+            git a
+            return Json(new {success = true, message = "Item geregistreerd" }); 
+
+        }
+        
+        [HttpPost]
+        [RequestSizeLimit(52428800*2)] // 100MB
+        public async Task<IActionResult> UploadVideoItem(string itemTitle, string expireDateTime, IFormFile video)
+        {
+            
+            ItemKind soort = _itemKindRepository.GetAll().Where(ik => ik.Description == "VIDEO").First();
+            Background achtergrond = _backgroundRepository.GetAll().First(b => b.Url.Equals("black.jpg"));
+
+            var videoRoot = Path.Combine(_hostEnvironment.WebRootPath, "videos");
+            string n = string.Format("vid-{0:yyyy-MM-dd_hh-mm-ss-tt}", DateTime.Now);
+            var fileName = n + "-" + video.FileName.Replace(" ", "-");
+            var fullFileName = Path.Combine(videoRoot, fileName);
+            if (video.Length > 0)
+            {
+                using (var stream = new FileStream(fullFileName, FileMode.Create))
+                {
+                    await video.CopyToAsync(stream);
+                }
+            }
+            
+            _itemRepository.Add(
+                new Item
+                {
+                    Soort = soort,
+                    Title = itemTitle,
+                    Content = fileName,
+                    Background = achtergrond,
+                    Active = true,
+                    Archieved = false,
+                    ExpireDateTime = DateTime.Parse(expireDateTime)
+                }
+            );
+            _itemRepository.Commit();
+
+            return Json(new {success = true, message = "Video geregistreerd" }); 
+            
+            
         }
 
     }

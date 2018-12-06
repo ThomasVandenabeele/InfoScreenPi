@@ -38,8 +38,8 @@ namespace InfoScreenPi.Infrastructure.Services
         {
             _logger.LogInformation("RSS refresh service is starting.");
 
-            _timer = new Timer(DoRssRefresh, null, TimeSpan.Zero, TimeSpan.FromSeconds(10));
-            //_timer = new Timer(DoRssRefresh, null, TimeSpan.Zero, TimeSpan.FromHours(1));
+            //_timer = new Timer(DoRssRefresh, null, TimeSpan.Zero, TimeSpan.FromSeconds(10));
+            _timer = new Timer(DoRssRefresh, null, TimeSpan.Zero, TimeSpan.FromHours(1));
 
             return Task.CompletedTask;
         }

@@ -1,3 +1,5 @@
+$( document ).ready( paginationHandler );
+
 
 $(document).ready(function() {
 
@@ -70,6 +72,17 @@ listenCheckState();
                     .setType(BootstrapDialog.TYPE_PRIMARY)
                     .open();
             });
+    });
+
+    $( "#nieuwVideoItem" ).click(function() {
+        $.get("/Config/Items/CreateVideoItem", function (data) {
+            modal
+                .setTitle('Nieuwe video')
+                .setMessage($('<div></div>').html(data))
+                .setSize(BootstrapDialog.SIZE_WIDE)
+                .setType(BootstrapDialog.TYPE_PRIMARY)
+                .open();
+        });
     });
 
     $(document).on('click','.verwijder',function(){

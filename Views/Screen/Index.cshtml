@@ -44,7 +44,6 @@
 
         <!-- Wrapper for Slides -->
         <div class="carousel-inner">
-
             @{
                 foreach(ItemViewModel item in Model){
                     string url = "";
@@ -56,49 +55,36 @@
                     {
                         url = "images/backgrounds/" + item.BackgroundUrl;
                     }
-                    if(index == 0){
-                        if(item.KindDescription == "CUSTOM"){
-                            <div class="item active">
-                                <div class="fill" style="background-image:url('@url')"></div>
-                                <div class="carousel-caption customlayout">
-                                    @Html.Raw(item.Content)
-                                </div>
+                    string active = "";
+                    if (index == 0) {active = "active";}
+                    if(item.KindDescription == "CUSTOM"){
+                        <div class="item @active">
+                            <div class="fill" style="background-image:url('@url')"></div>
+                            <div class="carousel-caption customlayout">
+                                @Html.Raw(item.Content)
                             </div>
-                        }
-                        else{
-                            <div class="item active">
-                                <div class="fill" style="background-image:url('@url')"></div>
-                                <div class="carousel-caption" style="font-weight: 900;">
-                                    <div style="display:flex;flex-direction: column;justify-content:center;align-items:center;width:930px;height:450px;">
-                                        <h2 style="font-weight: 900;">@Html.Raw(item.Title)</h2>
-                                        <p>@Html.Raw(item.Content)</p>
-                                    </div>
-                                    <div class="test"><b>BRON:</b> @item.RssSource</div>
-                                </div>
-                            </div>
-                        }
+                        </div>
+                    }
+                    else if (item.KindDescription == "VIDEO")
+                    {
+                        <div class="item @active">
+                            <video autoplay loop width="1920" height="1080">
+                                <source src="videos/@item.Content" type="video/mp4"/>
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
                     }
                     else{
-                        if(item.KindDescription == "CUSTOM"){
-                            <div class="item">
-                                <div class="fill" style="background-image:url('@url')"></div>
-                                <div class="carousel-caption customlayout">
-                                    @Html.Raw(item.Content)
+                        <div class="item @active">
+                            <div class="fill" style="background-image:url('@url')"></div>
+                            <div class="carousel-caption" style="font-weight: 900;">
+                                <div style="display:flex;flex-direction: column;justify-content:center;align-items:center;width:930px;height:450px;">
+                                    <h2 style="font-weight: 900;">@Html.Raw(item.Title)</h2>
+                                    <p>@Html.Raw(item.Content)</p>
                                 </div>
+                            <div class="test"><b>BRON:</b> @item.RssSource</div>
                             </div>
-                        }
-                        else{
-                            <div class="item">
-                                <div class="fill" style="background-image:url('@url')"></div>
-                                <div class="carousel-caption" style="font-weight: 900;">
-                                    <div style="display:flex;flex-direction: column;justify-content:center;align-items:center;width:930px;height:450px;">
-                                        <h2 style="font-weight: 900;">@Html.Raw(item.Title)</h2>
-                                        <p>@Html.Raw(item.Content)</p>
-                                    </div>
-                                    <div class="test"><b>@item.RssSource</b></div>
-                                </div>
-                            </div>
-                        }
+                        </div>
                     }
                     index++;
                 }

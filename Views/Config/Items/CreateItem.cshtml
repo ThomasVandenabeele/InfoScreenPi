@@ -7,6 +7,18 @@
         <input type="text" class="form-control" id="ItemTitle" placeholder="Titel">
     </div>
     <div class="form-group">
+        <label for="title">Vervaldatum en -uur</label>
+        <div class='input-group date' id='expiredatetimepicker'>
+            <input type='text' name="expireDateTime" class="form-control" id="expireDateTime"/>
+            <span class="input-group-addon" for="expireDateTime">
+                <span class="glyphicon glyphicon-calendar"></span>
+            </span>
+        </div>
+    
+    </div>
+    
+    
+    <div class="form-group">
         <label for="content">Inhoud</label>
         <textarea name="editorNewItem" id="editorNewItem" rows="20" cols="80"></textarea>
     </div>
@@ -19,6 +31,14 @@
 <button class="btn btn-primary" id="registerNewItem">Registreer</button>
 
 <script>
+    $(function () {
+        $('#expiredatetimepicker').datetimepicker();
+    });
+    $('#expiredatetimepicker input').click(function(event){
+        $('#expiredatetimepicker ').data("DateTimePicker").show();
+    });
+</script>
+<script>
         CKEDITOR.replace( 'editorNewItem' , {
             language: 'nl'
         });
@@ -28,9 +48,10 @@
             var content = CKEDITOR.instances.editorNewItem.getData();
             var img = $(".selectedBg").children("img")[0];
             var bgid = $(img).attr('id');
+            var expDT = $("#expireDateTime").val();
             
 
-            var postData = { itemTitle: title, itemContent: content, bgId: bgid };
+            var postData = { itemTitle: title, itemContent: content, bgId: bgid, expireDateTime: expDT};
 
             $.ajax({
                 type: "POST",

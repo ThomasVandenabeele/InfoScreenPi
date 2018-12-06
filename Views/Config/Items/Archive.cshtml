@@ -31,8 +31,17 @@
                                 url = "images/backgrounds/" + i.Background.Url;
                                 thumb = "images/backgrounds/thumbnails/" + i.Background.Url;
                             }
+                            if (!i.Background.Url.Equals("black.jpg"))
+                            {
+                                <a href="@url" target="new" ><img src="@url" width="100px" /></a>       
+                            }
+                            else
+                            {
+                                <button type="button" class="btn btn-default" onClick="window.open('videos/@i.Content');">
+                                    <span class="glyphicon glyphicon-film" aria-hidden="true"></span> &nbsp; VIDEO
+                                </button>
+                            }
                         }
-                        <a href="@url" target="new" ><img src="@thumb" width="100px" /></a>
                     </td>
                     <td>
                         @{

@@ -56,7 +56,7 @@ namespace InfoScreenPi.Controllers
 
         [HttpGet]
         public IActionResult Grid(){
-            return PartialView("~/Views/Config/Backgrounds/Grid.cshtml", _backgroundRepository.GetAllWithoutRSS(false).ToList());
+            return PartialView("~/Views/Config/Backgrounds/Grid.cshtml", _backgroundRepository.GetAllWithoutRSS(false).Where(b => !b.Url.Equals("black.jpg")).ToList());
         }
 
         [HttpGet]

@@ -11,6 +11,7 @@ namespace InfoScreenPi.Infrastructure.Repositories
         IEnumerable<Item> GetAllCustomItems();
         IEnumerable<Item> GetAllActiveCustomItems();
         IEnumerable<Item> GetAllActiveRSSItems();
+        bool CheckItemState();
     }
 
     public interface IBackgroundRepository : IEntityBaseRepository<Background> 

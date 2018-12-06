@@ -16,6 +16,7 @@ using InfoScreenPi.Infrastructure.Services;
 
 using InfoScreenPi.Infrastructure;
 using System.Reflection;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Hosting;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
@@ -86,7 +87,9 @@ namespace InfoScreenPi
             services.AddSignalR();
 
             services.AddHostedService<RefreshRSSTimedHostedService>();
-
+            services.AddHostedService<CheckItemStateTimedHostedService>();
+            
+            services.Configure<FormOptions>(x => x.MultipartBodyLengthLimit = 1_074_790_400);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -126,7 +129,7 @@ namespace InfoScreenPi
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Screen}/{action=Index}/{id?}");
+                    template: "{controller=Config}/{action=Index}/{id?}");
             });
             
         }

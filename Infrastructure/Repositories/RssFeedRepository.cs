@@ -143,7 +143,8 @@ namespace InfoScreenPi.Infrastructure.Repositories
                                     Content = i.Element("description").Value,
                                     Background = achtergrond,
                                     Active = true,
-                                    Archieved = false
+                                    Archieved = false,
+                                    ExpireDateTime = DateTime.Now.AddDays(1) 
                                 }
                             );
                             _itemRepository.Commit();

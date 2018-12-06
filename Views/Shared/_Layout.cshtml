@@ -24,6 +24,16 @@
     <link rel="stylesheet" href="~/lib/alertify.js/themes/alertify.bootstrap.css" />
     <link rel="stylesheet" href="~/lib/bootstrap3-dialog/src/css/bootstrap-dialog.css" />
     <link rel="stylesheet" href="~/css/nu-context-menu.css" />
+    <link rel="stylesheet" href="https://blueimp.github.io/Gallery/css/blueimp-gallery.min.css">
+    <!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
+    <link rel="stylesheet" href="~lib/file-upload/css/jquery.fileupload.css">
+    <link rel="stylesheet" href="~lib/file-upload/css/jquery.fileupload-ui.css">
+    <link rel="stylesheet" href="~/css/loading.css" />
+    
+    <noscript><link rel="stylesheet" href="~lib/file-upload/css/jquery.fileupload-noscript.css"></noscript>
+    <noscript><link rel="stylesheet" href="~lib/file-upload/css/jquery.fileupload-ui-noscript.css"></noscript>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.7.14/css/bootstrap-datetimepicker.min.css">
 </head>
 <body style="padding-top: 50px; padding-bottom: 20px;">
     <div class="navbar navbar-default navbar-fixed-top">
@@ -83,7 +93,11 @@
                 asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal">
         </script>
         
-    <script src="~/lib/bootstrap-toggle/js/bootstrap-toggle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.1/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.7.14/js/bootstrap-datetimepicker.min.js"></script>
+
+
+<script src="~/lib/bootstrap-toggle/js/bootstrap-toggle.min.js"></script>
     <script src="~/lib/alertify.js/lib/alertify.min.js"></script>
     <script src="~/lib/bootstrap3-dialog/src/js/bootstrap-dialog.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
@@ -91,6 +105,7 @@
     <script src="~/lib/signalr/dist/browser/signalr.js"></script>
     <script src="~/js/ws-config.js"></script>
     
-    @RenderSection("scripts", required: false)
+
+@RenderSection("scripts", required: false)
 </body>
 </html>

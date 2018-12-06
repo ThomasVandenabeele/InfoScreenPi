@@ -12,5 +12,6 @@ namespace InfoScreenPi.Entities
         public Background Background { get; set; }
         public Boolean Active { get; set; }
         public Boolean Archieved { get; set; }
+        public DateTime ExpireDateTime { get; set; }
     }
 }
