@@ -12,17 +12,16 @@ using InfoScreenPi.Infrastructure.Repositories;
 
 namespace InfoScreenPi.Controllers
 {
-    public class ScreenController : Controller
+    public class ScreenController : BaseController
     {
-
-        private InfoScreenContext _context;
         private readonly IHostingEnvironment _hostEnvironment;
         private readonly ISettingRepository _settingRepository;
         private readonly IItemRepository _itemRepository;
 
-        public ScreenController(InfoScreenContext context, IHostingEnvironment hostEnvironment, ISettingRepository settingRepository, IItemRepository itemRepository)
+        public ScreenController(IHostingEnvironment hostEnvironment,
+                                ISettingRepository settingRepository,
+                                IItemRepository itemRepository)
         {
-            _context = context;
             _hostEnvironment = hostEnvironment;
             _settingRepository = settingRepository;
             _itemRepository = itemRepository;
@@ -30,7 +29,7 @@ namespace InfoScreenPi.Controllers
 
         public IActionResult Index()
         {
-            List<string> tickerData = new List<string>(System.IO.File.ReadAllLines(_hostEnvironment.WebRootPath + "/data/ticker.txt")); 
+            List<string> tickerData = new List<string>(System.IO.File.ReadAllLines(_hostEnvironment.WebRootPath + "/data/ticker.txt"));
             TempData["TickerData"] = tickerData;
 
             //List<string> lst= TempData["TickerData"] as List<string>;
@@ -68,7 +67,7 @@ namespace InfoScreenPi.Controllers
             lijst.CleanList();
 
             List<ItemViewModel> model = lijst.Select(item => new ItemViewModel(item)).ToList<ItemViewModel>();
- 
+
             //Instellingen
             ViewBag.SlideTime = _settingRepository.GetSettingByName("SlideTime");
             ViewBag.TickerTime = _settingRepository.GetSettingByName("TickerTime");
@@ -77,7 +76,7 @@ namespace InfoScreenPi.Controllers
             ViewBag.ShowTicker = Convert.ToBoolean(_settingRepository.GetSettingByName("ShowTicker"));
             ViewBag.ShowWeather = Convert.ToBoolean(_settingRepository.GetSettingByName("ShowWeather"));
             ViewBag.WeatherLocation = _settingRepository.GetSettingByName("WeatherLocation");
-            
+
 
             return View(model);
         }

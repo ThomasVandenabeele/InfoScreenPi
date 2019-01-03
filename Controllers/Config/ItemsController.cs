@@ -20,30 +20,18 @@ namespace InfoScreenPi.Controllers
 {
     [Authorize(Policy = "AdminOnly")]
     [Route("Config/[controller]/[action]")]
-    public class ItemsController : Controller
+    public class ItemsController : BaseController
     {
-        private InfoScreenContext _context;
-        private readonly IMembershipService _membershipService;
-        private readonly IUserRepository _userRepository;
-        private readonly ILoggingRepository _loggingRepository;
         private readonly IItemRepository _itemRepository;
         private readonly IHostingEnvironment _hostEnvironment;
         private readonly IBackgroundRepository _backgroundRepository;
         private readonly IItemKindRepository _itemKindRepository;
 
-        public ItemsController(InfoScreenContext context, 
-                                IMembershipService membershipService,
-                                IUserRepository userRepository,
-                                ILoggingRepository _errorRepository,
-                                IItemRepository itemRepository,
-                                IHostingEnvironment hostEnvironment,
-                                IBackgroundRepository backgroundRepository,
-                                IItemKindRepository itemKindRepository)
+        public ItemsController(IItemRepository itemRepository,
+                               IHostingEnvironment hostEnvironment,
+                               IBackgroundRepository backgroundRepository,
+                               IItemKindRepository itemKindRepository)
         {
-            _context = context;
-            _membershipService = membershipService;
-            _userRepository = userRepository;
-            _loggingRepository = _errorRepository;
             _itemRepository = itemRepository;
             _hostEnvironment = hostEnvironment;
             _backgroundRepository = backgroundRepository;
@@ -59,10 +47,9 @@ namespace InfoScreenPi.Controllers
                 item.Active = state;
                 _itemRepository.Edit(item);
                 _itemRepository.Commit();
-                return Json(new {success = true, message = (state? "Item status verandert naar actief!" : "Item status verandert naar inactief!")});    
+                return Success(state? "Item status verandert naar actief!" : "Item status verandert naar inactief!");
             }
-
-            return Json(new {success = false, message = "Update is niet gelukt!"});
+            return Fail();
         }
 
         [HttpPost]
@@ -74,10 +61,9 @@ namespace InfoScreenPi.Controllers
                 item.Archieved = state;
                 _itemRepository.Edit(item);
                 _itemRepository.Commit();
-                return Json(new {success = true, message = (state? "Item verwijderd" : "Item terug geactiveerd")});    
+                return Success(state? "Item verwijderd" : "Item terug geactiveerd");
             }
-
-            return Json(new {success = false, message = "Archieveren is niet gelukt!"});
+            return Fail();
         }
 
         [HttpGet]
@@ -93,7 +79,7 @@ namespace InfoScreenPi.Controllers
             List<Item> model = _itemRepository.AllIncluding(a => a.Background, a => a.Soort).Where(i => i.Soort.Description != "RSS" && i.Archieved == false).ToList();
             return PartialView("~/Views/Config/Items/Table.cshtml", model);
         }
-        
+
         [HttpGet]
         public ActionResult CreateItem()
         {
@@ -120,10 +106,10 @@ namespace InfoScreenPi.Controllers
             );
             _itemRepository.Commit();
 
-            return Json(new {success = true, message = "Item geregistreerd" }); 
+            return Success();
         }
 
-        [HttpGet] 
+        [HttpGet]
         public ActionResult Edit(int id)
         {
             ViewBag.SelectionGrid = (List<Background>) _backgroundRepository.GetAllWithoutRSS(true).ToList();
@@ -140,14 +126,14 @@ namespace InfoScreenPi.Controllers
             item.Title = itemTitle;
             item.Content = itemContent;
             item.Background = bg;
-            
+
             _itemRepository.Edit(item);
             _itemRepository.Commit();
 
-            return Json(new {success = true, message = "Item '" + itemTitle + "' gewijzigd" }); 
+            return Success("Item '" + itemTitle + "' gewijzigd");
         }
-        
-        
+
+
         [HttpGet]
         public ActionResult CreateVideoItem()
         {
@@ -166,16 +152,14 @@ namespace InfoScreenPi.Controllers
                     await video.CopyToAsync(stream);
                 }
             }
-            git a
-            return Json(new {success = true, message = "Item geregistreerd" }); 
-
+            return Success();
         }
-        
+
         [HttpPost]
         [RequestSizeLimit(52428800*2)] // 100MB
         public async Task<IActionResult> UploadVideoItem(string itemTitle, string expireDateTime, IFormFile video)
         {
-            
+
             ItemKind soort = _itemKindRepository.GetAll().Where(ik => ik.Description == "VIDEO").First();
             Background achtergrond = _backgroundRepository.GetAll().First(b => b.Url.Equals("black.jpg"));
 
@@ -190,7 +174,7 @@ namespace InfoScreenPi.Controllers
                     await video.CopyToAsync(stream);
                 }
             }
-            
+
             _itemRepository.Add(
                 new Item
                 {
@@ -205,10 +189,7 @@ namespace InfoScreenPi.Controllers
             );
             _itemRepository.Commit();
 
-            return Json(new {success = true, message = "Video geregistreerd" }); 
-            
-            
+            return Success();
         }
-
     }
 }
