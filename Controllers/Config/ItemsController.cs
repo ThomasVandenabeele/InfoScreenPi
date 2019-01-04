@@ -12,9 +12,8 @@ using InfoScreenPi.Infrastructure.Services;
 using InfoScreenPi.Infrastructure.Repositories;
 using InfoScreenPi.Infrastructure.Core;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 
 namespace InfoScreenPi.Controllers
 {
