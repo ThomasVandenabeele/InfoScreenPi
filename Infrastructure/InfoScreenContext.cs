@@ -42,6 +42,53 @@ namespace InfoScreenPi.Infrastructure
             // Role
             modelBuilder.Entity<Role>().Property(r => r.Name).IsRequired().HasMaxLength(50);
 
+            //Inheritance
+            /*modelBuilder.Entity<Item>().Map(m =>
+            {
+                m.MapInheritedProperties();
+                m.ToTable("Item");
+            });
+            modelBuilder.Entity<User>().Map(m =>
+            {
+                m.MapInheritedProperties();
+                m.ToTable("User");
+            });
+            modelBuilder.Entity<RssFeed>().Map(m =>
+            {
+                m.MapInheritedProperties();
+                m.ToTable("RssFeed");
+            });
+            modelBuilder.Entity<Background>().Map(m =>
+            {
+                m.MapInheritedProperties();
+                m.ToTable("Background");
+            });
+            modelBuilder.Entity<ItemKind>().Map(m =>
+            {
+                m.MapInheritedProperties();
+                m.ToTable("ItemKind");
+            });
+            modelBuilder.Entity<Role>().Map(m =>
+            {
+                m.MapInheritedProperties();
+                m.ToTable("Role");
+            });
+            modelBuilder.Entity<UserRole>().Map(m =>
+            {
+                m.MapInheritedProperties();
+                m.ToTable("UserRole");
+            });
+            modelBuilder.Entity<Error>().Map(m =>
+            {
+                m.MapInheritedProperties();
+                m.ToTable("Error");
+            });
+            modelBuilder.Entity<Setting>().Map(m =>
+            {
+                m.MapInheritedProperties();
+                m.ToTable("Setting");
+            });*/
+
             base.OnModelCreating(modelBuilder);
         }
 
