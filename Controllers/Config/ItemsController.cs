@@ -69,14 +69,14 @@ namespace InfoScreenPi.Controllers
         [HttpGet]
         public ActionResult ItemsArchive()
         {
-            List<Item> model = _itemRepository.AllIncluding(a => a.Background, a => a.Soort).Where(i => i.Soort.Description != "RSS" && i.Archieved == true).ToList();
+            List<Item> model = _itemRepository.GetAll(a => a.Background, a => a.Soort).Where(i => i.Soort.Description != "RSS" && i.Archieved == true).ToList();
             return PartialView("~/Views/Config/Items/Archive.cshtml", model);
         }
 
         [HttpGet]
         public ActionResult Table()
         {
-            List<Item> model = _itemRepository.AllIncluding(a => a.Background, a => a.Soort).Where(i => i.Soort.Description != "RSS" && i.Archieved == false).ToList();
+            List<Item> model = _itemRepository.GetAll(a => a.Background, a => a.Soort).Where(i => i.Soort.Description != "RSS" && i.Archieved == false).ToList();
             return PartialView("~/Views/Config/Items/Table.cshtml", model);
         }
 
@@ -112,14 +112,14 @@ namespace InfoScreenPi.Controllers
         public ActionResult Edit(int id)
         {
             ViewBag.SelectionGrid = (List<Background>) _backgroundRepository.GetAllWithoutRSS(true).ToList();
-            Item model = _itemRepository.AllIncluding(i => i.Background).Where(i => i.Id == id).First();
+            Item model = _itemRepository.GetAll(i => i.Background).Where(i => i.Id == id).First();
             return PartialView("~/Views/Config/Items/EditItem.cshtml", model);
         }
 
         [HttpPost]
         public IActionResult EditItem(int itemId, string itemTitle, string itemContent, int bgId)
         {
-            Item item = _itemRepository.AllIncluding(i => i.Background).Where(i => i.Id == itemId).First();
+            Item item = _itemRepository.GetAll(i => i.Background).Where(i => i.Id == itemId).First();
             Background bg = _backgroundRepository.GetAll().First(b => b.Id == bgId);
 
             item.Title = itemTitle;

@@ -64,13 +64,6 @@ namespace InfoScreenPi.Controllers
             var imageRootThumb = Path.Combine(_hostEnvironment.WebRootPath, "images/backgrounds/thumbnails");
             if (file.Length > 0)
             {
-                /*if (filename.ToString().Contains("\\"))
-                {
-                    filename = Guid.NewGuid().ToString() + "-" + filename.Split('\\').Last();
-                }
-                filename = Guid.NewGuid().ToString() + "-" + filename;*/
-
-                //Werkt ook denk ik:
                 filename = Guid.NewGuid().ToString() + "-" + filename.Split('\\').Last();
 
                 await file.CopyToAsync(new FileStream(Path.Combine(imageRoot, filename), FileMode.Create));

@@ -12,7 +12,7 @@ namespace InfoScreenPi.Infrastructure.Repositories
         InfoScreenContext _context;
         public BackgroundRepository(InfoScreenContext context)
             : base(context)
-        { 
+        {
             _context = context;
         }
 
@@ -23,6 +23,9 @@ namespace InfoScreenPi.Infrastructure.Repositories
             IEnumerable<Background> rssAchtergronden = _context.Items.Include(i => i.Background).Include(i => i.Soort)
                                                         .Where(i => i.Soort.Description == "RSS")
                                                         .Select(i => i.Background);
+
+            /*IEnumerable<Background> rssAchtergronden = GetAll(i => i.Soort.Description == "RSS", i => i.Soort, i => i.Background)
+                                                      .Select(i=>i.Background);*/
 
             if(!archieved){
                 IEnumerable<Background> gearchiveerdeAchtergronden = _context.Items.Include(i => i.Background)

@@ -11,14 +11,5 @@ namespace InfoScreenPi.Infrastructure.Repositories
         public LoggingRepository(InfoScreenContext context)
             : base(context)
         { }
-
-        public override void Commit()
-        {
-            try
-            {
-                base.Commit();
-            }
-            catch { }
-        }
     }
 }

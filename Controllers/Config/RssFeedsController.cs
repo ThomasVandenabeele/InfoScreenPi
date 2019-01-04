@@ -99,7 +99,7 @@ namespace InfoScreenPi.Controllers
         [HttpGet]
         public ActionResult Table()
         {
-            return PartialView("~/Views/Config/RSS/Table.cshtml", _rssFeedRepository.AllIncluding(r => r.StandardBackground).ToList());
+            return PartialView("~/Views/Config/RSS/Table.cshtml", _rssFeedRepository.GetAll(r => r.StandardBackground).ToList());
         }
 
 

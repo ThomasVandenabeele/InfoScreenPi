@@ -65,15 +65,15 @@ namespace InfoScreenPi.Infrastructure.Repositories
 
             _itemKindRepository.Delete(ik);
             _itemKindRepository.Commit();
-                
+
             Delete(rf);
             Commit();
         }
-        
-        public void DeleteRssFeedItems(int rssFeedId){
-            RssFeed rssFeed = AllIncluding(rss => rss.StandardBackground).Where(rss => rss.Id == rssFeedId).First();
 
-            _itemRepository.AllIncluding(a => a.Background, a => a.Soort)
+        public void DeleteRssFeedItems(int rssFeedId){
+            RssFeed rssFeed = GetAll(rss => rss.StandardBackground).Where(rss => rss.Id == rssFeedId).First();
+
+            _itemRepository.GetAll(a => a.Background, a => a.Soort)
                     .Where(i => (i.Soort.Source == rssFeed.Source && i.Soort.Description == "RSS"))
                     .ToList()
                     .ForEach(i =>
@@ -95,13 +95,13 @@ namespace InfoScreenPi.Infrastructure.Repositories
             foreach(var feed in activeRssfeeds) await ExtractRssItems(feed);
             return activeRssfeeds.Count > 0;
         }
-        
+
         public async Task ExtractRssItems(int rssFeedId){
-            RssFeed rssFeed = AllIncluding(rss => rss.StandardBackground).Where(rss => rss.Id == rssFeedId).First();
-            
+            RssFeed rssFeed = GetAll(rss => rss.StandardBackground).Where(rss => rss.Id == rssFeedId).First();
+
             string feedUrl = rssFeed.Url;
             XDocument doc = await RssToXDocument(feedUrl);
-        
+
             if(doc != null)
             {
                 //var items = doc.Root.Descendants().First(i => i.Name.LocalName == "channel").Elements().Where(i => i.Name.LocalName == "item").ToList();
@@ -132,7 +132,7 @@ namespace InfoScreenPi.Infrastructure.Repositories
                             else{
                                 achtergrond = rssFeed.StandardBackground;
                             }
-                            
+
 
                             _itemRepository.Add(
                                 new Item
@@ -144,21 +144,21 @@ namespace InfoScreenPi.Infrastructure.Repositories
                                     Background = achtergrond,
                                     Active = true,
                                     Archieved = false,
-                                    ExpireDateTime = DateTime.Now.AddDays(1) 
+                                    ExpireDateTime = DateTime.Now.AddDays(1)
                                 }
                             );
                             _itemRepository.Commit();
-                            
+
                         }
                     );
                     //System.Threading.Thread.Sleep(1000);
-                    //return Json(new {success = true, message = "Rss Feed '" + rssFeed.Title + "' vernieuwd"}); 
+                    //return Json(new {success = true, message = "Rss Feed '" + rssFeed.Title + "' vernieuwd"});
                 }
             }
 
-            //return Json(new {success = false, message = "Er liep iets mis"});    
+            //return Json(new {success = false, message = "Er liep iets mis"});
         }
-        
+
         private async Task<XDocument> RssToXDocument(string uri)
         {
             XDocument doc = null;
