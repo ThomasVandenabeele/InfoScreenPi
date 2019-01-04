@@ -14,7 +14,14 @@ COPY . ./
 RUN dotnet publish -c Release -o out
 
 # Build runtime image
-FROM microsoft/dotnet:aspnetcore-runtime
+FROM microsoft/dotnet:2.1-aspnetcore-runtime
 WORKDIR /app
 COPY --from=build-env /app/out .
+
+#USER root
+#RUN chmod 655 /app/InfoScreenDB.db
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends libgdiplus libc6-dev \
+ && rm -rf /var/lib/apt/lists/*
+
 ENTRYPOINT ["dotnet", "InfoScreenPi.dll"]
