@@ -20,7 +20,7 @@ using Microsoft.AspNetCore.Authentication;
 namespace InfoScreenPi.Controllers
 {
     [Authorize(Policy = "AdminOnly")]
-    public class ConfigController : Controller
+    public class ConfigController : BaseController
     {
         private InfoScreenContext _context;
         private readonly IMembershipService _membershipService;
@@ -30,13 +30,12 @@ namespace InfoScreenPi.Controllers
         private readonly IHostingEnvironment _hostEnvironment;
         private readonly IBackgroundRepository _backgroundRepository;
         private readonly IRssFeedRepository _rssFeedRepository;
-        private readonly IDataProtector _protector;
         private readonly ISettingRepository _settingRepository;
         private readonly IEncryptionService _encryptionService;
         private readonly IRoleRepository _roleRepository;
         private readonly IUserRoleRepository _userRoleRepository;
 
-        public ConfigController(InfoScreenContext context, 
+        public ConfigController(InfoScreenContext context,
                                 IMembershipService membershipService,
                                 IUserRepository userRepository,
                                 ILoggingRepository _errorRepository,
@@ -58,7 +57,6 @@ namespace InfoScreenPi.Controllers
             _hostEnvironment = hostEnvironment;
             _backgroundRepository = backgroundRepository;
             _rssFeedRepository = rssFeedRepository;
-            _protector = dataProtectionProvider.CreateProtector("cookies");
             _settingRepository = settingRepository;
             _encryptionService = encryptionService;
             _roleRepository = roleRepository;
@@ -69,7 +67,7 @@ namespace InfoScreenPi.Controllers
         {
             if(HttpContext.Session.GetString("Username") != null) ViewBag.Username = HttpContext.Session.GetString("Username");
             ViewBag.ActiveItems = (List<Item>) _itemRepository.AllIncluding(a => a.Background, a => a.Soort).Where(i => i.Soort.Description != "RSS" && i.Archieved == false).ToList();
-            ViewBag.TickerItems = new List<string>(System.IO.File.ReadAllLines(_hostEnvironment.WebRootPath + "/data/ticker.txt")); 
+            ViewBag.TickerItems = new List<string>(System.IO.File.ReadAllLines(_hostEnvironment.WebRootPath + "/data/ticker.txt"));
             ViewBag.Backgrounds = (List<Background>) _backgroundRepository.GetAllWithoutRSS(false).Where(b => !b.Url.Equals("black.jpg")).ToList();
             ViewBag.RssAbo = (List<RssFeed>) _rssFeedRepository.AllIncluding(r => r.StandardBackground).ToList();
             return View(_context.Users.ToList());
@@ -115,30 +113,30 @@ namespace InfoScreenPi.Controllers
                         // Refreshing the authentication session should be allowed.
 
                         ///ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(20),
-                        // The time at which the authentication ticket expires. A 
-                        // value set here overrides the ExpireTimeSpan option of 
+                        // The time at which the authentication ticket expires. A
+                        // value set here overrides the ExpireTimeSpan option of
                         // CookieAuthenticationOptions set with AddCookie.
 
                         IsPersistent = user.RememberMe,
-                        // Whether the authentication session is persisted across 
-                        // multiple requests. Required when setting the 
-                        // ExpireTimeSpan option of CookieAuthenticationOptions 
-                        // set with AddCookie. Also required when setting 
+                        // Whether the authentication session is persisted across
+                        // multiple requests. Required when setting the
+                        // ExpireTimeSpan option of CookieAuthenticationOptions
+                        // set with AddCookie. Also required when setting
                         // ExpiresUtc.
 
                         ///IssuedUtc = DateTimeOffset.UtcNow,
                         // The time at which the authentication ticket was issued.
 
                         RedirectUri = "config"
-                        // The full path or absolute URI to be used as an http 
+                        // The full path or absolute URI to be used as an http
                         // redirect response value.
                     };
 
                     await HttpContext.SignInAsync(
-                        CookieAuthenticationDefaults.AuthenticationScheme, 
-                        new ClaimsPrincipal(claimsIdentity), 
+                        CookieAuthenticationDefaults.AuthenticationScheme,
+                        new ClaimsPrincipal(claimsIdentity),
                         authProperties);
-                    
+
 
                     // await HttpContext.Authentication.SignInAsync("MyCookieMiddlewareInstance",
                         // new ClaimsPrincipal(new ClaimsIdentity(_claims, CookieAuthenticationDefaults.AuthenticationScheme)),
@@ -202,7 +200,7 @@ namespace InfoScreenPi.Controllers
 
                 return BadRequest();
             }
-            
+
         }
 
         [HttpGet]
@@ -220,7 +218,7 @@ namespace InfoScreenPi.Controllers
             {
                 model = await _userRepository.GetSingleAsync((int)id);
             }
-            
+
             return PartialView("~/Views/Config/Account/Details.cshtml", model);
         }
 
@@ -278,7 +276,7 @@ namespace InfoScreenPi.Controllers
         {
             var n = listkey;
             System.IO.File.WriteAllLines(_hostEnvironment.WebRootPath + "/data/ticker.txt", listkey.Where(str => str != null));
-            return Json(new {success= true, message="Ingevoerde data voor de infoticker opgeslagen!"});
+            return Success("Ingevoerde data voor de infoticker opgeslagen!");
         }
 
         [HttpGet]
@@ -295,7 +293,7 @@ namespace InfoScreenPi.Controllers
             {
                 _settingRepository.SetSettingByName(setting.Key, setting.Value);
             }
-            return Json(new {success= true, message="Instellingen opgeslagen!"});
+            return Success();
         }
 
         [AllowAnonymous]
@@ -303,7 +301,7 @@ namespace InfoScreenPi.Controllers
         public IActionResult SetRefresh(Boolean status)
         {
             _settingRepository.SetSettingByName("Refresh", status.ToString());
-            return Json(new {success= true, message="Het scherm zal refreshen binnen 15 seconden"});
+            return Success("Het scherm zal refreshen binnen 15 seconden");
         }
 
         [AllowAnonymous]

@@ -20,30 +20,18 @@ namespace InfoScreenPi.Controllers
 {
     [Authorize(Policy = "AdminOnly")]
     [Route("Config/[controller]/[action]")]
-    public class ItemsController : Controller
+    public class ItemsController : BaseController
     {
-        private InfoScreenContext _context;
-        private readonly IMembershipService _membershipService;
-        private readonly IUserRepository _userRepository;
-        private readonly ILoggingRepository _loggingRepository;
         private readonly IItemRepository _itemRepository;
         private readonly IHostingEnvironment _hostEnvironment;
         private readonly IBackgroundRepository _backgroundRepository;
         private readonly IItemKindRepository _itemKindRepository;
 
-        public ItemsController(InfoScreenContext context,
-                                IMembershipService membershipService,
-                                IUserRepository userRepository,
-                                ILoggingRepository _errorRepository,
-                                IItemRepository itemRepository,
-                                IHostingEnvironment hostEnvironment,
-                                IBackgroundRepository backgroundRepository,
-                                IItemKindRepository itemKindRepository)
+        public ItemsController(IItemRepository itemRepository,
+                               IHostingEnvironment hostEnvironment,
+                               IBackgroundRepository backgroundRepository,
+                               IItemKindRepository itemKindRepository)
         {
-            _context = context;
-            _membershipService = membershipService;
-            _userRepository = userRepository;
-            _loggingRepository = _errorRepository;
             _itemRepository = itemRepository;
             _hostEnvironment = hostEnvironment;
             _backgroundRepository = backgroundRepository;
@@ -59,10 +47,9 @@ namespace InfoScreenPi.Controllers
                 item.Active = state;
                 _itemRepository.Edit(item);
                 _itemRepository.Commit();
-                return Json(new {success = true, message = (state? "Item status verandert naar actief!" : "Item status verandert naar inactief!")});
+                return Success(state? "Item status verandert naar actief!" : "Item status verandert naar inactief!");
             }
-
-            return Json(new {success = false, message = "Update is niet gelukt!"});
+            return Fail();
         }
 
         [HttpPost]
@@ -74,10 +61,9 @@ namespace InfoScreenPi.Controllers
                 item.Archieved = state;
                 _itemRepository.Edit(item);
                 _itemRepository.Commit();
-                return Json(new {success = true, message = (state? "Item verwijderd" : "Item terug geactiveerd")});
+                return Success(state? "Item verwijderd" : "Item terug geactiveerd");
             }
-
-            return Json(new {success = false, message = "Archieveren is niet gelukt!"});
+            return Fail();
         }
 
         [HttpGet]
@@ -119,8 +105,7 @@ namespace InfoScreenPi.Controllers
                 }
             );
             _itemRepository.Commit();
-
-            return Json(new {success = true, message = "Item geregistreerd" });
+            return Success();
         }
 
         [HttpGet]
@@ -143,8 +128,7 @@ namespace InfoScreenPi.Controllers
 
             _itemRepository.Edit(item);
             _itemRepository.Commit();
-
-            return Json(new {success = true, message = "Item '" + itemTitle + "' gewijzigd" });
+            return Success("Item '" + itemTitle + "' gewijzigd");
         }
 
 
@@ -166,8 +150,7 @@ namespace InfoScreenPi.Controllers
                     await video.CopyToAsync(stream);
                 }
             }
-            return Json(new {success = true, message = "Item geregistreerd" });
-
+            return Success();
         }
 
         [HttpPost]
@@ -204,10 +187,7 @@ namespace InfoScreenPi.Controllers
             );
             _itemRepository.Commit();
 
-            return Json(new {success = true, message = "Video geregistreerd" });
-
-
+            return Success();
         }
-
     }
 }

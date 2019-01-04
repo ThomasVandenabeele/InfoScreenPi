@@ -24,31 +24,21 @@ namespace InfoScreenPi.Controllers
 {
     [Authorize(Policy = "AdminOnly")]
     [Route("Config/[controller]/[action]")]
-    public class BackgroundsController : Controller
+    public class BackgroundsController : BaseController
     {
-        private InfoScreenContext _context;
-        private readonly IMembershipService _membershipService;
-        private readonly IUserRepository _userRepository;
-        private readonly ILoggingRepository _loggingRepository;
-        private readonly IItemRepository _itemRepository;
-        private readonly IHostingEnvironment _hostEnvironment;
-        private readonly IBackgroundRepository _backgroundRepository;
+        public static readonly List<string> ImageExtensions = new List<string> { ".JPG", ".JPE", ".BMP", ".GIF", ".PNG" };
 
         const int size = 150;
         const int quality = 75;
 
-        public BackgroundsController(InfoScreenContext context, 
-                                IMembershipService membershipService,
-                                IUserRepository userRepository,
-                                ILoggingRepository _errorRepository,
-                                IItemRepository itemRepository,
-                                IHostingEnvironment hostEnvironment,
-                                IBackgroundRepository backgroundRepository)
+        private readonly IItemRepository _itemRepository;
+        private readonly IHostingEnvironment _hostEnvironment;
+        private readonly IBackgroundRepository _backgroundRepository;
+
+        public BackgroundsController(IItemRepository itemRepository,
+                                     IHostingEnvironment hostEnvironment,
+                                     IBackgroundRepository backgroundRepository)
         {
-            _context = context;
-            _membershipService = membershipService;
-            _userRepository = userRepository;
-            _loggingRepository = _errorRepository;
             _itemRepository = itemRepository;
             _hostEnvironment = hostEnvironment;
             _backgroundRepository = backgroundRepository;
@@ -63,60 +53,44 @@ namespace InfoScreenPi.Controllers
         public IActionResult SelectionGrid(){
             return PartialView("~/Views/Config/Backgrounds/SelectionGrid.cshtml", _backgroundRepository.GetAllWithoutRSS(true).ToList());
         }
-
         [HttpPost]
         public async Task<ActionResult> FileUpload(IFormFile file)
         {
-                // libc6-dev and libgdiplus installed ??
+            // libc6-dev and libgdiplus installed ??
+            var parsedContentDisposition = ContentDispositionHeaderValue.Parse(file.ContentDisposition);
+            string filename = parsedContentDisposition.FileName.Trim().ToString(); //NAKIJKEN
 
-                var parsedContentDisposition = ContentDispositionHeaderValue.Parse(file.ContentDisposition);
-                string filename = parsedContentDisposition.FileName.Trim().ToString(); //NAKIJKEN
-
-
-                var imageRoot = Path.Combine(_hostEnvironment.WebRootPath, "images/backgrounds");
-                var imageRootThumb = Path.Combine(_hostEnvironment.WebRootPath, "images/backgrounds/thumbnails");
-                if (file.Length > 0)
-                {
-                    if (filename.ToString().Contains("\\"))
-                    {
-                        filename = Guid.NewGuid().ToString() + "-" + filename.Split('\\').Last();
-                    }
-                    filename = Guid.NewGuid().ToString() + "-" + filename;
-
-                    await file.CopyToAsync(new FileStream(Path.Combine(imageRoot, filename), FileMode.Create));
-
-                    Background b = new Background() { Url = filename };
-                    _backgroundRepository.Add(b);
-                    _backgroundRepository.Commit();
-
-                    /* thumbs */
-                    
-
-                    MemoryStream ms = new MemoryStream(); 
-                    file.OpenReadStream().CopyTo(ms); 
-                    
- 
-                    System.Drawing.Image inputImage = System.Drawing.Image.FromStream(ms); 
-                    Image thumb = GetReducedImage(inputImage);
-                    thumb.Save(Path.Combine(imageRootThumb, filename));
-                    
-
-                    return Json(new { success = true, message = ("Nieuwe achtergrond geupload") });
-                }
-
-                return Json(new { success = false, message = ("Er liep iets mis") });
-        }
-
-        public byte[] ImageToByteArray(System.Drawing.Image imageIn)
-        {
-            using (var ms = new MemoryStream())
+            var imageRoot = Path.Combine(_hostEnvironment.WebRootPath, "images/backgrounds");
+            var imageRootThumb = Path.Combine(_hostEnvironment.WebRootPath, "images/backgrounds/thumbnails");
+            if (file.Length > 0)
             {
-                imageIn.Save(ms,System.Drawing.Imaging.ImageFormat.Gif);
-                return  ms.ToArray();
-            }
-        }
-        public static readonly List<string> ImageExtensions = new List<string> { ".JPG", ".JPE", ".BMP", ".GIF", ".PNG" };
+                /*if (filename.ToString().Contains("\\"))
+                {
+                    filename = Guid.NewGuid().ToString() + "-" + filename.Split('\\').Last();
+                }
+                filename = Guid.NewGuid().ToString() + "-" + filename;*/
 
+                //Werkt ook denk ik:
+                filename = Guid.NewGuid().ToString() + "-" + filename.Split('\\').Last();
+
+                await file.CopyToAsync(new FileStream(Path.Combine(imageRoot, filename), FileMode.Create));
+
+                Background b = new Background() { Url = filename };
+                _backgroundRepository.Add(b);
+                _backgroundRepository.Commit();
+
+                /* thumbs */
+                MemoryStream ms = new MemoryStream();
+                file.OpenReadStream().CopyTo(ms);
+
+                System.Drawing.Image inputImage = System.Drawing.Image.FromStream(ms);
+                Image thumb = GetReducedImage(inputImage);
+                thumb.Save(Path.Combine(imageRootThumb, filename));
+
+                return Success();
+            }
+            return Fail();
+        }
         public IActionResult CreateThumbs(){
             string path = Path.Combine(_hostEnvironment.WebRootPath, "images");
             string[] dirs = Directory.GetDirectories(path);
@@ -132,32 +106,25 @@ namespace InfoScreenPi.Controllers
                     string ext = Path.GetExtension(fileName).ToUpperInvariant();
                     if (ImageExtensions.Contains(ext))
                     {
-
                         Console.WriteLine(fileName);
                         Console.WriteLine(name);
 
-                        MemoryStream ms = new MemoryStream(); 
+                        MemoryStream ms = new MemoryStream();
                         using (FileStream stream = System.IO.File.Open(fileName, FileMode.Open))
                         {
                             stream.CopyTo(ms);
                         }
-                        
-                        System.Drawing.Image inputImage = System.Drawing.Image.FromStream(ms); 
-                        Image thumb = GetReducedImage(inputImage);
 
-                        
+                        System.Drawing.Image inputImage = System.Drawing.Image.FromStream(ms);
+                        Image thumb = GetReducedImage(inputImage);
 
                         var imageRootThumb = Path.Combine(_hostEnvironment.WebRootPath, "images/backgrounds/thumbnails");
                         thumb.Save(Path.Combine(imageRootThumb, name));
-
                     }
                 }
             }
-
-            return Json(new { success = true, message = ("Thumbnails geupdated!") });
-            
+            return Success("Thumbnails geupdated!");
         }
-
         public Image GetReducedImage(Image img)
         {
             using (var image = new Bitmap(img))
@@ -173,32 +140,19 @@ namespace InfoScreenPi.Controllers
                     width = Convert.ToInt32(image.Width * size / (double)image.Height);
                     height = size;
                 }
-                //Image resized = new Bitmap(width, height);
 
                 Image ReducedImage;
-
-                Image.GetThumbnailImageAbort callb = new Image.GetThumbnailImageAbort(ThumbnailCallback);
-
+                Image.GetThumbnailImageAbort callb = new Image.GetThumbnailImageAbort(()=>false);
                 ReducedImage = image.GetThumbnailImage(width, height, callb, IntPtr.Zero);
-
                 return ReducedImage;
-            
             }
-            
         }
-        
-        public bool ThumbnailCallback()
-        {
-            return false;
-        }
-
         [HttpPost]
         public IActionResult Delete(int id)
         {
             Background b = _backgroundRepository.GetSingle(id);
            List<Background> aantal =  _backgroundRepository.GetAll().ToList();
-            
-            
+
             if(!_itemRepository.GetAllCustomItems().Select(i => i.Background).ToList().Contains(b))
             {
                 var imageRoot = Path.Combine(_hostEnvironment.WebRootPath, "images/backgrounds");
@@ -206,18 +160,21 @@ namespace InfoScreenPi.Controllers
                 if (file.Exists) file.Delete();
                 FileInfo thumb = new FileInfo(imageRoot + "/thumbnails/" + b.Url);
                 if (thumb.Exists) thumb.Delete();
-                
+
                 _backgroundRepository.Delete(b);
                 _backgroundRepository.Commit();
-                return Json(new { success = true, message = ("Achtergrond verwijderd") });
+                return Success();
             }
-            return Json(new { success = false, message = ("Kan achtergrond niet verwijderen, deze is nog in gebruik.") });
-            
+            return Fail("Kan achtergrond niet verwijderen, deze is nog in gebruik.");
         }
 
-
-            
-        
-
+        private byte[] ImageToByteArray(System.Drawing.Image imageIn)
+        {
+            using (var ms = new MemoryStream())
+            {
+                imageIn.Save(ms,System.Drawing.Imaging.ImageFormat.Gif);
+                return  ms.ToArray();
+            }
+        }
     }
 }
