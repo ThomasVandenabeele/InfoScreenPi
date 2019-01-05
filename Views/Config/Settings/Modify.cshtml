@@ -7,92 +7,298 @@
     int TickerTimeSec = Convert.ToInt32(@Model.First(s => s.SettingName == "TickerTime").SettingValue)/1000;
 }
 
-<div class="form-horizontal" id="SettingsForm">
-  <h3 class="col-sm-offset-2">Slides</h3>
-  <div class="form-group">
-    <label for="SlideTime" class="col-sm-2 control-label">Slide Intervaltijd</label>
-    <div class="input-group col-md-5">
-        <input type="number" class="form-control" id="SlideTime" value="@SlideTimeSec">
-        <span class="input-group-addon">seconden</span>
-    </div>
-  </div>
-  <hr/>
-  <h3 class="col-sm-offset-2">Ticker</h3>
-  <div class="form-group">
-    <label for="ShowTicker" class="col-sm-2 control-label">Toon Ticker</label>
-    <div class="input-group col-md-5">
-      <input type="checkbox" id="ShowTicker" class="ShowTicker" checked data-toggle="toggle" data-style="ios" data-size="small" data-on="Toon" data-off="Verberg" data-onstyle="success" data-offstyle="danger">
-    </div>
-  </div>
-  <div class="form-group">
-    <label for="TickerTime" class="col-sm-2 control-label">Ticker Intervaltijd</label>
-     <div class="input-group col-md-5">
-        <input type="number" class="form-control" id="TickerTime" value="@TickerTimeSec">
-        <span class="input-group-addon">seconden</span>
-    </div>
-  </div>
-  <div class="form-group">
-    <label for="TickerTime" class="col-sm-2 control-label">Ticker Effect</label>
-     <div class="input-group col-md-5">
-         @if(@Model.First(s => s.SettingName == "TickerEffect").SettingValue == "fade")
-         { 
-             <select class="form-control" id="TickerEffect">
-                <option value="fade" selected="selected">Fade</option>
-                <option value="slide" >Slide</option>
-                <option value="typing" >Typing</option>
-            </select>
-         }
-         else if(@Model.First(s => s.SettingName == "TickerEffect").SettingValue == "slide")
-         {
-              <select class="form-control" id="TickerEffect">
-                <option value="fade">Fade</option>
-                <option value="slide" selected="selected" >Slide</option>
-                <option value="typing" >Typing</option>
-            </select>
-         }
-         else
-         {
-             <select class="form-control" id="TickerEffect">
-                <option value="fade">Fade</option>
-                <option value="slide" >Slide</option>
-                <option value="typing" selected="selected">Typing</option>
-            </select>
-         }
-    </div>
-  </div>
-  <hr/>
-  <h3 class="col-sm-offset-2">Klok</h3>
-  <div class="form-group">
-    <label for="TickerTime" class="col-sm-2 control-label">Toon</label>
-     <div class="form-group">
-      <div class="input-group col-md-5">
-        <input type="checkbox" id="ShowClock" class="ShowClock" checked data-toggle="toggle" data-style="ios" data-size="small" data-on="Toon" data-off="Verberg" data-onstyle="success" data-offstyle="danger">
+<!-- Nav tabs -->
+<ul class="nav nav-tabs" role="tablist">
+  <li role="presentation" class="active"><a href="#screen" aria-controls="screen" role="tab" data-toggle="tab">Scherm</a></li>
+  <li role="presentation"><a href="#prog" aria-controls="prog" role="tab" data-toggle="tab">InfoScreenPi</a></li>
+</ul>
+<div class="tab-content">
+  <div role="tabpanel" class="tab-pane fade in active" id="screen">
+    <div class="form-horizontal" id="SettingsForm">
+      <h3 class="col-sm-offset-2">Slides</h3>
+      <div class="form-group">
+        <label for="SlideTime" class="col-sm-2 control-label">Slide Intervaltijd</label>
+        <div class="input-group col-md-5">
+            <input type="number" class="form-control" id="SlideTime" value="@SlideTimeSec">
+            <span class="input-group-addon">seconden</span>
+        </div>
+      </div>
+      <hr/>
+      <h3 class="col-sm-offset-2">Ticker</h3>
+      <div class="form-group">
+        <label for="ShowTicker" class="col-sm-2 control-label">Toon Ticker</label>
+        <div class="input-group col-md-5">
+          <input type="checkbox" id="ShowTicker" class="ShowTicker" checked data-toggle="toggle" data-style="ios" data-size="small" data-on="Toon" data-off="Verberg" data-onstyle="success" data-offstyle="danger">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="TickerTime" class="col-sm-2 control-label">Ticker Intervaltijd</label>
+        <div class="input-group col-md-5">
+            <input type="number" class="form-control" id="TickerTime" value="@TickerTimeSec">
+            <span class="input-group-addon">seconden</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="TickerTime" class="col-sm-2 control-label">Ticker Effect</label>
+        <div class="input-group col-md-5">
+            @if(@Model.First(s => s.SettingName == "TickerEffect").SettingValue == "fade")
+            { 
+                <select class="form-control" id="TickerEffect">
+                    <option value="fade" selected="selected">Fade</option>
+                    <option value="slide" >Slide</option>
+                    <option value="typing" >Typing</option>
+                </select>
+            }
+            else if(@Model.First(s => s.SettingName == "TickerEffect").SettingValue == "slide")
+            {
+                  <select class="form-control" id="TickerEffect">
+                    <option value="fade">Fade</option>
+                    <option value="slide" selected="selected" >Slide</option>
+                    <option value="typing" >Typing</option>
+                </select>
+            }
+            else
+            {
+                <select class="form-control" id="TickerEffect">
+                    <option value="fade">Fade</option>
+                    <option value="slide" >Slide</option>
+                    <option value="typing" selected="selected">Typing</option>
+                </select>
+            }
+        </div>
+      </div>
+      <hr/>
+      <h3 class="col-sm-offset-2">Klok</h3>
+      <div class="form-group">
+        <label for="TickerTime" class="col-sm-2 control-label">Toon</label>
+        <div class="form-group">
+          <div class="input-group col-md-5">
+            <input type="checkbox" id="ShowClock" class="ShowClock" checked data-toggle="toggle" data-style="ios" data-size="small" data-on="Toon" data-off="Verberg" data-onstyle="success" data-offstyle="danger">
+          </div>
+        </div>
+      </div>
+      <hr/>
+      <h3 class="col-sm-offset-2">Weer</h3>
+      <div class="form-group">
+        <label for="TickerTime" class="col-sm-2 control-label">Toon</label>
+        <div class="input-group col-md-5">
+            <input type="checkbox" id="ShowWeather" class="ShowTicker" checked data-toggle="toggle" data-style="ios" data-size="small" data-on="Toon" data-off="Verberg" data-onstyle="success" data-offstyle="danger">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="TickerTime" class="col-sm-2 control-label">Locatie</label>
+        <div class="input-group col-md-5">
+            <input type="text" class="form-control" id="WeatherLocation" value='@Model.First(s => s.SettingName == "WeatherLocation").SettingValue'></div>
+      </div>
+      <hr/>
+      <div class="form-group">
+        <div class="col-md-5"><br>
+          <button class="btn btn-primary" id="SaveSettings" >Opslaan</button>
+        </div>
       </div>
     </div>
   </div>
-  <hr/>
-  <h3 class="col-sm-offset-2">Weer</h3>
-  <div class="form-group">
-    <label for="TickerTime" class="col-sm-2 control-label">Toon</label>
-     <div class="input-group col-md-5">
-        <input type="checkbox" id="ShowWeather" class="ShowTicker" checked data-toggle="toggle" data-style="ios" data-size="small" data-on="Toon" data-off="Verberg" data-onstyle="success" data-offstyle="danger">
-    </div>
-  </div>
-  <div class="form-group">
-    <label for="TickerTime" class="col-sm-2 control-label">Locatie</label>
-     <div class="input-group col-md-5">
-        <input type="text" class="form-control" id="WeatherLocation" value="Alken"></div>
-  </div>
-  <hr/>
-  <div class="form-group">
-    <div class="col-md-5"><br>
-      <button class="btn btn-primary" id="SaveSettings" >Opslaan</button>
+  <div role="tabpanel" class="tab-pane fade" id="prog">
+    <div class="form-horizontal" id="ProgSettingsForm">
+      <h3 class="col-sm-offset-1">Gegevens</h3>
+      @{
+          //string titel = @Model.First(s => s.SettingName == "SlideTime").SettingValue)/1000;
+      }
+      <div class="form-group">
+        <label for="Title" class="col-sm-2 control-label">Titel</label>
+        <div class="input-group col-md-5">
+            <input type="text" class="form-control" id="site-title" value='@Model.First(s => s.SettingName == "Title").SettingValue'></div>
+      </div>
+      <div class="form-group">
+        <label for="Logo" class="col-sm-2 control-label">Logo</label>
+        <div class="input-group col-md-5">
+          <label class="input-group-btn">
+              <span class="btn btn-primary">
+                  Browse &hellip; <input type="file" class="upload" name="logoup" id="f_UploadLogo" style="display: none;" accept="image/*">
+              </span>
+          </label>
+          <input type="text" class="form-control" placeholder="Upload nieuw logo" id="placeholderUploadLogo" readonly>
+        </div>
+        <div class="col-md-5 col-sm-offset-2">
+          <div id="logoUploadPreview"></div><center><span id="logoUrlSpan">@Model.First(s => s.SettingName == "LogoUrl").SettingValue </span></center><br />
+        </div>
+      </div>
+      <hr/>
+      <h3 class="col-sm-offset-1">Gebruikers</h3>
+      <div class="form-group">
+        <div class="col-md-9 col-sm-offset-1">
+          <table class="table table-striped" id="userTable">
+          <tr>
+            <th>
+              Gebruikersnaam
+            </th>
+            <th>
+              Naam & E-mail
+            </th>
+            <th>
+              Laatste login
+            </th>
+            <th></th>
+            <th></th>
+          </tr>
+          <div id="userTabBody">
+            @foreach (User u in ViewBag.Users)
+            {
+              <tr>
+                <td>@u.Username</td>
+                <td>@u.FirstName @u.LastName <br/> <i>@u.Email</i></td>
+                <td>
+                  @{
+                    if(u.LastLogin.ToString().Equals("1/1/01 12:00:00 AM")){
+                      <text>Nog niet ingelogd.</text>
+                    }
+                    else{
+                      <text>@u.LastLogin</text>
+                    }
+                  }
+                </td>
+                <td>
+                  @{
+                    if(u.UserRoles.First().Role.Name.Equals("Admin")){
+                      <span class="glyphicon glyphicon-wrench" aria-hidden="true" data-toggle="tooltip" data-placement="right" title="Administrator"></span>
+                    }
+                  }
+                </td>
+                <td><span class="glyphicon glyphicon-trash spanLink deleteUser" aria-hidden="true" id="@u.Id"></span></td>
+              </tr>
+            }
+          </div>
+          
+        </table>
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <button class="btn btn-default center" id="showRegisterUser">Voeg gebruiker toe</button>
+            <div id="registerPane">
+
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="col-md-5"><br>
+          <button class="btn btn-primary" id="SaveProgSettings" >Opslaan</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
+
 
 <script>
   $('input:checkbox').each(function () {
             $(this).bootstrapToggle();
         });
+
+  $("#f_UploadLogo").on('change', function () {
+    
+        var label = $(this).val().replace(/\\/g, '/').replace(/.*\//, '');
+        var input = $(this).parents('.input-group').find(':text');
+
+        if( input.length ) {
+            input.val(label);
+            $("#logoUrlSpan").html(label);
+        } else {
+            if( label ) alert(log);
+        }
+
+        var file;
+        if ((file = this.files[0])) {
+            var logUrl = URL.createObjectURL(file);
+            show_logo(logUrl);
+        }
+    });
+    
+
+    function show_logo(url){
+        var image = $('<img />', {
+                id: 'prevLogo',
+                src: url,
+                style: "margin-top: 25px; margin-left: auto; margin-right: auto; width: 200px; display: block;"
+            });
+            $("#logoUploadPreview").html(image);
+
+    }
+
+    show_logo("images/logo/@Model.First(s => s.SettingName == "LogoUrl").SettingValue")
+
+    $("#showRegisterUser").click(function(e){
+      $.get( "/Config/CreateUserView", function( data ) {
+        $( "#registerPane" ).html( data );
+        $('#showRegisterUser').hide();
+      });
+    });
+
+    $('.deleteUser').click(function(){
+      var curRow = $(this).closest('tr');
+      var userid = $(this).attr('id');
+      var userUN = curRow.find('td:first').text();
+      var postData = { userId: userid };
+      console.log(postData);
+      alertify.confirm("Bent u zeker dat u gebruiker " + userUN + " wilt verwijderen?", function (e) {
+        console.log(e);
+            if (e) {
+                $.ajax({
+                  type: "POST",
+                  url: "/Config/DeleteUser",
+                  data: postData,
+                  success: function(response)
+                    {
+                      if(response.success) {
+                        curRow.remove();
+                      }
+                      else{
+                          alertify.error(response.message);
+                      }
+                    }
+                });
+            } else {
+                // user clicked "cancel"
+            }
+        });
+      
+    });
+
+    $("#SaveProgSettings").click(function(e) {
+        e.preventDefault();
+
+        var frm = $("#ProgSettingsForm");
+        var title = frm.find("#site-title").val();
+
+        var data = new FormData();
+        data.append('logo', frm.find("#f_UploadLogo")[0].files[0]);
+        data.append('title', title);
+
+        $.ajax({
+            type: 'post',
+            url: '/Config/SaveProgSettings',
+            data: data,
+            processData: false,
+            contentType: false,
+            success: function (response, textStatus, jqXHR) {
+                if(response.success) {
+                    modal.close();
+                    
+                    $("#progTitle").html("<b>" + title + "</b>");
+                    $("#progLogo").attr('src', 'images/logo/' + $("#logoUrlSpan").text());
+
+                    alertify.success(response.message);
+                }
+                else{
+                    alertify.error(response.message);
+                }
+            },
+            error: function () {
+                alert("Whoops something went wrong!");
+            }
+        });
+
+    });
+
 </script>

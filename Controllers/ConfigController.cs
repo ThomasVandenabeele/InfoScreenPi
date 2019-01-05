@@ -16,6 +16,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Authentication;
+using System.IO;
+using Microsoft.EntityFrameworkCore;
 
 namespace InfoScreenPi.Controllers
 {
@@ -70,12 +72,32 @@ namespace InfoScreenPi.Controllers
             ViewBag.TickerItems = new List<string>(System.IO.File.ReadAllLines(_hostEnvironment.WebRootPath + "/data/ticker.txt"));
             ViewBag.Backgrounds = (List<Background>) _backgroundRepository.GetAllWithoutRSS(false).Where(b => !b.Url.Equals("black.jpg")).ToList();
             ViewBag.RssAbo = (List<RssFeed>) _rssFeedRepository.AllIncluding(r => r.StandardBackground).ToList();
+            ViewBag.Logo = _settingRepository.GetSettingByName("LogoUrl");
+            ViewBag.TitleProg = _settingRepository.GetSettingByName("Title");
+
+            string idString = "";
+            if(HttpContext.User.Identity.IsAuthenticated)
+            {
+                idString = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Id")?.Value;
+            }
+            //string idString = _protector.Unprotect(HttpContext.Request.Cookies["YU2ert-gert24-59HEHF-thtyyE-87R23!"]); // id
+            int? id = Convert.ToInt32(idString);
+         
+            if (id != null && id != 0)
+            {
+                int roleId = _userRoleRepository.GetAll().First(ur => ur.UserId == id).RoleId;
+                Role role = _roleRepository.GetSingle(roleId);
+
+                ViewBag.CurrentRole = role;
+            }
+
             return View(_context.Users.ToList());
         }
 
         [AllowAnonymous]
         public IActionResult Login()
         {
+            ViewBag.Logo = _settingRepository.GetSettingByName("LogoUrl");
             return View();
         }
 
@@ -165,6 +187,7 @@ namespace InfoScreenPi.Controllers
                         Succeeded = false,
                         Message = "Authentication failed"
                     };
+                    ViewBag.Logo = _settingRepository.GetSettingByName("LogoUrl");
                     return View(user);
                 }
             }
@@ -181,6 +204,7 @@ namespace InfoScreenPi.Controllers
             }
 
             _result = new ObjectResult(_authenticationResult);
+            ViewBag.Logo = _settingRepository.GetSettingByName("LogoUrl");
             return View(user);
         }
 
@@ -229,14 +253,43 @@ namespace InfoScreenPi.Controllers
             return View();
         }
 
+        [HttpGet]
+        public IActionResult CreateUserView()
+        {
+            return PartialView("~/Views/Config/Account/CreateUser.cshtml");
+        }
+
+        [HttpPost]
+        public IActionResult RegisterUser (String Username, String Email, String FirstName, String LastName, String Password, String VerifyPassword, bool Admin){
+            if(Username != null | Username != ""){
+                if(VerifyPassword.Equals(Password)){
+                   return CreateUser(Username, Email, FirstName, LastName, Password, Admin);
+                }
+                else return Fail("Wachtwoorden komen niet overeen");  
+            } 
+            else return Fail("Geef gebruikersnaam op"); 
+        }
+
 
         public IActionResult Error()
         {
             return View();
         }
 
+        [HttpPost]
+        public IActionResult DeleteUser(int userId)
+        {
+            User s = _userRepository.GetSingle(userId);
+            //User s = _userRepository.GetAll().First(u => u.Username.Equals(username));
+            _userRepository.Delete(s);
+            _userRepository.Commit();
+
+            return Success("Gebruiker verwijderd");
+
+        }
+
         [HttpGet]
-        public ActionResult CreateUser(string username, string email, string firstname, string lastname, string wachtwoord)
+        public ActionResult CreateUser(string username, string email, string firstname, string lastname, string wachtwoord, bool admin)
         {
 
             var passwordSalt = _encryptionService.CreateSalt();
@@ -256,7 +309,16 @@ namespace InfoScreenPi.Controllers
             _userRepository.Add(user);
             _userRepository.Commit();
 
-            var role = _roleRepository.GetSingle(1);
+            Role role;
+            if(admin) 
+            {
+                role = _roleRepository.GetAll().First(r => r.Name.Equals("Admin"));
+            }
+            else
+            {
+                role = _roleRepository.GetAll().First(r => r.Name.Equals("Redacteur"));
+            }
+
             var userRole = new UserRole()
             {
                 RoleId = role.Id,
@@ -283,6 +345,9 @@ namespace InfoScreenPi.Controllers
         public ActionResult GetSettings()
         {
             List<Setting> model = _settingRepository.GetAll().ToList();
+            List<User> gebruikers = _context.Set<User>().Include(x => x.UserRoles).ThenInclude(x => x.Role).ToList();
+            
+            ViewBag.Users = gebruikers;
             return PartialView("~/Views/Config/Settings/Modify.cshtml", model);
         }
 
@@ -293,6 +358,38 @@ namespace InfoScreenPi.Controllers
             {
                 _settingRepository.SetSettingByName(setting.Key, setting.Value);
             }
+            return Success();
+        }
+
+        [HttpPost]
+        [RequestSizeLimit(52428800*2)] // 100MB
+        public async Task<IActionResult> SaveProgSettings(string title, IFormFile logo)
+        {
+
+            
+            var logoRoot = Path.Combine(_hostEnvironment.WebRootPath, "images/logo");
+            //string n = string.Format("vid-{0:yyyy-MM-dd_hh-mm-ss-tt}", DateTime.Now);
+            //var fileName = n + "-" + video.FileName.Replace(" ", "-");
+            
+            if (logo != null)
+            {
+                if(logo.Length > 0){
+                    var fileName = logo.FileName.Replace(" ", "-");
+                    var fullFileName = Path.Combine(logoRoot, fileName);
+                    using (var stream = new FileStream(fullFileName, FileMode.Create))
+                    {
+                        await logo.CopyToAsync(stream);
+                    }
+                    
+                    _settingRepository.SetSettingByName("LogoUrl", fileName);
+                }
+                
+            }
+
+            _settingRepository.SetSettingByName("Title", title);
+
+            _settingRepository.Commit();
+
             return Success();
         }
 

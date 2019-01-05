@@ -1,3 +1,4 @@
+@using InfoScreenPi.Entities
 <!DOCTYPE html>
 <html>
 <head>
@@ -44,8 +45,8 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
-                </button><img src="~/images/ScreenPiLogoHorizontal.svg" class="navbar-brand" height="50px">
-                <a asp-controller="Config" asp-action="Index" class="navbar-brand"> <b>KU Leuven Diepenbeek - Infopanelen</b></a>
+                </button><img src="~/images/logo/@ViewBag.Logo" class="navbar-brand" id="progLogo" height="50px">
+                <a asp-controller="Config" asp-action="Index" class="navbar-brand" id="progTitle"> <b>@ViewBag.TitleProg</b></a>
             </div>
             <div class="navbar-collapse collapse">
                 @*
@@ -56,13 +57,18 @@
                 *@
                 <form class="navbar-form form-inline"> @* Form gebruiken om het te aligneren met de navbar *@
                     <div class="btn-group btn-group-xs">
-                        <button type="button" class="btn btn-default" id="RefreshScreen" style="margin-top:6px; margin-left: 2px">
+                        <button type="button" class="btn btn-default" id="RefreshScreen" style="margin-top:6px; margin-left: 2px" data-toggle="tooltip" data-placement="bottom" title="Herlaad alle geconnecteerde schermen">
                             <i class="glyphicon glyphicon-refresh"> </i>&nbsp;&nbsp;Refresh Scherm
                         </button>
-                        <button type="button" class="btn btn-default" id="Settings" style="margin-top:6px;">
-                            <i class="glyphicon glyphicon-wrench"> </i>&nbsp;&nbsp;Instellingen
-                        </button>
-                        <a href="~/" target="new" role="button" class="btn btn-default" style="margin-top:6px;">
+                        @{
+                            Role r = ViewBag.CurrentRole;
+                            if(r.Name.Equals("Admin")){
+                                <button type="button" class="btn btn-default" id="Settings" style="margin-top:6px;" data-toggle="tooltip" data-placement="bottom" title="Instellingen schermen en InfoScreenPi">
+                                    <i class="glyphicon glyphicon-wrench"> </i>&nbsp;&nbsp;Instellingen
+                                </button>
+                            }
+                        }
+                        <a href="~/" target="new" role="button" class="btn btn-default" style="margin-top:6px;" data-toggle="tooltip" data-placement="bottom" title="Toon het scherm op je pc">
                             <i class="glyphicon glyphicon-search"> </i>&nbsp;&nbsp;Preview
                         </a>
                     </div>
@@ -80,7 +86,7 @@
         </center>
         <hr />
         <footer>
-            <p style="text-align: center;">&copy; 2016 - Thomas Vandenabeele</p>
+            <p style="text-align: center;">&copy; 2019 - Thomas Vandenabeele</p>
         </footer>
     </div>
 
