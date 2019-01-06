@@ -479,17 +479,39 @@ $(document).ready(function() {
 
     var autosave_timer;
 
-    $('#TickerData').on('keyup', function() {
+    function delayedSendTickerLines(){
         if(autosave_timer) {
             clearTimeout(autosave_timer);
         }
-        autosave_timer = setTimeout(sendTickerData, 2000); 
-        // after 3 second of keyup save_by_ajax function will execute
+        autosave_timer = setTimeout(sendTickerDataLines, 3000); 
+    }
+
+    $(".add-more-ticker").click(function(){ 
+
+        var parent = $(this).parents(".control-group");
+        var copy = parent.clone(true);
+        parent.after(copy);
+        parent.next().find("input").val("");
+
     });
 
-    function sendTickerData(){
-        var stringArray2 = $('#TickerData').val().split('\n');
-        var postData = { listkey: stringArray2 };
+    $(".delete-ticker-line").click(function(){
+        console.log("delete clicked");
+        $(this).parents(".control-group").remove();
+        delayedSendTickerLines();
+    });
+
+    $("#parentTickerArea input").keyup(function(){
+        delayedSendTickerLines();
+    });
+
+    function sendTickerDataLines(){
+        var tickerArray = $('#parentTickerArea input').map(function() {
+            return this.value;
+        }).get();
+        console.log(tickerArray);
+        var postData = { listkey: tickerArray };
+        console.log(postData);
 
         $.ajax({
             type: "POST",

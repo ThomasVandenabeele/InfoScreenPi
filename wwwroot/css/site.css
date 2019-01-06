@@ -41,6 +41,10 @@ textarea {
     line-height: 20px;
 }
 
+.ticker-group{
+    margin-bottom: 10px;
+}
+
 .customlayout > p{
     font-size: 20px;
 }

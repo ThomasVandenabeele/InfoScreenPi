@@ -109,18 +109,20 @@
             </div>
             <div class="media-body">
                 <p class="text-muted">
-                    Pas de inhoud aan door iedere rij aan te passen.
+                    Pas de informatie ticker aan door regels aan te passen.
                     Voeg een nieuwe rij toe voor een extra tickerveld.<br />
                 </p>
             </div>
         </div><br />
-        <textarea class="form-control" id="TickerData" rows="5">
-            @foreach (string dataLine in ViewBag.TickerItems as List<string>) {
-                @Html.Raw(dataLine + "\n")
-            }
-        </textarea> 
+        @foreach (string dataLine in ViewBag.TickerItems as List<string>) {
+            <div class="input-group control-group ticker-group">
+                <input type="text" name="addmore[]" class="form-control" value="@dataLine" maxlength="55">
+                <div class="input-group-btn"> 
+                    <button class="btn btn-success add-more-ticker" type="button"><i class="glyphicon glyphicon-plus"></i></button>
+                    <button class="btn btn-danger delete-ticker-line" type="button"><i class="glyphicon glyphicon-trash"></i></button>
+                </div>
+            </div>
+        }
+        
     </div>
 </div>
-
-
-
