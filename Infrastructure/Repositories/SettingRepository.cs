@@ -11,7 +11,7 @@ namespace InfoScreenPi.Infrastructure.Repositories
         public SettingRepository(InfoScreenContext context)
             : base(context)
         { }
-    
+
 
         public string GetSettingByName(string setting)
         {
@@ -19,11 +19,17 @@ namespace InfoScreenPi.Infrastructure.Repositories
         }
 
         public void SetSettingByName(string key, string value){
-            List<Setting> lijst = GetAll().ToList();
-            Setting s = lijst.First(setting => setting.SettingName == key);
+
+            Setting s = GetSingle(setting => setting.SettingName == key);
             s.SettingValue = value;
             Edit(s);
             Commit();
+
+            /*List<Setting> lijst = GetAll().ToList();
+            Setting s = lijst.First(setting => setting.SettingName == key);
+            s.SettingValue = value;
+            Edit(s);
+            Commit();*/
         }
 
     }
