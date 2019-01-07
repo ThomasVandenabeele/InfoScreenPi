@@ -2,9 +2,8 @@ using System;
 
 namespace InfoScreenPi.Entities
 {
-    public class RssFeed : IEntityBase
+    public class RssFeed : Entity, IEntityBase
     {
-        public int Id { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public Boolean Active { get; set; }

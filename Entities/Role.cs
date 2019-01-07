@@ -1,8 +1,7 @@
 namespace InfoScreenPi.Entities
 {
-    public class Role : IEntityBase
+    public class Role : Entity, IEntityBase
     {
-        public int Id { get; set; }
         public string Name { get; set; }
     }
 }

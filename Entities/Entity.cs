@@ -1,7 +1,7 @@
 namespace InfoScreenPi.Entities
 {
-    public interface IEntityBase
+    public abstract class Entity
     {
-        int Id { get; set; }
+        public int Id { get; set; }
     }
 }

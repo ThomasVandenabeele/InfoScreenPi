@@ -3,13 +3,12 @@ using System.Collections.Generic;
 
 namespace InfoScreenPi.Entities
 {
-    public class User : IEntityBase
+    public class User : Entity, IEntityBase
     {
         public User()
         {
             UserRoles = new List<UserRole>();
         }
-        public int Id { get; set; }
         public string Username { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }

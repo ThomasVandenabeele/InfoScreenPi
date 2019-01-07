@@ -1,8 +1,7 @@
 namespace InfoScreenPi.Entities
 {
-    public class ItemKind : IEntityBase
+    public class ItemKind : Entity, IEntityBase
     {
-        public int Id {get; set; }
         public string Description { get; set; }
         public string Source { get; set; }
     }
