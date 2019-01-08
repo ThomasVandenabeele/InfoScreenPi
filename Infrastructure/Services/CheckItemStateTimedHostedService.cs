@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using InfoScreenPi.Entities;
 using Microsoft.AspNetCore.SignalR;
 using InfoScreenPi.Hubs;
-using InfoScreenPi.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,7 +23,7 @@ namespace InfoScreenPi.Infrastructure.Services
 
 
         public CheckItemStateTimedHostedService(
-                ILogger<RefreshRSSTimedHostedService> logger, 
+                ILogger<RefreshRSSTimedHostedService> logger,
                 IHubContext<WebSocketHub, IWebSocketHub> hubContext,
                 IServiceScopeFactory scopeFactory
             )
@@ -44,19 +43,19 @@ namespace InfoScreenPi.Infrastructure.Services
             return Task.CompletedTask;
         }
 
-        private async void DoCheckItemState(object state)
+        private void DoCheckItemState(object state)
         {
             _logger.LogInformation("CheckItemStateTimedHostedService is working.");
 
             using (var scope = _scopeFactory.CreateScope())
             {
-                var itemScope = scope.ServiceProvider.GetRequiredService<IItemRepository>();
+                var itemScope = scope.ServiceProvider.GetRequiredService<IDataService>();
                 var changed = itemScope.CheckItemState();
-                
-                //Enkel refresh indien items zijn gewijzigd               
+
+                //Enkel refresh indien items zijn gewijzigd
                 if(changed) _hubContext.Clients.All.RefreshScreens();
             }
-            
+
         }
 
         public Task StopAsync(CancellationToken cancellationToken)

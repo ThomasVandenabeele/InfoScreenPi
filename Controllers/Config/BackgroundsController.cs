@@ -8,7 +8,6 @@ using InfoScreenPi.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using InfoScreenPi.ViewModels;
 using InfoScreenPi.Infrastructure.Services;
-using InfoScreenPi.Infrastructure.Repositories;
 using InfoScreenPi.Infrastructure.Core;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -31,27 +30,17 @@ namespace InfoScreenPi.Controllers
         const int size = 150;
         const int quality = 75;
 
-        private readonly IItemRepository _itemRepository;
-        private readonly IHostingEnvironment _hostEnvironment;
-        private readonly IBackgroundRepository _backgroundRepository;
-
-        public BackgroundsController(IItemRepository itemRepository,
-                                     IHostingEnvironment hostEnvironment,
-                                     IBackgroundRepository backgroundRepository)
-        {
-            _itemRepository = itemRepository;
-            _hostEnvironment = hostEnvironment;
-            _backgroundRepository = backgroundRepository;
-        }
+        public BackgroundsController(IDataService dataService, IHostingEnvironment hostEnvironment)
+        : base(dataService, hostEnvironment) {}
 
         [HttpGet]
         public IActionResult Grid(){
-            return PartialView("~/Views/Config/Backgrounds/Grid.cshtml", _backgroundRepository.GetAllWithoutRSS(false).Where(b => !b.Url.Equals("black.jpg")).ToList());
+            return PartialView("~/Views/Config/Backgrounds/Grid.cshtml", _data.GetAllBackgroundsWithoutRSS(false).Where(b => !b.Url.Equals("black.jpg")).ToList());
         }
 
         [HttpGet]
         public IActionResult SelectionGrid(){
-            return PartialView("~/Views/Config/Backgrounds/SelectionGrid.cshtml", _backgroundRepository.GetAllWithoutRSS(true).ToList());
+            return PartialView("~/Views/Config/Backgrounds/SelectionGrid.cshtml", _data.GetAllBackgroundsWithoutRSS(true).ToList());
         }
         [HttpPost]
         public async Task<ActionResult> FileUpload(IFormFile file)
@@ -69,8 +58,8 @@ namespace InfoScreenPi.Controllers
                 await file.CopyToAsync(new FileStream(Path.Combine(imageRoot, filename), FileMode.Create));
 
                 Background b = new Background() { Url = filename };
-                _backgroundRepository.Add(b);
-                _backgroundRepository.Commit();
+                _data.Add(b);
+                _data.Commit();
 
                 /* thumbs */
                 MemoryStream ms = new MemoryStream();
@@ -143,10 +132,10 @@ namespace InfoScreenPi.Controllers
         [HttpPost]
         public IActionResult Delete(int id)
         {
-            Background b = _backgroundRepository.GetSingle(id);
-           List<Background> aantal =  _backgroundRepository.GetAll().ToList();
+            var b = _data.GetSingle<Background>(id);
+            var aantal =  _data.GetAll<Background>().ToList();
 
-            if(!_itemRepository.GetAllCustomItems().Select(i => i.Background).ToList().Contains(b))
+            if(!_data.GetAllCustomItems().Select(i => i.Background).ToList().Contains(b))
             {
                 var imageRoot = Path.Combine(_hostEnvironment.WebRootPath, "images/backgrounds");
                 FileInfo file = new FileInfo(imageRoot + "/" + b.Url);
@@ -154,8 +143,8 @@ namespace InfoScreenPi.Controllers
                 FileInfo thumb = new FileInfo(imageRoot + "/thumbnails/" + b.Url);
                 if (thumb.Exists) thumb.Delete();
 
-                _backgroundRepository.Delete(b);
-                _backgroundRepository.Commit();
+                _data.Delete(b);
+                _data.Commit();
                 return Success();
             }
             return Fail("Kan achtergrond niet verwijderen, deze is nog in gebruik.");

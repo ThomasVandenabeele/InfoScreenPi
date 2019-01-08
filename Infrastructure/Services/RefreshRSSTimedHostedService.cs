@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using InfoScreenPi.Entities;
 using Microsoft.AspNetCore.SignalR;
 using InfoScreenPi.Hubs;
-using InfoScreenPi.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,7 +23,7 @@ namespace InfoScreenPi.Infrastructure.Services
 
 
         public RefreshRSSTimedHostedService(
-                ILogger<RefreshRSSTimedHostedService> logger, 
+                ILogger<RefreshRSSTimedHostedService> logger,
                 IHubContext<WebSocketHub, IWebSocketHub> hubContext,
                 IServiceScopeFactory scopeFactory
             )
@@ -50,29 +49,29 @@ namespace InfoScreenPi.Infrastructure.Services
 
             using (var scope = _scopeFactory.CreateScope())
             {
-                var rssFeedRepo = scope.ServiceProvider.GetRequiredService<IRssFeedRepository>();
+                var rssFeedRepo = scope.ServiceProvider.GetRequiredService<IRSSService>();
                 var renewed = rssFeedRepo.RenewActiveRssFeeds().Result;
                 //Enkel refresh indien rssfeeds zijn gewijzigd
 
-                var settingsRepo = scope.ServiceProvider.GetRequiredService<ISettingRepository>();
-                var dbChanged = settingsRepo.GetSettingByName("DBChanged") == "True";
-                
+                var dataService = scope.ServiceProvider.GetRequiredService<IDataService>();
+                var dbChanged = dataService.GetSettingByName("DBChanged") == "True";
+
                 if(renewed || dbChanged)
                 {
                     var _context = scope.ServiceProvider.GetRequiredService<InfoScreenContext>();
-                    
+
                     Setting s = _context.Settings.ToList().First(setting => setting.SettingName == "DBChanged");
                     s.SettingValue = false.ToString();
                     EntityEntry dbEnt = _context.Entry(s);
                     dbEnt.State = EntityState.Modified;
-            
+
                     _context.SaveChanges();
-                    
-                    _hubContext.Clients.All.RefreshScreens();
-                    
+
+                    await _hubContext.Clients.All.RefreshScreens();
+
                 }
             }
-            
+
             //_rssFeedRepository.RenewActiveRssFeeds();
             //_hubContext.Clients.All.RefreshScreens();
         }

@@ -1,5 +1,4 @@
 using InfoScreenPi.Entities;
-using InfoScreenPi.Infrastructure.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,17 +9,12 @@ namespace InfoScreenPi.Infrastructure.Services
 {
     public class MembershipService : IMembershipService
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IRoleRepository _roleRepository;
-        private readonly IUserRoleRepository _userRoleRepository;
+        private readonly IDataService _data;
         private readonly IEncryptionService _encryptionService;
-        
-        public MembershipService(IUserRepository userRepository, IRoleRepository roleRepository,
-        IUserRoleRepository userRoleRepository, IEncryptionService encryptionService)
+
+        public MembershipService(IDataService dataService, IEncryptionService encryptionService)
         {
-            _userRepository = userRepository;
-            _roleRepository = roleRepository;
-            _userRoleRepository = userRoleRepository;
+            _data = dataService;
             _encryptionService = encryptionService;
         }
 
@@ -28,7 +22,7 @@ namespace InfoScreenPi.Infrastructure.Services
         {
             var membershipCtx = new MembershipContext();
 
-            var user = _userRepository.GetSingleByUsername(username);
+            var user = _data.GetSingleByUsername(username);
             if (user != null && isUserValid(user, password))
             {
                 var userRoles = GetUserRoles(user.Username);
@@ -45,7 +39,7 @@ namespace InfoScreenPi.Infrastructure.Services
 
         public User CreateUser(string username, string email, string password, int[] roles)
         {
-            var existingUser = _userRepository.GetSingleByUsername(username);
+            var existingUser = _data.GetSingleByUsername(username);
 
             if (existingUser != null)
             {
@@ -64,9 +58,9 @@ namespace InfoScreenPi.Infrastructure.Services
                 DateCreated = DateTime.Now
             };
 
-            _userRepository.Add(user);
+            _data.Add(user);
 
-            _userRepository.Commit();
+            _data.Commit();
 
             if (roles != null || roles.Length > 0)
             {
@@ -76,14 +70,14 @@ namespace InfoScreenPi.Infrastructure.Services
                 }
             }
 
-            _userRepository.Commit();
+            _data.Commit();
 
             return user;
         }
 
         public User GetUser(int userId)
         {
-            return _userRepository.GetSingle(userId);
+            return _data.GetSingle<User>(userId);
         }
 
 
@@ -91,7 +85,7 @@ namespace InfoScreenPi.Infrastructure.Services
         {
             List<Role> _result = new List<Role>();
 
-            var existingUser = _userRepository.GetSingleByUsername(username);
+            var existingUser = _data.GetSingleByUsername(username);
 
             if (existingUser != null)
             {
@@ -107,7 +101,7 @@ namespace InfoScreenPi.Infrastructure.Services
 
         private void addUserToRole(User user, int roleId)
         {
-            var role = _roleRepository.GetSingle(roleId);
+            var role = _data.GetSingle<Role>(roleId);
             if (role == null)
                 throw new Exception("Role doesn't exist.");
 
@@ -116,9 +110,9 @@ namespace InfoScreenPi.Infrastructure.Services
                 RoleId = role.Id,
                 UserId = user.Id
             };
-            _userRoleRepository.Add(userRole);
+            _data.Add(userRole);
 
-            _userRepository.Commit();
+            _data.Commit();
         }
 
         private bool isPasswordValid(User user, string password)
@@ -135,6 +129,6 @@ namespace InfoScreenPi.Infrastructure.Services
 
             return false;
         }
-        
+
     }
 }

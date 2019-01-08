@@ -2,7 +2,7 @@ using System;
 
 namespace InfoScreenPi.Entities
 {
-    public class Error : Entity, IEntityBase
+    public class Error : Entity
     {
         public string Message { get; set; }
         public string StackTrace { get; set; }

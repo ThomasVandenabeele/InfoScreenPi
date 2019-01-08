@@ -9,7 +9,6 @@ using InfoScreenPi.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using InfoScreenPi.ViewModels;
 using InfoScreenPi.Infrastructure.Services;
-using InfoScreenPi.Infrastructure.Repositories;
 using InfoScreenPi.Infrastructure.Core;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Hosting;
@@ -21,31 +20,18 @@ namespace InfoScreenPi.Controllers
     [Route("Config/[controller]/[action]")]
     public class ItemsController : BaseController
     {
-        private readonly IItemRepository _itemRepository;
-        private readonly IHostingEnvironment _hostEnvironment;
-        private readonly IBackgroundRepository _backgroundRepository;
-        private readonly IItemKindRepository _itemKindRepository;
-
-        public ItemsController(IItemRepository itemRepository,
-                               IHostingEnvironment hostEnvironment,
-                               IBackgroundRepository backgroundRepository,
-                               IItemKindRepository itemKindRepository)
-        {
-            _itemRepository = itemRepository;
-            _hostEnvironment = hostEnvironment;
-            _backgroundRepository = backgroundRepository;
-            _itemKindRepository = itemKindRepository;
-        }
+        public ItemsController(IDataService dataService, IHostingEnvironment hostEnvironment)
+        : base(dataService, hostEnvironment){}
 
         [HttpPost]
         public ActionResult ChangeItemState(int id, bool state)
         {
-            Item item = _itemRepository.GetSingle(id);
+            Item item = _data.GetSingle<Item>(id);
             if (item != null)
             {
                 item.Active = state;
-                _itemRepository.Edit(item);
-                _itemRepository.Commit();
+                _data.Edit(item);
+                _data.Commit();
                 return Success(state? "Item status verandert naar actief!" : "Item status verandert naar inactief!");
             }
             return Fail();
@@ -54,12 +40,12 @@ namespace InfoScreenPi.Controllers
         [HttpPost]
         public ActionResult ArchiveItem(int id, bool state)
         {
-            Item item = _itemRepository.GetSingle(id);
+            Item item = _data.GetSingle<Item>(id);
             if (item != null)
             {
                 item.Archieved = state;
-                _itemRepository.Edit(item);
-                _itemRepository.Commit();
+                _data.Edit(item);
+                _data.Commit();
                 return Success(state? "Item verwijderd" : "Item terug geactiveerd");
             }
             return Fail();
@@ -68,30 +54,30 @@ namespace InfoScreenPi.Controllers
         [HttpGet]
         public ActionResult ItemsArchive()
         {
-            List<Item> model = _itemRepository.GetAll(a => a.Background, a => a.Soort).Where(i => i.Soort.Description != "RSS" && i.Archieved == true).ToList();
+            List<Item> model = _data.GetAll<Item>(i => i.Soort.Description != "RSS" && i.Archieved == true, a => a.Background, a => a.Soort).ToList();
             return PartialView("~/Views/Config/Items/Archive.cshtml", model);
         }
 
         [HttpGet]
         public ActionResult Table()
         {
-            List<Item> model = _itemRepository.GetAll(a => a.Background, a => a.Soort).Where(i => i.Soort.Description != "RSS" && i.Archieved == false).ToList();
+            List<Item> model = _data.GetAll<Item>(i => i.Soort.Description != "RSS" && i.Archieved == false, a => a.Background, a => a.Soort).ToList();
             return PartialView("~/Views/Config/Items/Table.cshtml", model);
         }
 
         [HttpGet]
         public ActionResult CreateItem()
         {
-            List<Background> model = _backgroundRepository.GetAllWithoutRSS(true).Where(b => !b.Url.Equals("black.jpg")).ToList();
+            List<Background> model = _data.GetAllBackgroundsWithoutRSS(true).Where(b => !b.Url.Equals("black.jpg")).ToList();
             return PartialView("~/Views/Config/Items/CreateItem.cshtml", model);
         }
 
         [HttpPost]
         public ActionResult RegisterNewItem(string itemTitle, string itemContent, int bgId, string expireDateTime)
         {
-            ItemKind soort = _itemKindRepository.GetAll().Where(ik => ik.Description == "CUSTOM").First();
-            Background achtergrond = _backgroundRepository.GetSingle(bgId);
-            _itemRepository.Add(
+            ItemKind soort = _data.GetSingle<ItemKind>(ik => ik.Description == "CUSTOM");
+            Background achtergrond = _data.GetSingle<Background>(bgId);
+            _data.Add(
                 new Item
                 {
                     Soort = soort,
@@ -103,30 +89,30 @@ namespace InfoScreenPi.Controllers
                     ExpireDateTime = DateTime.Parse(expireDateTime)
                 }
             );
-            _itemRepository.Commit();
+            _data.Commit();
             return Success();
         }
 
         [HttpGet]
         public ActionResult Edit(int id)
         {
-            ViewBag.SelectionGrid = (List<Background>) _backgroundRepository.GetAllWithoutRSS(true).ToList();
-            Item model = _itemRepository.GetAll(i => i.Background).Where(i => i.Id == id).First();
+            ViewBag.SelectionGrid = (List<Background>) _data.GetAllBackgroundsWithoutRSS(true).ToList();
+            Item model = _data.GetSingle<Item>(id, i => i.Background);
             return PartialView("~/Views/Config/Items/EditItem.cshtml", model);
         }
 
         [HttpPost]
         public IActionResult EditItem(int itemId, string itemTitle, string itemContent, int bgId)
         {
-            Item item = _itemRepository.GetAll(i => i.Background).Where(i => i.Id == itemId).First();
-            Background bg = _backgroundRepository.GetAll().First(b => b.Id == bgId);
+            Item item = _data.GetSingle<Item>(itemId, i => i.Background);
+            Background bg = _data.GetSingle<Background>(bgId);
 
             item.Title = itemTitle;
             item.Content = itemContent;
             item.Background = bg;
 
-            _itemRepository.Edit(item);
-            _itemRepository.Commit();
+            _data.Edit(item);
+            _data.Commit();
             return Success("Item '" + itemTitle + "' gewijzigd");
         }
 
@@ -157,8 +143,8 @@ namespace InfoScreenPi.Controllers
         public async Task<IActionResult> UploadVideoItem(string itemTitle, string expireDateTime, IFormFile video)
         {
 
-            ItemKind soort = _itemKindRepository.GetAll().Where(ik => ik.Description == "VIDEO").First();
-            Background achtergrond = _backgroundRepository.GetAll().First(b => b.Url.Equals("black.jpg"));
+            ItemKind soort = _data.GetSingle<ItemKind>(ik => ik.Description == "VIDEO");
+            Background achtergrond = _data.GetSingle<Background>(b => b.Url.Equals("black.jpg"));
 
             var videoRoot = Path.Combine(_hostEnvironment.WebRootPath, "videos");
             string n = string.Format("vid-{0:yyyy-MM-dd_hh-mm-ss-tt}", DateTime.Now);
@@ -172,7 +158,7 @@ namespace InfoScreenPi.Controllers
                 }
             }
 
-            _itemRepository.Add(
+            _data.Add(
                 new Item
                 {
                     Soort = soort,
@@ -184,7 +170,7 @@ namespace InfoScreenPi.Controllers
                     ExpireDateTime = DateTime.Parse(expireDateTime)
                 }
             );
-            _itemRepository.Commit();
+            _data.Commit();
 
             return Success();
         }

@@ -2,7 +2,7 @@ using System;
 
 namespace InfoScreenPi.Entities
 {
-    public class Item : Entity, IEntityBase
+    public class Item : Entity
     {
         public ItemKind Soort { get; set; }
         public RssFeed RssFeed { get; set; }

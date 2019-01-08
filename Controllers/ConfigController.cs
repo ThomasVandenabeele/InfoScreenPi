@@ -8,7 +8,6 @@ using InfoScreenPi.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using InfoScreenPi.ViewModels;
 using InfoScreenPi.Infrastructure.Services;
-using InfoScreenPi.Infrastructure.Repositories;
 using InfoScreenPi.Infrastructure.Core;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -26,54 +25,30 @@ namespace InfoScreenPi.Controllers
     {
         private InfoScreenContext _context;
         private readonly IMembershipService _membershipService;
-        private readonly IUserRepository _userRepository;
-        private readonly ILoggingRepository _loggingRepository;
-        private readonly IItemRepository _itemRepository;
-        private readonly IHostingEnvironment _hostEnvironment;
-        private readonly IBackgroundRepository _backgroundRepository;
-        private readonly IRssFeedRepository _rssFeedRepository;
-        private readonly ISettingRepository _settingRepository;
         private readonly IEncryptionService _encryptionService;
-        private readonly IRoleRepository _roleRepository;
-        private readonly IUserRoleRepository _userRoleRepository;
 
         public ConfigController(InfoScreenContext context,
                                 IMembershipService membershipService,
-                                IUserRepository userRepository,
-                                ILoggingRepository _errorRepository,
-                                IItemRepository itemRepository,
+                                IDataService dataService,
                                 IHostingEnvironment hostEnvironment,
-                                IBackgroundRepository backgroundRepository,
-                                IRssFeedRepository rssFeedRepository,
                                 IDataProtectionProvider dataProtectionProvider,
-                                ISettingRepository settingRepository,
-                                IEncryptionService encryptionService,
-                                IRoleRepository roleRepository,
-                                IUserRoleRepository userRoleRepository)
+                                IEncryptionService encryptionService)
+        : base(dataService, hostEnvironment)
         {
             _context = context;
             _membershipService = membershipService;
-            _userRepository = userRepository;
-            _loggingRepository = _errorRepository;
-            _itemRepository = itemRepository;
-            _hostEnvironment = hostEnvironment;
-            _backgroundRepository = backgroundRepository;
-            _rssFeedRepository = rssFeedRepository;
-            _settingRepository = settingRepository;
             _encryptionService = encryptionService;
-            _roleRepository = roleRepository;
-            _userRoleRepository = userRoleRepository;
         }
 
         public IActionResult Index()
         {
             if(HttpContext.Session.GetString("Username") != null) ViewBag.Username = HttpContext.Session.GetString("Username");
-            ViewBag.ActiveItems = (List<Item>) _itemRepository.GetAll(a => a.Background, a => a.Soort).Where(i => i.Soort.Description != "RSS" && i.Archieved == false).ToList();
+            ViewBag.ActiveItems = _data.GetAll<Item>(a => a.Background, a => a.Soort).Where(i => i.Soort.Description != "RSS" && i.Archieved == false).ToList();
             ViewBag.TickerItems = new List<string>(System.IO.File.ReadAllLines(_hostEnvironment.WebRootPath + "/data/ticker.txt"));
-            ViewBag.Backgrounds = (List<Background>) _backgroundRepository.GetAllWithoutRSS(false).ToList();
-            ViewBag.RssAbo = (List<RssFeed>) _rssFeedRepository.GetAll(r => r.StandardBackground).ToList();
-            ViewBag.Logo = _settingRepository.GetSettingByName("LogoUrl");
-            ViewBag.TitleProg = _settingRepository.GetSettingByName("Title");
+            ViewBag.Backgrounds = _data.GetAllBackgroundsWithoutRSS(false).ToList();
+            ViewBag.RssAbo = _data.GetAll<RssFeed>(r => r.StandardBackground).ToList();
+            ViewBag.Logo = _data.GetSettingByName("LogoUrl");
+            ViewBag.TitleProg = _data.GetSettingByName("Title");
 
             string idString = "";
             if(HttpContext.User.Identity.IsAuthenticated)
@@ -82,11 +57,11 @@ namespace InfoScreenPi.Controllers
             }
             //string idString = _protector.Unprotect(HttpContext.Request.Cookies["YU2ert-gert24-59HEHF-thtyyE-87R23!"]); // id
             int? id = Convert.ToInt32(idString);
-         
+
             if (id != null && id != 0)
             {
-                int roleId = _userRoleRepository.GetAll().First(ur => ur.UserId == id).RoleId;
-                Role role = _roleRepository.GetSingle(roleId);
+                int roleId = _data.GetAll<UserRole>().First(ur => ur.UserId == id).RoleId;
+                Role role = _data.GetSingle<Role>(roleId);
 
                 ViewBag.CurrentRole = role;
             }
@@ -97,7 +72,7 @@ namespace InfoScreenPi.Controllers
         [AllowAnonymous]
         public IActionResult Login()
         {
-            ViewBag.Logo = _settingRepository.GetSettingByName("LogoUrl");
+            ViewBag.Logo = _data.GetSettingByName("LogoUrl");
             return View();
         }
 
@@ -171,12 +146,12 @@ namespace InfoScreenPi.Controllers
                         Message = "Authentication succeeded"
                     };
 
-                    User loggedUser = _userRepository.GetSingleByUsername(user.Username);
+                    User loggedUser = _data.GetSingleByUsername(user.Username);
                     //HttpContext.Response.Cookies.Append("YU2ert-gert24-59HEHF-thtyyE-87R23!", _protector.Protect(loggedUser.Id.ToString()), new CookieOptions { Expires = DateTimeOffset.Now.AddDays(15) });
 
                     loggedUser.LastLogin = DateTime.Now;
-                    _userRepository.Edit(loggedUser);
-                    _userRepository.Commit();
+                    _data.Edit(loggedUser);
+                    _data.Commit();
 
                     return RedirectToAction("Index", "Config");
                 }
@@ -187,7 +162,7 @@ namespace InfoScreenPi.Controllers
                         Succeeded = false,
                         Message = "Authentication failed"
                     };
-                    ViewBag.Logo = _settingRepository.GetSettingByName("LogoUrl");
+                    ViewBag.Logo = _data.GetSettingByName("LogoUrl");
                     return View(user);
                 }
             }
@@ -199,12 +174,12 @@ namespace InfoScreenPi.Controllers
                     Message = ex.Message
                 };
 
-                _loggingRepository.Add(new Error() { Message = ex.Message, StackTrace = ex.StackTrace, DateCreated = DateTime.Now });
-                _loggingRepository.Commit();
+                _data.Add(new Error() { Message = ex.Message, StackTrace = ex.StackTrace, DateCreated = DateTime.Now });
+                _data.Commit();
             }
 
             _result = new ObjectResult(_authenticationResult);
-            ViewBag.Logo = _settingRepository.GetSettingByName("LogoUrl");
+            ViewBag.Logo = _data.GetSettingByName("LogoUrl");
             return View(user);
         }
 
@@ -219,8 +194,8 @@ namespace InfoScreenPi.Controllers
             }
             catch (Exception ex)
             {
-                _loggingRepository.Add(new Error() { Message = ex.Message, StackTrace = ex.StackTrace, DateCreated = DateTime.Now });
-                _loggingRepository.Commit();
+                _data.Add(new Error() { Message = ex.Message, StackTrace = ex.StackTrace, DateCreated = DateTime.Now });
+                _data.Commit();
 
                 return BadRequest();
             }
@@ -240,7 +215,7 @@ namespace InfoScreenPi.Controllers
             User model = null;
             if (id != null && id != 0)
             {
-                model = await _userRepository.GetSingleAsync((int)id);
+                model = await _data.GetSingleAsync<User>((int)id);
             }
 
             return PartialView("~/Views/Config/Account/Details.cshtml", model);
@@ -265,9 +240,9 @@ namespace InfoScreenPi.Controllers
                 if(VerifyPassword.Equals(Password)){
                    return CreateUser(Username, Email, FirstName, LastName, Password, Admin);
                 }
-                else return Fail("Wachtwoorden komen niet overeen");  
-            } 
-            else return Fail("Geef gebruikersnaam op"); 
+                else return Fail("Wachtwoorden komen niet overeen");
+            }
+            else return Fail("Geef gebruikersnaam op");
         }
 
 
@@ -279,10 +254,10 @@ namespace InfoScreenPi.Controllers
         [HttpPost]
         public IActionResult DeleteUser(int userId)
         {
-            User s = _userRepository.GetSingle(userId);
+            User s = _data.GetSingle<User>(userId);
             //User s = _userRepository.GetAll().First(u => u.Username.Equals(username));
-            _userRepository.Delete(s);
-            _userRepository.Commit();
+            _data.Delete(s);
+            _data.Commit();
 
             return Success("Gebruiker verwijderd");
 
@@ -306,29 +281,19 @@ namespace InfoScreenPi.Controllers
                 DateCreated = DateTime.Now
             };
 
-            _userRepository.Add(user);
-            _userRepository.Commit();
+            _data.Add(user);
+            _data.Commit();
 
-            Role role;
-            if(admin) 
-            {
-                role = _roleRepository.GetAll().First(r => r.Name.Equals("Admin"));
-            }
-            else
-            {
-                role = _roleRepository.GetAll().First(r => r.Name.Equals("Redacteur"));
-            }
+            string roleName = admin? "Admin" : "Redacteur";
+            Role role = _data.GetSingle<Role>(r => r.Name.Equals(roleName));
 
             var userRole = new UserRole()
             {
                 RoleId = role.Id,
                 UserId = user.Id
             };
-            _userRoleRepository.Add(userRole);
-
-            _userRoleRepository.Commit();
-
-            _userRepository.Commit();
+            _data.Add(userRole);
+            _data.Commit();
 
             return Json(new {success = true, gebruiker= user});
         }
@@ -344,9 +309,9 @@ namespace InfoScreenPi.Controllers
         [HttpGet]
         public ActionResult GetSettings()
         {
-            List<Setting> model = _settingRepository.GetAll().ToList();
+            List<Setting> model = _data.GetAll<Setting>().ToList();
             List<User> gebruikers = _context.Set<User>().Include(x => x.UserRoles).ThenInclude(x => x.Role).ToList();
-            
+
             ViewBag.Users = gebruikers;
             return PartialView("~/Views/Config/Settings/Modify.cshtml", model);
         }
@@ -356,7 +321,7 @@ namespace InfoScreenPi.Controllers
         {
             foreach(var setting in parameters)
             {
-                _settingRepository.SetSettingByName(setting.Key, setting.Value);
+                _data.SetSettingByName(setting.Key, setting.Value);
             }
             return Success();
         }
@@ -366,11 +331,11 @@ namespace InfoScreenPi.Controllers
         public async Task<IActionResult> SaveProgSettings(string title, IFormFile logo)
         {
 
-            
+
             var logoRoot = Path.Combine(_hostEnvironment.WebRootPath, "images/logo");
             //string n = string.Format("vid-{0:yyyy-MM-dd_hh-mm-ss-tt}", DateTime.Now);
             //var fileName = n + "-" + video.FileName.Replace(" ", "-");
-            
+
             if (logo != null)
             {
                 if(logo.Length > 0){
@@ -380,15 +345,14 @@ namespace InfoScreenPi.Controllers
                     {
                         await logo.CopyToAsync(stream);
                     }
-                    
-                    _settingRepository.SetSettingByName("LogoUrl", fileName);
+
+                    _data.SetSettingByName("LogoUrl", fileName);
                 }
-                
+
             }
 
-            _settingRepository.SetSettingByName("Title", title);
-
-            _settingRepository.Commit();
+            _data.SetSettingByName("Title", title);
+            _data.Commit();
 
             return Success();
         }
@@ -397,7 +361,7 @@ namespace InfoScreenPi.Controllers
         [HttpPost]
         public IActionResult SetRefresh(Boolean status)
         {
-            _settingRepository.SetSettingByName("Refresh", status.ToString());
+            _data.SetSettingByName("Refresh", status.ToString());
             return Success("Het scherm zal refreshen binnen 15 seconden");
         }
 
@@ -405,7 +369,7 @@ namespace InfoScreenPi.Controllers
         [HttpGet]
         public IActionResult GetRefresh()
         {
-            Boolean RefreshStatus = Convert.ToBoolean(_settingRepository.GetSettingByName("Refresh"));
+            Boolean RefreshStatus = Convert.ToBoolean(_data.GetSettingByName("Refresh"));
             return Json(new {success = true, status = RefreshStatus, message="Gelukt"});
         }
     }

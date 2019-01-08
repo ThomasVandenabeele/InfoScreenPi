@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace InfoScreenPi.Entities
 {
-    public class User : Entity, IEntityBase
+    public class User : Entity
     {
         public User()
         {

@@ -7,54 +7,53 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace InfoScreenPi.Infrastructure.Repositories
+namespace InfoScreenPi.Infrastructure.Services
 {
-    public class EntityBaseRepository<T> : IEntityBaseRepository<T>
-            where T : class, IEntityBase, new()
+    public abstract class GenericDataService : IGenericDataService
     {
 
-        private InfoScreenContext _context;
+        protected InfoScreenContext _context;
 
-        public EntityBaseRepository(InfoScreenContext context)
+        public GenericDataService(InfoScreenContext context)
         {
             _context = context;
         }
-        private IQueryable<T> ConstructQuery(params Expression<Func<T, object>>[] includeProperties)
+        private IQueryable<T> ConstructQuery<T>(params Expression<Func<T, object>>[] includeProperties) where T : Entity
         {
           return includeProperties.Aggregate((IQueryable<T>)_context.Set<T>(),(q,p)=>q.Include(p));
         }
-        public IEnumerable<T> GetAll(Expression<Func<T,bool>> predicate, params Expression<Func<T, object>>[] includeProperties)
+        public IEnumerable<T> GetAll<T>(Expression<Func<T,bool>> predicate, params Expression<Func<T, object>>[] includeProperties) where T : Entity
         {
-            return ConstructQuery(includeProperties).Where(predicate).AsEnumerable();
+            return ConstructQuery<T>(includeProperties).Where(predicate).AsEnumerable();
         }
-        public IEnumerable<T> GetAll(params Expression<Func<T, object>>[] includeProperties)
+        public IEnumerable<T> GetAll<T>(params Expression<Func<T, object>>[] includeProperties) where T : Entity
         {
-            return ConstructQuery(includeProperties).AsEnumerable();
+            return ConstructQuery<T>(includeProperties).AsEnumerable();
         }
-        public T GetSingle(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includeProperties)
+        public T GetSingle<T>(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includeProperties) where T : Entity
         {
-            return ConstructQuery(includeProperties).FirstOrDefault(predicate);
+            return ConstructQuery<T>(includeProperties).FirstOrDefault(predicate);
         }
-        public T GetSingle(int id, params Expression<Func<T, object>>[] includeProperties)
+        public T GetSingle<T>(int id, params Expression<Func<T, object>>[] includeProperties) where T : Entity
         {
-            return GetSingle(x => x.Id == id, includeProperties);
+            return GetSingle<T>(x => x.Id == id, includeProperties);
         }
-        public async Task<T> GetSingleAsync(int id)
+        public async Task<T> GetSingleAsync<T>(int id) where T : Entity
         {
             return await _context.Set<T>().FirstOrDefaultAsync(e => e.Id == id);
         }
-        public void Add(T entity)
+        public void Add<T>(T entity) where T : Entity
         {
             EntityEntry dbEntityEntry = _context.Entry<T>(entity);
             _context.Set<T>().Add(entity);
         }
 
-        public void Edit(T entity)
+        public void Edit<T>(T entity) where T : Entity
         {
             EntityEntry dbEntityEntry = _context.Entry<T>(entity);
             dbEntityEntry.State = EntityState.Modified;
         }
-        public void Delete(T entity)
+        public void Delete<T>(T entity) where T : Entity
         {
             EntityEntry dbEntityEntry = _context.Entry<T>(entity);
             dbEntityEntry.State = EntityState.Deleted;
@@ -74,5 +73,10 @@ namespace InfoScreenPi.Infrastructure.Repositories
           task.Start();
           Commit();
         }
+
+
+
+
+
     }
 }

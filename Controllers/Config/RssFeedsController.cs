@@ -8,7 +8,6 @@ using InfoScreenPi.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using InfoScreenPi.ViewModels;
 using InfoScreenPi.Infrastructure.Services;
-using InfoScreenPi.Infrastructure.Repositories;
 using InfoScreenPi.Infrastructure.Core;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -28,33 +27,31 @@ namespace InfoScreenPi.Controllers
     [Route("Config/[controller]/[action]")]
     public class RssFeedsController : BaseController
     {
-        private readonly IBackgroundRepository _backgroundRepository;
-        private readonly IRssFeedRepository _rssFeedRepository;
+        private readonly IRSSService _rss;
 
-        public RssFeedsController(IBackgroundRepository backgroundRepository,
-                                  IRssFeedRepository rssFeedRepository)
+        public RssFeedsController(IDataService dataService, IRSSService rssService)
+        : base(dataService, null)
         {
-            _backgroundRepository = backgroundRepository;
-            _rssFeedRepository = rssFeedRepository;
+            _rss = rssService;
         }
 
         [HttpGet]
         public IActionResult CreateRssFeed(){
-            return PartialView("~/Views/Config/RSS/CreateRssFeed.cshtml", _backgroundRepository.GetAllWithoutRSS(true).ToList());
+            return PartialView("~/Views/Config/RSS/CreateRssFeed.cshtml", _data.GetAllBackgroundsWithoutRSS(true).ToList());
         }
 
         [HttpPost]
         public async Task<ActionResult> ChangeRssFeedState(int id, bool state)
         {
-            RssFeed rf = _rssFeedRepository.GetSingle(id);
+            RssFeed rf = _data.GetSingle<RssFeed>(id);
             if (rf != null)
             {
                 rf.Active = state;
-                _rssFeedRepository.Edit(rf);
-                _rssFeedRepository.Commit();
+                _data.Edit(rf);
+                _data.Commit();
 
-                _rssFeedRepository.DeleteRssFeedItems(id);
-                if(state) await _rssFeedRepository.ExtractRssItems(id);
+                _rss.DeleteRssFeedItems(id);
+                if(state) await _rss.ExtractRssItems(id);
                 return Success(state? "Abonnement status verandert naar actief!" : "Abonnement status verandert naar inactief!");
             }
             return Fail();
@@ -64,13 +61,12 @@ namespace InfoScreenPi.Controllers
         public async Task<IActionResult> RegisterRss(string uri, int bgId){
             try
             {
-                if(_rssFeedRepository.GetAll().Where(r => r.Url == uri).Count() > 0 ) return Json(new {success = false, message = "RSS abonnement bestaat al"});
+                if(_data.GetAll<RssFeed>(r => r.Url == uri).Count() > 0 ) return Fail("RSS abonnement bestaat al");
 
-                await _rssFeedRepository.RegisterRss(uri, bgId);
-                await _rssFeedRepository.ExtractRssItems(_rssFeedRepository.GetAll().Where(r => r.Url == uri).Last().Id);
+                await _rss.RegisterRss(uri, bgId);
+                await _rss.ExtractRssItems(_data.GetAll<RssFeed>(r => r.Url == uri).Last().Id);
 
                 return Success("RSS abonnement geregistreerd");
-
             }
             catch (Exception e)
             {
@@ -81,7 +77,7 @@ namespace InfoScreenPi.Controllers
         public IActionResult DeleteRssFeed(int id){
             try
             {
-                _rssFeedRepository.DeleteRssFeed(id);
+                _rss.DeleteRssFeed(id);
                 return Success("RSS abonnement verwijderd");
             }
             catch(Exception e)
@@ -91,18 +87,14 @@ namespace InfoScreenPi.Controllers
         }
 
          public async Task<IActionResult> RenewRssFeeds(){
-             if (_rssFeedRepository.RenewActiveRssFeeds().Result) return Success("Rss Feeds vernieuwd");
+             if (await _rss.RenewActiveRssFeeds()) return Success("Rss Feeds vernieuwd");
              else return Fail("Geen Rss Feeds actief");
          }
-
 
         [HttpGet]
         public ActionResult Table()
         {
-            return PartialView("~/Views/Config/RSS/Table.cshtml", _rssFeedRepository.GetAll(r => r.StandardBackground).ToList());
+            return PartialView("~/Views/Config/RSS/Table.cshtml", _data.GetAll<RssFeed>(r => r.StandardBackground).ToList());
         }
-
-
-
     }
 }

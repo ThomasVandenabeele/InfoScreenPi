@@ -1,9 +1,8 @@
 
 namespace InfoScreenPi.Entities
 {
-    public class Background : IEntityBase
+    public class Background : Entity
     {
-        public int Id { get; set; }
         public string Url { get; set; }
     }
 }

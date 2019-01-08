@@ -7,20 +7,15 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using InfoScreenPi.Extensions;
 
-namespace InfoScreenPi.Infrastructure.Repositories
+namespace InfoScreenPi.Infrastructure.Services
 {
-    public class RssFeedRepository : EntityBaseRepository<RssFeed>, IRssFeedRepository
+    public class RSSService : IRSSService
     {
-        IItemRepository _itemRepository;
-        IBackgroundRepository _backgroundRepository;
-        IItemKindRepository _itemKindRepository;
+        private readonly IGenericDataService _data;
 
-        public RssFeedRepository(InfoScreenContext context, IItemRepository itemRepository, IBackgroundRepository backgroundRepository, IItemKindRepository itemKindRepository)
-            : base(context)
+        public RSSService(IDataService dataService)
         {
-            _itemRepository = itemRepository;
-            _backgroundRepository = backgroundRepository;
-            _itemKindRepository = itemKindRepository;
+            _data = dataService;
         }
 
         public async Task RegisterRss(string uri, int bgId)
@@ -30,74 +25,65 @@ namespace InfoScreenPi.Infrastructure.Repositories
             if (rssString != null)
             {
                 string source = Guid.NewGuid().ToString();
-                _itemKindRepository.Add(
+                _data.Add(
                     new ItemKind
                     {
                         Description = "RSS",
                         Source = source
                     }
                 );
-                _itemKindRepository.Commit();
-
-                Add(
+                _data.Add(
                     new RssFeed
                     {
                         Active = true,
                         Url = uri,
-                        StandardBackground = _backgroundRepository.GetSingle(bgId),
+                        StandardBackground = _data.GetSingle<Background>(bgId),
                         Source = source,
                         PublicationDate = rssString.Root.Descendants("channel").Elements("pubDate").First().Value
                             .ParseDate(),
                         Title = rssString.Root.Descendants("channel").Elements("title").First().Value,
                         Description = rssString.Root.Descendants("channel").Elements("description").First().Value
                     });
-                Commit();
+                _data.Commit();
             }
         }
 
-        public async Task DeleteRssFeed(int rssFeedId)
+        public void DeleteRssFeed(int rssFeedId)
         {
-            RssFeed rf = GetSingle(rssFeedId);
+            RssFeed rf = _data.GetSingle<RssFeed>(rssFeedId);
 
-            ItemKind ik = _itemKindRepository.GetAll().Where(i => i.Description == "RSS" && i.Source == rf.Source).First();
+            ItemKind ik = _data.GetSingle<ItemKind>(i => i.Description == "RSS" && i.Source == rf.Source);
 
             DeleteRssFeedItems(rssFeedId);
 
-            _itemKindRepository.Delete(ik);
-            _itemKindRepository.Commit();
-
-            Delete(rf);
-            Commit();
+            _data.Delete(ik);
+            _data.Delete(rf);
+            _data.Commit();
         }
 
         public void DeleteRssFeedItems(int rssFeedId){
-            RssFeed rssFeed = GetAll(rss => rss.StandardBackground).Where(rss => rss.Id == rssFeedId).First();
+            RssFeed rssFeed = _data.GetSingle<RssFeed>(rss => rss.Id == rssFeedId, rss => rss.StandardBackground);
 
-            _itemRepository.GetAll(a => a.Background, a => a.Soort)
+            _data.GetAll<Item>(a => a.Background, a => a.Soort)
                     .Where(i => (i.Soort.Source == rssFeed.Source && i.Soort.Description == "RSS"))
                     .ToList()
                     .ForEach(i =>
                     {
-                        if(i.Background != rssFeed.StandardBackground){
-                            _backgroundRepository.Delete(i.Background);
-                            _backgroundRepository.Commit();
-                        }
-
-                        _itemRepository.Delete(i);
-                        _itemRepository.Commit();
+                        if(i.Background != rssFeed.StandardBackground) _data.Delete(i.Background);
+                        _data.Delete(i);
+                        _data.Commit();
                     });
-
         }
 
         public async Task<bool> RenewActiveRssFeeds()
         {
-            List<int> activeRssfeeds = GetAll().Where(r => r.Active).Select(r => r.Id).ToList();
+            List<int> activeRssfeeds = _data.GetAll<RssFeed>(r => r.Active).Select(r => r.Id).ToList();
             foreach(var feed in activeRssfeeds) await ExtractRssItems(feed);
             return activeRssfeeds.Count > 0;
         }
 
         public async Task ExtractRssItems(int rssFeedId){
-            RssFeed rssFeed = GetAll(rss => rss.StandardBackground).Where(rss => rss.Id == rssFeedId).First();
+            RssFeed rssFeed = _data.GetSingle<RssFeed>(rss => rss.Id == rssFeedId, rss => rss.StandardBackground);
 
             string feedUrl = rssFeed.Url;
             XDocument doc = await RssToXDocument(feedUrl);
@@ -109,13 +95,13 @@ namespace InfoScreenPi.Infrastructure.Repositories
 
                 DateTime pubDate = doc.Root.Descendants("channel").Elements("pubDate").First().Value.ParseDate();//doc.Root.Descendants().First(i => i.Name.LocalName == "channel").Elements().First(i => i.Name.LocalName == "pubDate").Value);
 
-                ItemKind soort = _itemKindRepository.GetAll().Where(ik => (ik.Description == "RSS" && ik.Source == rssFeed.Source)).First();
+                ItemKind soort = _data.GetSingle<ItemKind>(ik => (ik.Description == "RSS" && ik.Source == rssFeed.Source));
 
                 if(pubDate >= rssFeed.PublicationDate){
 
                     rssFeed.PublicationDate = pubDate;
-                    Edit(rssFeed);
-                    Commit();
+                    _data.Edit(rssFeed);
+                    _data.Commit();
 
                     DeleteRssFeedItems(rssFeedId);
 
@@ -134,7 +120,7 @@ namespace InfoScreenPi.Infrastructure.Repositories
                             }
 
 
-                            _itemRepository.Add(
+                            _data.Add(
                                 new Item
                                 {
                                     RssFeed = rssFeed,
@@ -147,7 +133,7 @@ namespace InfoScreenPi.Infrastructure.Repositories
                                     ExpireDateTime = DateTime.Now.AddDays(1)
                                 }
                             );
-                            _itemRepository.Commit();
+                            _data.Commit();
 
                         }
                     );

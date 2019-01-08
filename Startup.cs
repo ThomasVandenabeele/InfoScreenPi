@@ -11,7 +11,6 @@ using System;
 
 using InfoScreenPi;
 using InfoScreenPi.Hubs;
-using InfoScreenPi.Infrastructure.Repositories;
 using InfoScreenPi.Infrastructure.Services;
 
 using InfoScreenPi.Infrastructure;
@@ -46,20 +45,11 @@ namespace InfoScreenPi
 
             services.AddDbContext<InfoScreenContext>(options => options.UseSqlite("Data Source=db/InfoScreenDB.db"));
 
-            // Repositories
-            services.AddScoped<IItemRepository, ItemRepository>();
-            services.AddScoped<IItemKindRepository, ItemKindRepository>();
-            services.AddScoped<IBackgroundRepository, BackgroundRepository>();
-            services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped<IUserRoleRepository, UserRoleRepository>();
-            services.AddScoped<IRoleRepository, RoleRepository>();
-            services.AddScoped<ILoggingRepository, LoggingRepository>();
-            services.AddScoped<IRssFeedRepository, RssFeedRepository>();
-            services.AddScoped<ISettingRepository, SettingRepository>();
- 
             // Services
+            services.AddScoped<IDataService, DataService>();
             services.AddScoped<IMembershipService, MembershipService>();
             services.AddScoped<IEncryptionService, EncryptionService>();
+            services.AddScoped<IRSSService, RSSService>();
 
             services.AddDataProtection();
             //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -78,7 +68,7 @@ namespace InfoScreenPi
                 {
                     policy.RequireRole("Admin");
                 });
- 
+
             });
 
             // services.AddSession(/* options go here */);
@@ -88,7 +78,7 @@ namespace InfoScreenPi
 
             services.AddHostedService<RefreshRSSTimedHostedService>();
             services.AddHostedService<CheckItemStateTimedHostedService>();
-            
+
             services.Configure<FormOptions>(x => x.MultipartBodyLengthLimit = 1_074_790_400);
         }
 
@@ -117,7 +107,7 @@ namespace InfoScreenPi
             app.UseCookiePolicy();
 
             app.UseAuthentication();
-            
+
             app.UseSession();
 
             app.UseSignalR(routes =>
@@ -131,7 +121,7 @@ namespace InfoScreenPi
                     name: "default",
                     template: "{controller=Config}/{action=Index}/{id?}");
             });
-            
+
         }
     }
 }

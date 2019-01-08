@@ -2,7 +2,7 @@ using System;
 
 namespace InfoScreenPi.Entities
 {
-    public class RssFeed : Entity, IEntityBase
+    public class RssFeed : Entity
     {
         public string Title { get; set; }
         public string Description { get; set; }

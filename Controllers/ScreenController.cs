@@ -4,28 +4,18 @@ using System.Linq;
 using InfoScreenPi.Entities;
 using InfoScreenPi.ViewModels;
 using InfoScreenPi.Infrastructure;
+using InfoScreenPi.Infrastructure.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using InfoScreenPi.Extensions;
-using InfoScreenPi.Infrastructure.Repositories;
 
 namespace InfoScreenPi.Controllers
 {
     public class ScreenController : BaseController
     {
-        private readonly IHostingEnvironment _hostEnvironment;
-        private readonly ISettingRepository _settingRepository;
-        private readonly IItemRepository _itemRepository;
-
-        public ScreenController(IHostingEnvironment hostEnvironment,
-                                ISettingRepository settingRepository,
-                                IItemRepository itemRepository)
-        {
-            _hostEnvironment = hostEnvironment;
-            _settingRepository = settingRepository;
-            _itemRepository = itemRepository;
-        }
+        public ScreenController(IHostingEnvironment hostEnvironment, IDataService dataService)
+        : base(dataService, hostEnvironment){}
 
         public IActionResult Index()
         {
@@ -41,8 +31,8 @@ namespace InfoScreenPi.Controllers
                             .Where(i => i.Active == true && i.Archieved == false).ToList<Item>()
                             .Select(item => new ItemViewModel(item)).ToList<ItemViewModel>();*/
 
-            List<Item> lijstRss = _itemRepository.GetAllActiveRSSItems().ToList();
-            List<Item> lijstCustom = _itemRepository.GetAllActiveCustomItems().ToList();
+            List<Item> lijstRss = _data.GetAllActiveRSSItems().ToList();
+            List<Item> lijstCustom = _data.GetAllActiveCustomItems().ToList();
             List<Item> lijstCustomOld = lijstCustom;
 
             double deling = (double)lijstRss.Count()/(double)lijstCustom.Count();
@@ -69,13 +59,13 @@ namespace InfoScreenPi.Controllers
             List<ItemViewModel> model = lijst.Select(item => new ItemViewModel(item)).ToList<ItemViewModel>();
 
             //Instellingen
-            ViewBag.SlideTime = _settingRepository.GetSettingByName("SlideTime");
-            ViewBag.TickerTime = _settingRepository.GetSettingByName("TickerTime");
-            ViewBag.TickerEffect = _settingRepository.GetSettingByName("TickerEffect");
-            ViewBag.ShowClock = Convert.ToBoolean(_settingRepository.GetSettingByName("ShowClock"));
-            ViewBag.ShowTicker = Convert.ToBoolean(_settingRepository.GetSettingByName("ShowTicker"));
-            ViewBag.ShowWeather = Convert.ToBoolean(_settingRepository.GetSettingByName("ShowWeather"));
-            ViewBag.WeatherLocation = _settingRepository.GetSettingByName("WeatherLocation");
+            ViewBag.SlideTime = _data.GetSettingByName("SlideTime");
+            ViewBag.TickerTime = _data.GetSettingByName("TickerTime");
+            ViewBag.TickerEffect = _data.GetSettingByName("TickerEffect");
+            ViewBag.ShowClock = Convert.ToBoolean(_data.GetSettingByName("ShowClock"));
+            ViewBag.ShowTicker = Convert.ToBoolean(_data.GetSettingByName("ShowTicker"));
+            ViewBag.ShowWeather = Convert.ToBoolean(_data.GetSettingByName("ShowWeather"));
+            ViewBag.WeatherLocation = _data.GetSettingByName("WeatherLocation");
 
 
             return View(model);
