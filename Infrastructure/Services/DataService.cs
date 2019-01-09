@@ -15,14 +15,17 @@ namespace InfoScreenPi.Infrastructure.Services
     public DataService(InfoScreenContext context) : base(context)
     {}
 
-    public IEnumerable<Background> GetAllBackgroundsWithoutRSS(bool archieved)
+    public IEnumerable<Background> GetBackgroundsNoRSS(bool archieved)
     {
-      List<Background> exclAchtergronden = GetAll<Item>(i => (i.Soort.Description == "RSS") || archieved? false : (i.Archieved),
+      List<Background> exclAchtergronden = GetAll<Item>(i => i.Soort.Description == "RSS"  || (archieved? false : i.Archieved),
                                                         i => i.Background, i => i.Soort)
-                                          .Select(i => i.Background).ToList();
+                                           .Select(i => i.Background).ToList();
       return GetAll<Background>(a => !exclAchtergronden.Contains(a) && !a.Url.Equals("black.jpg"));
     }
-
+    public IEnumerable<Item> GetItemsNoRss(bool archived)
+    {
+      return GetAll<Item>(i => i.Soort.Description != "RSS" && i.Archieved == archived, a => a.Background, a => a.Soort);
+    }
     public IEnumerable<Item> GetAllCustomItems()
     {
         return GetAll<Item>(i => (i.Soort.Description == "CUSTOM" || i.Soort.Description == "VIDEO"),

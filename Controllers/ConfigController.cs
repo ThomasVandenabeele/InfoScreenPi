@@ -43,9 +43,9 @@ namespace InfoScreenPi.Controllers
         public IActionResult Index()
         {
             if(HttpContext.Session.GetString("Username") != null) ViewBag.Username = HttpContext.Session.GetString("Username");
-            ViewBag.ActiveItems = _data.GetAll<Item>(a => a.Background, a => a.Soort).Where(i => i.Soort.Description != "RSS" && i.Archieved == false).ToList();
+            ViewBag.ActiveItems = _data.GetItemsNoRss(false).ToList();
             ViewBag.TickerItems = new List<string>(System.IO.File.ReadAllLines(_hostEnvironment.WebRootPath + "/data/ticker.txt"));
-            ViewBag.Backgrounds = _data.GetAllBackgroundsWithoutRSS(false).ToList();
+            ViewBag.Backgrounds = _data.GetBackgroundsNoRSS(false).ToList();
             ViewBag.RssAbo = _data.GetAll<RssFeed>(r => r.StandardBackground).ToList();
             ViewBag.Logo = _data.GetSettingByName("LogoUrl");
             ViewBag.TitleProg = _data.GetSettingByName("Title");

@@ -35,12 +35,12 @@ namespace InfoScreenPi.Controllers
 
         [HttpGet]
         public IActionResult Grid(){
-            return PartialView("~/Views/Config/Backgrounds/Grid.cshtml", _data.GetAllBackgroundsWithoutRSS(false).Where(b => !b.Url.Equals("black.jpg")).ToList());
+            return PartialView("~/Views/Config/Backgrounds/Grid.cshtml", _data.GetBackgroundsNoRSS(false).Where(b => !b.Url.Equals("black.jpg")).ToList());
         }
 
         [HttpGet]
         public IActionResult SelectionGrid(){
-            return PartialView("~/Views/Config/Backgrounds/SelectionGrid.cshtml", _data.GetAllBackgroundsWithoutRSS(true).ToList());
+            return PartialView("~/Views/Config/Backgrounds/SelectionGrid.cshtml", _data.GetBackgroundsNoRSS(true).ToList());
         }
         [HttpPost]
         public async Task<ActionResult> FileUpload(IFormFile file)
@@ -133,9 +133,8 @@ namespace InfoScreenPi.Controllers
         public IActionResult Delete(int id)
         {
             var b = _data.GetSingle<Background>(id);
-            var aantal =  _data.GetAll<Background>().ToList();
 
-            if(!_data.GetAllCustomItems().Select(i => i.Background).ToList().Contains(b))
+            if(!_data.GetAllCustomItems().Select(i => i.Background).Contains(b))
             {
                 var imageRoot = Path.Combine(_hostEnvironment.WebRootPath, "images/backgrounds");
                 FileInfo file = new FileInfo(imageRoot + "/" + b.Url);

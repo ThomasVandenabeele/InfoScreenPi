@@ -54,21 +54,19 @@ namespace InfoScreenPi.Controllers
         [HttpGet]
         public ActionResult ItemsArchive()
         {
-            List<Item> model = _data.GetAll<Item>(i => i.Soort.Description != "RSS" && i.Archieved == true, a => a.Background, a => a.Soort).ToList();
-            return PartialView("~/Views/Config/Items/Archive.cshtml", model);
+            return PartialView("~/Views/Config/Items/Archive.cshtml", _data.GetItemsNoRss(true).ToList());
         }
 
         [HttpGet]
         public ActionResult Table()
         {
-            List<Item> model = _data.GetAll<Item>(i => i.Soort.Description != "RSS" && i.Archieved == false, a => a.Background, a => a.Soort).ToList();
-            return PartialView("~/Views/Config/Items/Table.cshtml", model);
+            return PartialView("~/Views/Config/Items/Table.cshtml", _data.GetItemsNoRss(false).ToList());
         }
 
         [HttpGet]
         public ActionResult CreateItem()
         {
-            List<Background> model = _data.GetAllBackgroundsWithoutRSS(true).Where(b => !b.Url.Equals("black.jpg")).ToList();
+            List<Background> model = _data.GetBackgroundsNoRSS(true).Where(b => !b.Url.Equals("black.jpg")).ToList();
             return PartialView("~/Views/Config/Items/CreateItem.cshtml", model);
         }
 
@@ -96,7 +94,7 @@ namespace InfoScreenPi.Controllers
         [HttpGet]
         public ActionResult Edit(int id)
         {
-            ViewBag.SelectionGrid = (List<Background>) _data.GetAllBackgroundsWithoutRSS(true).ToList();
+            ViewBag.SelectionGrid = (List<Background>) _data.GetBackgroundsNoRSS(true).ToList();
             Item model = _data.GetSingle<Item>(id, i => i.Background);
             return PartialView("~/Views/Config/Items/EditItem.cshtml", model);
         }

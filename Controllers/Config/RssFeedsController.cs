@@ -37,7 +37,7 @@ namespace InfoScreenPi.Controllers
 
         [HttpGet]
         public IActionResult CreateRssFeed(){
-            return PartialView("~/Views/Config/RSS/CreateRssFeed.cshtml", _data.GetAllBackgroundsWithoutRSS(true).ToList());
+            return PartialView("~/Views/Config/RSS/CreateRssFeed.cshtml", _data.GetBackgroundsNoRSS(true).ToList());
         }
 
         [HttpPost]
