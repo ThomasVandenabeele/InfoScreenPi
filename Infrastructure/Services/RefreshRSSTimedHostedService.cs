@@ -17,14 +17,14 @@ namespace InfoScreenPi.Infrastructure.Services
     {
 
         private readonly IServiceScopeFactory _scopeFactory;
-        private IHubContext<WebSocketHub, IWebSocketHub> _hubContext;
+        private IHubContext<WebSocketHub, IWebSocketClient> _hubContext;
         private readonly ILogger _logger;
         private Timer _timer;
 
 
         public RefreshRSSTimedHostedService(
-                ILogger<RefreshRSSTimedHostedService> logger,
-                IHubContext<WebSocketHub, IWebSocketHub> hubContext,
+                ILogger<RefreshRSSTimedHostedService> logger, 
+                IHubContext<WebSocketHub, IWebSocketClient> hubContext,
                 IServiceScopeFactory scopeFactory
             )
         {
@@ -64,11 +64,14 @@ namespace InfoScreenPi.Infrastructure.Services
                     s.SettingValue = false.ToString();
                     EntityEntry dbEnt = _context.Entry(s);
                     dbEnt.State = EntityState.Modified;
+            
+                    //Item test = _context.Items.Include(i => i.Background).Include(i => i.RssFeed).First(i => i.Current == true);
 
                     _context.SaveChanges();
-
+                    
                     await _hubContext.Clients.All.RefreshScreens();
-
+                    //await _hubContext.Clients.All.BroadcastSlide("ikke", test);
+                    //_hubContext.Clients.All.SendAsync("RefreshScreens")
                 }
             }
 

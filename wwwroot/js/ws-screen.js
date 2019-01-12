@@ -11,7 +11,11 @@ connection.on("ReceiveMessage", function (user, message) {
 });
 connection.on("RefreshScreens", function () {
     console.log("on refresh");
-    location.reload();
+    //location.reload();
+});
+connection.on("BroadcastSlide", function(currentSlide){
+    console.log("new slide ontvangen");
+    console.log(currentSlide);
 });
 
 connection.start().catch(function (err) {

@@ -84,7 +84,8 @@ namespace InfoScreenPi.Controllers
                     Background = achtergrond,
                     Active = true,
                     Archieved = false,
-                    ExpireDateTime = DateTime.Parse(expireDateTime)
+                    ExpireDateTime = DateTime.Parse(expireDateTime),
+                    DisplayTime = 20
                 }
             );
             _data.Commit();
@@ -165,7 +166,8 @@ namespace InfoScreenPi.Controllers
                     Background = achtergrond,
                     Active = true,
                     Archieved = false,
-                    ExpireDateTime = DateTime.Parse(expireDateTime)
+                    ExpireDateTime = DateTime.Parse(expireDateTime),
+                    DisplayTime = 15
                 }
             );
             _data.Commit();
