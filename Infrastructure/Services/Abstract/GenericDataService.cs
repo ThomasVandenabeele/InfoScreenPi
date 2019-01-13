@@ -20,7 +20,7 @@ namespace InfoScreenPi.Infrastructure.Services
         }
         private IQueryable<T> ConstructQuery<T>(params Expression<Func<T, object>>[] includeProperties) where T : Entity
         {
-          return includeProperties.Aggregate((IQueryable<T>)_context.Set<T>(),(q,p)=>q.Include(p));
+          return includeProperties.Aggregate((IQueryable<T>)_context.Set<T>(),(q,p)=>q.Include(p));//.AsNoTracking();
         }
         public IEnumerable<T> GetAll<T>(Expression<Func<T,bool>> predicate, params Expression<Func<T, object>>[] includeProperties) where T : Entity
         {
@@ -46,17 +46,20 @@ namespace InfoScreenPi.Infrastructure.Services
         {
             EntityEntry dbEntityEntry = _context.Entry<T>(entity);
             _context.Set<T>().Add(entity);
+            //_context.SaveChanges();
         }
 
         public void Edit<T>(T entity) where T : Entity
         {
             EntityEntry dbEntityEntry = _context.Entry<T>(entity);
             dbEntityEntry.State = EntityState.Modified;
+            //_context.SaveChanges();
         }
         public void Delete<T>(T entity) where T : Entity
         {
             EntityEntry dbEntityEntry = _context.Entry<T>(entity);
             dbEntityEntry.State = EntityState.Deleted;
+            //_context.SaveChanges();
         }
 
         public void Commit()

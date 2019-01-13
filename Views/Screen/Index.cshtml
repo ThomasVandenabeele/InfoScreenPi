@@ -1,6 +1,6 @@
 @using InfoScreenPi.Entities
 @using InfoScreenPi.ViewModels
-@model IEnumerable<ItemViewModel>
+@* @model IEnumerable<ItemViewModel> *@
 @{
     Layout = null;
     int index = 0;
@@ -40,55 +40,16 @@
     <div class="loader"></div>
 
     <!-- Full Page Image Background Carousel Header -->
-    <div id="myCarousel" class="carousel slide">
+    <div id="screenSlider" class="carousel slide">
 
         <!-- Wrapper for Slides -->
         <div class="carousel-inner">
-            @{
-                foreach(ItemViewModel item in Model){
-                    string url = "";
-                    if(item.BackgroundUrl.StartsWith("http://") || item.BackgroundUrl.StartsWith("https://"))
-                    {
-                        url = item.BackgroundUrl;
-                    }
-                    else
-                    {
-                        url = "images/backgrounds/" + item.BackgroundUrl;
-                    }
-                    string active = "";
-                    if (index == 0) {active = "active";}
-                    if(item.KindDescription == "CUSTOM"){
-                        <div class="item @active">
-                            <div class="fill" style="background-image:url('@url')"></div>
-                            <div class="carousel-caption customlayout">
-                                @Html.Raw(item.Content)
-                            </div>
-                        </div>
-                    }
-                    else if (item.KindDescription == "VIDEO")
-                    {
-                        <div class="item @active">
-                            <video autoplay loop width="1920" height="1080">
-                                <source src="videos/@item.Content" type="video/mp4"/>
-                                Your browser does not support the video tag.
-                            </video>
-                        </div>
-                    }
-                    else{
-                        <div class="item @active">
-                            <div class="fill" style="background-image:url('@url')"></div>
-                            <div class="carousel-caption" style="font-weight: 900;">
-                                <div style="display:flex;flex-direction: column;justify-content:center;align-items:center;width:930px;height:450px;">
-                                    <h2 style="font-weight: 900;">@Html.Raw(item.Title)</h2>
-                                    <p>@Html.Raw(item.Content)</p>
-                                </div>
-                            <div class="test"><b>BRON:</b> @item.RssSource</div>
-                            </div>
-                        </div>
-                    }
-                    index++;
-                }
-            }
+            <div class="item active" >
+                
+            </div>
+            <div class="item">
+                
+            </div>
         </div>
 
     </div>
@@ -138,7 +99,7 @@
     <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.3.min.js"
                 asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
                 asp-fallback-test="window.jQuery">
-        </script>
+    </script>
         <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.6/bootstrap.min.js"
                 asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
                 asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal">
@@ -150,121 +111,130 @@
 
     <!-- Script to Activate the Carousel -->
     <script type="text/javascript">
-
+        var firstItemReceived = false;
+        function checkFlag() {
+            if(firstItemReceived === false) {
+                window.setTimeout(checkFlag, 100); /* this checks the flag every 100 milliseconds*/
+            } else {
+                $(".loader").fadeOut("slow");
+            }
+        }
         $(window).load(function() {
-            $(".loader").fadeOut("slow");
+
+            checkFlag();
+            //$(".loader").fadeOut("slow");
         })
 
-    $(document).ready(function()
-    {
+        $(document).ready(function()
+        {
     
-        /*
-        var ajax_call = function() {
-            //console.log("check refresh:");
-           $.get("/Config/GetRefresh", function (response, textStatus, jqXHR) {
-                if(response.success){
-                    //console.log(response.status);
-                    if(response.status == true){
-                        var postData = { status: false };
-                        $.ajax({
-                            type: "POST",
-                            url: '/Config/SetRefresh',
-                            data: postData,
-                            success: function(response, textStatus, jqXHR){
-                                //console.log(response);
-                                if(response.success){
-                                    location.reload();
-                                }
-                            },
-                            dataType: "json",
-                            traditional: true
-                        });
+            /*
+            var ajax_call = function() {
+                //console.log("check refresh:");
+               $.get("/Config/GetRefresh", function (response, textStatus, jqXHR) {
+                    if(response.success){
+                        //console.log(response.status);
+                        if(response.status == true){
+                            var postData = { status: false };
+                            $.ajax({
+                                type: "POST",
+                                url: '/Config/SetRefresh',
+                                data: postData,
+                                success: function(response, textStatus, jqXHR){
+                                    //console.log(response);
+                                    if(response.success){
+                                        location.reload();
+                                    }
+                                },
+                                dataType: "json",
+                                traditional: true
+                            });
+                        }
                     }
-                }
-            });
-
-        };
-
-        setInterval(ajax_call, 15000);
-        */
+                });
+    
+            };
+    
+            setInterval(ajax_call, 15000);
+            */
         
-        /*
-        var refreshRss = function() {
-            $.get("/Config/RssFeeds/RenewRssFeeds", function (response) {
-                //alertify.success(response.message);
-                location.reload();
-            });
+            /*
+            var refreshRss = function() {
+                $.get("/Config/RssFeeds/RenewRssFeeds", function (response) {
+                    //alertify.success(response.message);
+                    location.reload();
+                });
+    
+            };
+    
+            setInterval(refreshRss, 60000*30);
+            */
 
-        };
+            function getWeather() {
+                $('.weather-temperature').openWeather({
+                    key: '97c37a2e1a695328beacb54db1735880',
+                    city: '@ViewBag.WeatherLocation',
+                    lang: 'nl',
+                    iconTarget: '.weather-icon',
+                    descriptionTarget: '.weather-description'
+                });
+            }
+        
+            getWeather(); //Get the initial weather.
+            setInterval(getWeather, 600000); //Update the weather every 10 minutes.
 
-        setInterval(refreshRss, 60000*30);
-        */
+    
+        });
 
-        function getWeather() {
-            $('.weather-temperature').openWeather({
-                key: '97c37a2e1a695328beacb54db1735880',
-                city: '@ViewBag.WeatherLocation',
-                lang: 'nl',
-                iconTarget: '.weather-icon',
-                descriptionTarget: '.weather-description'
-            });
+        var sign = "&nbsp;";
+        function startTime() {
+            var today = new Date();
+            var h = today.getHours();
+            var m = today.getMinutes();
+            var s = today.getSeconds();
+            m = checkTime(m);
+            s = checkTime(s);
+            if(sign == "&nbsp;") sign = ":";
+            else sign = "&nbsp;";
+            document.getElementById('clock').innerHTML =
+                h + sign + m;
+            var t = setTimeout(startTime, 1000);
         }
-        
-        getWeather(); //Get the initial weather.
-        setInterval(getWeather, 600000); //Update the weather every 10 minutes.
+        function checkTime(i) {
+            if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
+            return i;
+        }
 
-    
-    });
-
-    var sign = "&nbsp;";
-	function startTime() {
-	    var today = new Date();
-	    var h = today.getHours();
-	    var m = today.getMinutes();
-	    var s = today.getSeconds();
-	    m = checkTime(m);
-	    s = checkTime(s);
-	    if(sign == "&nbsp;") sign = ":";
-	    else sign = "&nbsp;";
-	    document.getElementById('clock').innerHTML =
-	    h + sign + m;
-	    var t = setTimeout(startTime, 1000);
-	}
-	function checkTime(i) {
-	    if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
-	    return i;
-	}
-
-	$(document).ready(function() {
-	    $('.ticker').inewsticker({
-			speed       : @ViewBag.TickerTime,
-			effect      : '@ViewBag.TickerEffect',
-			dir         : 'ltr',
-			color       : '#fff',
-			font_family : 'arial',
-			delay_after : 1000		
-		});
-	});
-
-
-    </script>
-    <script type="text/javascript">
-    
-        var $ = jQuery.noConflict();
-        $(document).ready(function() { 
-            $('#myCarousel').carousel({ 
-                interval: parseInt(@ViewBag.SlideTime), 
-                cycle: true,
-                pause: "false" 
+        $(document).ready(function() {
+            $('.ticker').inewsticker({
+                speed       : @ViewBag.TickerTime,
+                effect      : '@ViewBag.TickerEffect',
+                dir         : 'ltr',
+                color       : '#fff',
+                font_family : 'arial',
+                delay_after : 1000		
             });
-        }); 
+        });
 
-        //$('.carousel').carousel('next');
-        //document.getElementById("#myCarousel").focus();
-        
-        //document.body.style.cursor = 'none';
-    
+
     </script>
+<script type="text/javascript">
+    
+    var $ = jQuery.noConflict();
+    $(document).ready(function() { 
+        $('#screenSlider').carousel({ 
+            interval: parseInt(@ViewBag.SlideTime)
+        });
+            
+        $('#screenSlider').carousel('pause');
+    }); 
+        
+        
+    //document.getElementById("#myCarousel").focus();
+        
+    //document.body.style.cursor = 'none';
+
+</script>
 
     <script src="~/lib/signalr/dist/browser/signalr.js"></script>
     <script src="~/js/ws-screen.js"></script>

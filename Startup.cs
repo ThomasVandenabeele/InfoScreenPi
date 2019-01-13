@@ -76,8 +76,8 @@ namespace InfoScreenPi
 
             services.AddSignalR();
 
-            services.AddHostedService<RefreshRSSTimedHostedService>();
-            services.AddHostedService<CheckItemStateTimedHostedService>();
+            //services.AddHostedService<RefreshRSSTimedHostedService>();
+            //services.AddHostedService<CheckItemStateTimedHostedService>();
             //services.AddHostedService<ScreenTimedHostedService>();
             services.AddHostedService<ScreenBackgroundService>();
             services.Configure<FormOptions>(x => x.MultipartBodyLengthLimit = 1_074_790_400);

@@ -64,7 +64,7 @@
         if ((file = this.files[0])) {
             var vidUrl = URL.createObjectURL(file);
             var video = $('<video />', {
-                id: 'video',
+                id: 'videoPrev',
                 src: vidUrl,
                 type: 'video/mp4',
                 controls: true,
@@ -97,6 +97,7 @@
         data.append('video', frm.find("#f_UploadVideo")[0].files[0]);
         data.append('itemTitle', frm.find("#ItemTitle").val());
         data.append('expireDateTime', frm.find("#expireDateTime").val());
+        data.append('displayTime', Math.round(document.getElementById("videoPrev").duration));
 
 //        var ajax = new XMLHttpRequest();
 //        ajax.addEventListener('progress', function(evt) {

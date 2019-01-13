@@ -591,7 +591,8 @@ $(document).ready(function() {
                 
                 if ( input.is( ":button" ) ) {}
                 else{
-                    if (input.attr('type')=='number'){
+                    //if (input.attr('type')=='number'){
+                    if(input[0].id == 'TickerTime'){
                         //console.log(input.attr('type') == 'number');
                         parameters[input[0].id] = String(parseInt(input[0].value)*1000);
                     }

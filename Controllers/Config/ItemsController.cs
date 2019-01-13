@@ -67,11 +67,12 @@ namespace InfoScreenPi.Controllers
         public ActionResult CreateItem()
         {
             List<Background> model = _data.GetBackgroundsNoRSS(true).Where(b => !b.Url.Equals("black.jpg")).ToList();
+            ViewBag.DefaultDisplayTime = _data.GetSettingByName("DefaultDisplayTime");
             return PartialView("~/Views/Config/Items/CreateItem.cshtml", model);
         }
 
         [HttpPost]
-        public ActionResult RegisterNewItem(string itemTitle, string itemContent, int bgId, string expireDateTime)
+        public ActionResult RegisterNewItem(string itemTitle, string itemContent, int bgId, string expireDateTime, int displayTime)
         {
             ItemKind soort = _data.GetSingle<ItemKind>(ik => ik.Description == "CUSTOM");
             Background achtergrond = _data.GetSingle<Background>(bgId);
@@ -85,7 +86,7 @@ namespace InfoScreenPi.Controllers
                     Active = true,
                     Archieved = false,
                     ExpireDateTime = DateTime.Parse(expireDateTime),
-                    DisplayTime = 20
+                    DisplayTime = displayTime
                 }
             );
             _data.Commit();
@@ -101,7 +102,7 @@ namespace InfoScreenPi.Controllers
         }
 
         [HttpPost]
-        public IActionResult EditItem(int itemId, string itemTitle, string itemContent, int bgId)
+        public IActionResult EditItem(int itemId, string itemTitle, string itemContent, int bgId, string expireDateTime, int displayTime)
         {
             Item item = _data.GetSingle<Item>(itemId, i => i.Background);
             Background bg = _data.GetSingle<Background>(bgId);
@@ -109,6 +110,8 @@ namespace InfoScreenPi.Controllers
             item.Title = itemTitle;
             item.Content = itemContent;
             item.Background = bg;
+            item.ExpireDateTime = DateTime.Parse(expireDateTime);
+            item.DisplayTime = displayTime;
 
             _data.Edit(item);
             _data.Commit();
@@ -139,7 +142,7 @@ namespace InfoScreenPi.Controllers
 
         [HttpPost]
         [RequestSizeLimit(52428800*2)] // 100MB
-        public async Task<IActionResult> UploadVideoItem(string itemTitle, string expireDateTime, IFormFile video)
+        public async Task<IActionResult> UploadVideoItem(string itemTitle, string expireDateTime, int displayTime, IFormFile video)
         {
 
             ItemKind soort = _data.GetSingle<ItemKind>(ik => ik.Description == "VIDEO");
@@ -167,7 +170,7 @@ namespace InfoScreenPi.Controllers
                     Active = true,
                     Archieved = false,
                     ExpireDateTime = DateTime.Parse(expireDateTime),
-                    DisplayTime = 15
+                    DisplayTime = displayTime
                 }
             );
             _data.Commit();
