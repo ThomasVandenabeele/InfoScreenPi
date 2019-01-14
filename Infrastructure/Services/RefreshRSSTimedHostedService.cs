@@ -79,9 +79,7 @@ namespace InfoScreenPi.Infrastructure.Services
         public Task StopAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation("RSS refresh service is stopping.");
-
             _timer?.Change(Timeout.Infinite, 0);
-
             return Task.CompletedTask;
         }
 

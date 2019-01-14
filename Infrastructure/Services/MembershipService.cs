@@ -39,12 +39,7 @@ namespace InfoScreenPi.Infrastructure.Services
 
         public User CreateUser(string username, string email, string password, int[] roles)
         {
-            var existingUser = _data.GetSingleByUsername(username);
-
-            if (existingUser != null)
-            {
-                throw new Exception("Username is already in use");
-            }
+            if (_data.GetSingleByUsername(username) != null) throw new Exception("Username is already in use");
 
             var passwordSalt = _encryptionService.CreateSalt();
 
@@ -57,9 +52,7 @@ namespace InfoScreenPi.Infrastructure.Services
                 HashedPassword = _encryptionService.EncryptPassword(password, passwordSalt),
                 DateCreated = DateTime.Now
             };
-
             _data.Add(user);
-
             _data.Commit();
 
             if (roles != null || roles.Length > 0)
@@ -71,7 +64,6 @@ namespace InfoScreenPi.Infrastructure.Services
             }
 
             _data.Commit();
-
             return user;
         }
 
@@ -94,7 +86,6 @@ namespace InfoScreenPi.Infrastructure.Services
                     _result.Add(userRole.Role);
                 }
             }
-
             return _result.Distinct().ToList();
         }
 
@@ -111,7 +102,6 @@ namespace InfoScreenPi.Infrastructure.Services
                 UserId = user.Id
             };
             _data.Add(userRole);
-
             _data.Commit();
         }
 
@@ -126,7 +116,6 @@ namespace InfoScreenPi.Infrastructure.Services
             {
                 return !user.IsLocked;
             }
-
             return false;
         }
 
