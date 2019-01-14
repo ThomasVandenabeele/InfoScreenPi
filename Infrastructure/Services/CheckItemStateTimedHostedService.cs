@@ -17,14 +17,14 @@ namespace InfoScreenPi.Infrastructure.Services
     {
 
         private readonly IServiceScopeFactory _scopeFactory;
-        private IHubContext<WebSocketHub, IWebSocketHub> _hubContext;
+        private IHubContext<WebSocketHub, IWebSocketClient> _hubContext;
         private readonly ILogger _logger;
         private Timer _timer;
 
 
         public CheckItemStateTimedHostedService(
-                ILogger<RefreshRSSTimedHostedService> logger,
-                IHubContext<WebSocketHub, IWebSocketHub> hubContext,
+                ILogger<RefreshRSSTimedHostedService> logger, 
+                IHubContext<WebSocketHub, IWebSocketClient> hubContext,
                 IServiceScopeFactory scopeFactory
             )
         {

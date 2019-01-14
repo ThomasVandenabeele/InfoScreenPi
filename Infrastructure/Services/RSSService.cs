@@ -130,7 +130,8 @@ namespace InfoScreenPi.Infrastructure.Services
                                     Background = achtergrond,
                                     Active = true,
                                     Archieved = false,
-                                    ExpireDateTime = DateTime.Now.AddDays(1)
+                                    ExpireDateTime = DateTime.Now.AddDays(1),
+                                    DisplayTime = 10
                                 }
                             );
                             _data.Commit();

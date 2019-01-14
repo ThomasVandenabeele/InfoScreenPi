@@ -6,16 +6,32 @@
         <label for="title">Title</label>
         <input type="text" class="form-control" id="ItemTitle" placeholder="Titel">
     </div>
-    <div class="form-group">
-        <label for="title">Vervaldatum en -uur</label>
-        <div class='input-group date' id='expiredatetimepicker'>
-            <input type='text' name="expireDateTime" class="form-control" id="expireDateTime"/>
-            <span class="input-group-addon" for="expireDateTime">
-                <span class="glyphicon glyphicon-calendar"></span>
-            </span>
-        </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="title">Vervaldatum en -uur</label>
+                <div class='input-group date' id='expiredatetimepicker'>
+                    <input type='text' name="expireDateTime" class="form-control" id="expireDateTime"/>
+                    <span class="input-group-addon" for="expireDateTime">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>
     
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="title">Weergavetijd</label>
+                <div class="input-group">
+                    <input type="number" class="form-control" id="DisplayTime" placeholder="@ViewBag.DefaultDisplayTime"/>
+                    <span class="input-group-addon">seconden</span>
+                </div>
+                
+    
+            </div>
+        </div>
     </div>
+    
     
     
     <div class="form-group">
@@ -49,9 +65,9 @@
             var img = $(".selectedBg").children("img")[0];
             var bgid = $(img).attr('id');
             var expDT = $("#expireDateTime").val();
-            
+            var dspTime = $("#DisplayTime").val();
 
-            var postData = { itemTitle: title, itemContent: content, bgId: bgid, expireDateTime: expDT};
+            var postData = { itemTitle: title, itemContent: content, bgId: bgid, expireDateTime: expDT, displayTime: dspTime};
 
             $.ajax({
                 type: "POST",

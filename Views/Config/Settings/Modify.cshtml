@@ -17,9 +17,9 @@
     <div class="form-horizontal" id="SettingsForm">
       <h3 class="col-sm-offset-2">Slides</h3>
       <div class="form-group">
-        <label for="SlideTime" class="col-sm-2 control-label">Slide Intervaltijd</label>
+        <label for="DefaultDisplayTime" class="col-sm-2 control-label">Standaard Intervaltijd</label>
         <div class="input-group col-md-5">
-            <input type="number" class="form-control" id="SlideTime" value="@SlideTimeSec">
+            <input type="number" class="form-control" id="DefaultDisplayTime" value="@Model.First(s => s.SettingName == "DefaultDisplayTime").SettingValue">
             <span class="input-group-addon">seconden</span>
         </div>
       </div>
