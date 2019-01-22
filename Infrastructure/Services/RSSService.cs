@@ -26,13 +26,6 @@ namespace InfoScreenPi.Infrastructure.Services
             {
                 string source = Guid.NewGuid().ToString();
                 _data.Add(
-                    new ItemKind
-                    {
-                        Description = "RSS",
-                        Source = source
-                    }
-                );
-                _data.Add(
                     new RssFeed
                     {
                         Active = true,
@@ -51,28 +44,22 @@ namespace InfoScreenPi.Infrastructure.Services
         public void DeleteRssFeed(int rssFeedId)
         {
             RssFeed rf = _data.GetSingle<RssFeed>(rssFeedId);
-
-            ItemKind ik = _data.GetSingle<ItemKind>(i => i.Description == "RSS" && i.Source == rf.Source);
-
             DeleteRssFeedItems(rssFeedId);
-
-            _data.Delete(ik);
             _data.Delete(rf);
             _data.Commit();
         }
 
         public void DeleteRssFeedItems(int rssFeedId){
-            RssFeed rssFeed = _data.GetSingle<RssFeed>(rss => rss.Id == rssFeedId, rss => rss.StandardBackground);
+            RssFeed rssFeed = _data.GetSingle<RssFeed>(rssFeedId, rss => rss.StandardBackground);
 
-            _data.GetAll<Item>(a => a.Background, a => a.Soort)
-                    .Where(i => (i.Soort.Source == rssFeed.Source && i.Soort.Description == "RSS"))
+            _data.GetAll<RSSItem>(i => i.RssFeed == rssFeed, a => a.Background)
                     .ToList()
                     .ForEach(i =>
                     {
-                        if(i.Background != rssFeed.StandardBackground) _data.Delete(i.Background);
                         _data.Delete(i);
-                        _data.Commit();
+                        if(i.Background != rssFeed.StandardBackground) _data.Delete(i.Background);
                     });
+                    _data.Commit();
         }
 
         public async Task<bool> RenewActiveRssFeeds()
@@ -94,8 +81,6 @@ namespace InfoScreenPi.Infrastructure.Services
                 var items = doc.Root.Descendants("channel").Elements("item").ToList();
 
                 DateTime pubDate = doc.Root.Descendants("channel").Elements("pubDate").First().Value.ParseDate();//doc.Root.Descendants().First(i => i.Name.LocalName == "channel").Elements().First(i => i.Name.LocalName == "pubDate").Value);
-
-                ItemKind soort = _data.GetSingle<ItemKind>(ik => (ik.Description == "RSS" && ik.Source == rssFeed.Source));
 
                 if(pubDate >= rssFeed.PublicationDate){
 
@@ -121,16 +106,13 @@ namespace InfoScreenPi.Infrastructure.Services
 
 
                             _data.Add(
-                                new Item
+                                new RSSItem
                                 {
                                     RssFeed = rssFeed,
-                                    Soort = soort,
                                     Title = i.Element("title").Value,
                                     Content = i.Element("description").Value,
                                     Background = achtergrond,
                                     Active = true,
-                                    Archieved = false,
-                                    ExpireDateTime = DateTime.Now.AddDays(1),
                                     DisplayTime = 10
                                 }
                             );

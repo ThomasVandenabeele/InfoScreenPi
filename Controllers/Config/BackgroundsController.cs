@@ -134,7 +134,7 @@ namespace InfoScreenPi.Controllers
         {
             var b = _data.GetSingle<Background>(id);
 
-            if(!_data.GetAllCustomItems().Select(i => i.Background).Contains(b))
+            if(!_data.GetAll<CustomItem>().Select(i => i.Background).Contains(b))
             {
                 var imageRoot = Path.Combine(_hostEnvironment.WebRootPath, "images/backgrounds");
                 FileInfo file = new FileInfo(imageRoot + "/" + b.Url);

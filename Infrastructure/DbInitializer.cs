@@ -32,30 +32,6 @@ namespace InfoScreenPi.Infrastructure
                         SettingValue = "6000"
                     }
                 );
-                
-                var _itemKind1 = context.ItemKinds.Add(
-                    new ItemKind
-                    {
-                        Description = "RSS",
-                        Source = "HBVL"
-                    }
-                ).Entity;
-                
-                var _itemKind2 = context.ItemKinds.Add(
-                    new ItemKind
-                    {
-                        Description = "CUSTOM",
-                        Source = ""
-                    }
-                ).Entity;
-
-                var _itemKind3 = context.ItemKinds.Add(
-                    new ItemKind
-                    {
-                        Description = "RSS",
-                        Source = "GEZONDHEID"
-                    }
-                ).Entity;
 
                 var _background1 = context.Backgrounds.Add(
                     new Background
@@ -91,49 +67,49 @@ namespace InfoScreenPi.Infrastructure
                         Url = "050f37fb-6a46-4e9c-af17-fcefc5d8255d-1944680.jpg"
                     }
                 );
-                
+
                 context.Backgrounds.Add(
                     new Background
                     {
                         Url = "6248795c-6ed8-436f-ac9b-1ae30c6f3d2d-29046177.jpg"
                     }
                 );
-                
+
                 context.Backgrounds.Add(
                     new Background
                     {
                         Url = "c0452fa0-7765-412c-a139-2d631824b2c4-IMG_0853.0.jpg"
                     }
                 );
-                
+
                 context.Backgrounds.Add(
                     new Background
                     {
                         Url = "fc1ac0a3-ce44-43cd-af4d-f8ff892795f8-IMG_4246.jpg"
                     }
                 );
-                
+
                 context.Backgrounds.Add(
                     new Background
                     {
                         Url = "a48a5543-5db4-4553-9e57-944fe41f1130-kerk-centrum2.jpg"
                     }
                 );
-                
+
                 context.Backgrounds.Add(
                     new Background
                     {
                         Url = "47f6ee6c-c04b-4b38-beb3-8abab9583766-1944587.jpg"
                     }
                 );
-                
+
                 context.Backgrounds.Add(
                     new Background
                     {
                         Url = "5826178a-9fdb-4d2f-b97e-a889cc1b0e23-1944633.jpg"
                     }
                 );
-                
+
                 context.Backgrounds.Add(
                     new Background
                     {
@@ -153,24 +129,21 @@ namespace InfoScreenPi.Infrastructure
                         StandardBackground = _background2
                     }
                 ).Entity;
-                
+
                 context.Items.Add(
-                    new Item
+                    new RSSItem
                     {
-                        Soort = _itemKind1,
-                        RssFeed = _rssFeed1,
+                      RssFeed = _rssFeed1,
         	            Title = "Sint-Truiden trotseert gietende regen voor Rode Duivels",
         	            Content = "<p>In Sint-Truiden werd het een feestje om niet snel te vergeten. Ondanks de gietende regen zakten de fans massaal af om samen de overwinning van de Rode Duivels te vieren.</p>",
         	            Background = _background1,
-        	            Active = true,
-        	            Archieved = false
+        	            Active = true
                     }
                 );
 
                 context.Items.Add(
-                    new Item
+                    new CustomItem
                     {
-                        Soort = _itemKind2,
                         Title = "Test item",
                         Content = "<center><h2><u>TEST</u> TEST</h2></center>",
                         Background = _background2,
@@ -180,21 +153,18 @@ namespace InfoScreenPi.Infrastructure
                 );
 
                 context.Items.Add(
-                    new Item
+                    new RSSItem
                     {
-                        Soort = _itemKind2,
                         Title = "Vakantie Zomer",
                         Content = "<center><h2><span style='color:#ff0000'>Wegens jaarlijks verlof is de praktijk gesloten:</span></h2><h2><strong>van maandag 1 augustus 2016 tot en met maandag 15 augustus 2016.</strong></h2><p>&nbsp;</p><h3>U kan zich tijdens deze afwezigheid wenden tot de vervangende huisarts:</h3><h3>Dr. Michotte-Jansen</h3><h3>St.-Truidersteenweg 523</h3><h3>3500 St. - Lambrechts - Herk</h3><h3>Tel. 011/31.14.58</h3><p>&nbsp;</p><p><em>Steeds na telefonische afspraak !</em></p></center>",
                         Background = _background4,
-                        Active = true,
-                        Archieved = false
+                        Active = true
                     }
                 );
 
                 context.Items.Add(
-                    new Item
+                    new CustomItem
                     {
-                        Soort = _itemKind2,
                         Title = "Zaterdag Gesloten",
                         Content = "<p style='text-align: center;'><strong>Tijdens de maanden juli en augustus is de praktijk op zaterdag gesloten.</strong></p><p style='text-align: center;'>Er kunnen op zaterdagvoormiddag GEEN afspraken gemaakt worden&nbsp;bij Dr. Vandenabeele.</p><p style='text-align: center;'>U kan zich op deze momenten wenden tot de Dokter van wacht, &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp</p><p style='text-align: center;'>op het nummer: 011/31.54.00.</p>",
                         Background = _background5,

@@ -43,7 +43,7 @@ namespace InfoScreenPi.Controllers
             Item item = _data.GetSingle<Item>(id);
             if (item != null)
             {
-                item.Archieved = state;
+                ((IExpiring)item).Archieved = state;
                 _data.Edit(item);
                 _data.Commit();
                 return Success(state? "Item verwijderd" : "Item terug geactiveerd");
@@ -74,12 +74,11 @@ namespace InfoScreenPi.Controllers
         [HttpPost]
         public ActionResult RegisterNewItem(string itemTitle, string itemContent, int bgId, string expireDateTime, int displayTime)
         {
-            ItemKind soort = _data.GetSingle<ItemKind>(ik => ik.Description == "CUSTOM");
+            //ItemKind soort = _data.GetSingle<ItemKind>(ik => ik.Description == "CUSTOM");
             Background achtergrond = _data.GetSingle<Background>(bgId);
             _data.Add(
-                new Item
+                new CustomItem
                 {
-                    Soort = soort,
                     Title = itemTitle,
                     Content = itemContent,
                     Background = achtergrond,
@@ -97,14 +96,15 @@ namespace InfoScreenPi.Controllers
         public ActionResult Edit(int id)
         {
             ViewBag.SelectionGrid = (List<Background>) _data.GetBackgroundsNoRSS(true).ToList();
-            Item model = _data.GetSingle<Item>(id, i => i.Background);
+            Item model = _data.GetSingle<Item>(id);
+            if (model is IStatic) model = _data.GetSingle<Item>(id, i => ((IStatic)i).Background);
             return PartialView("~/Views/Config/Items/EditItem.cshtml", model);
         }
 
         [HttpPost]
         public IActionResult EditItem(int itemId, string itemTitle, string itemContent, int bgId, string expireDateTime, int displayTime)
         {
-            Item item = _data.GetSingle<Item>(itemId, i => i.Background);
+            CustomItem item = _data.GetSingle<CustomItem>(itemId, i => i.Background);
             Background bg = _data.GetSingle<Background>(bgId);
 
             item.Title = itemTitle;
@@ -144,10 +144,6 @@ namespace InfoScreenPi.Controllers
         [RequestSizeLimit(52428800*2)] // 100MB
         public async Task<IActionResult> UploadVideoItem(string itemTitle, string expireDateTime, int displayTime, IFormFile video)
         {
-
-            ItemKind soort = _data.GetSingle<ItemKind>(ik => ik.Description == "VIDEO");
-            Background achtergrond = _data.GetSingle<Background>(b => b.Url.Equals("black.jpg"));
-
             var videoRoot = Path.Combine(_hostEnvironment.WebRootPath, "videos");
             string n = string.Format("vid-{0:yyyy-MM-dd_hh-mm-ss-tt}", DateTime.Now);
             var fileName = n + "-" + video.FileName.Replace(" ", "-");
@@ -161,12 +157,10 @@ namespace InfoScreenPi.Controllers
             }
 
             _data.Add(
-                new Item
+                new VideoItem
                 {
-                    Soort = soort,
                     Title = itemTitle,
-                    Content = fileName,
-                    Background = achtergrond,
+                    URL = fileName,
                     Active = true,
                     Archieved = false,
                     ExpireDateTime = DateTime.Parse(expireDateTime),

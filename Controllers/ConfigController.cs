@@ -74,6 +74,10 @@ namespace InfoScreenPi.Controllers
         {
             ViewBag.Logo = _data.GetSettingByName("LogoUrl");
             return View();
+            //i => !(i is RSSItem) && ((IExpiring)i).Archieved == false, a => ((IStatic)a).Background
+            /*var test = _data.GetAll<RSSItem>().ToList();
+            var a = 0;
+            return Success(""+test[0].Title);*/
         }
 
         [HttpPost]

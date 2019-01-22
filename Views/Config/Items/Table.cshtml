@@ -4,7 +4,7 @@
         <tr>
             <th style="display:none;">Id</th>
             <th width="10px"></th>
-            <th width="200px">Titel</th> 
+            <th width="200px">Titel</th>
             <th width="100px">Achtergrond</th>
             <th>Inhoud</th>
             <th width="50px">Tijd</th>
@@ -23,23 +23,23 @@
                     <td>
                         @{
                             string url = "";
-                            if(i.Background.Url.StartsWith("http://"))
-                            {
-                                url = i.Background.Url;
-                            }
-                            else
-                            {
-                                url = "images/backgrounds/thumbnails/" + i.Background.Url;
-                                //url = "images/backgrounds/" + i.Background.Url;
-                            }
+                            if (i is IStatic){
+                              string bg = ((IStatic) i).Background.Url;
+                              if(bg.StartsWith("http://"))
+                              {
+                                 url = bg;
+                              }
+                              else
+                              {
+                                 url = "images/backgrounds/thumbnails/" + bg;
+                              }
 
-                            if (!i.Background.Url.Equals("black.jpg"))
-                            {
-                                <a href="@url" target="new" ><img src="@url" width="100px" /></a>       
+                              <a href="@url" target="new" ><img src="@url" width="100px" /></a>
                             }
-                            else
+                            else if (i is VideoItem)
                             {
-                                <button type="button" class="btn btn-default" onClick="window.open('videos/@i.Content');">
+                              VideoItem v = (VideoItem)i;
+                                <button type="button" class="btn btn-default" onClick="window.open('videos/@v.URL');">
                                     <span class="glyphicon glyphicon-film" aria-hidden="true"></span> &nbsp; VIDEO
                                 </button>
                             }
@@ -47,8 +47,8 @@
                     </td>
                     <td>@{
                             string content = "", content2 = "";
-                            if(i.Content != null){
-                                content = System.Text.RegularExpressions.Regex.Replace(i.Content, "&.*?;", " ");
+                            if(i is IStatic && ((IStatic)i).Content != null){
+                                content = System.Text.RegularExpressions.Regex.Replace(((IStatic)i).Content, "&.*?;", " ");
                                 content2 = System.Text.RegularExpressions.Regex.Replace(content, "<.*?>", " ");
                             }
                         }
@@ -64,7 +64,7 @@
                         @weergavetijd
                     </td>
                     <td>
-                        @if(i.Active){
+                        @if(i is IExpiring && i.Active){
                             <input type="checkbox" class="stateCheckItems" checked data-toggle="toggle" data-style="ios" data-size="mini" data-on="Actief" data-off="Inactief"data-onstyle="success" data-offstyle="danger">
                         }
                         else
