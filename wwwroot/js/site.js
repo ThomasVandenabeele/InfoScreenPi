@@ -125,7 +125,7 @@ listenCheckState();
     $(document).on('click','.wijzigItem',function(){
         var itemId = parseInt((($(this).closest("tr").children("td"))[0]).innerHTML);
 
-        $.get("/Config/Items/Edit?id=" + itemId, function (data) {
+        $.get("/Config/Items/EditCustomItem?id=" + itemId, function (data) {
             modal
                 .setTitle('Wijzig Item')
                 .setMessage($('<div></div>').html(data))
@@ -582,48 +582,7 @@ $(document).ready(function() {
             // });
         // });
 
-        $(document).on('click', '#SaveSettings', function(){
-
-            var parameters = new Object();
-
-            $("#SettingsForm :input").each(function (index, item) {
-                var input = $(this);
-                
-                if ( input.is( ":button" ) ) {}
-                else{
-                    //if (input.attr('type')=='number'){
-                    if(input[0].id == 'TickerTime'){
-                        //console.log(input.attr('type') == 'number');
-                        parameters[input[0].id] = String(parseInt(input[0].value)*1000);
-                    }
-                    else if (input.is(':checkbox')) {
-                        if (input.is(":checked")) parameters[input[0].id] = 'true';
-                        else parameters[input[0].id] = 'false';
-                    }
-                    else parameters[input[0].id] = input[0].value;
-                }
-            });
-            
-
-            $.ajax({
-                type: "POST",
-                url: '/Config/SaveSettings',
-                data: parameters,
-                success: function(response, textStatus, jqXHR){
-                    console.log(response);
-                    if(response.success){
-                        modal.close();
-                        alertify.success(response.message);
-                    }
-                    else{
-                        alertify.error(response.message);
-                    }
-                },
-                dataType: "json",
-                traditional: true
-            });
-
-        })
+       
 
 
 });

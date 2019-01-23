@@ -15,12 +15,12 @@
 </ul>
 <div class="tab-content">
   <div role="tabpanel" class="tab-pane fade in active" id="screen">
-    <div class="form-horizontal" id="SettingsForm">
+    <form class="form-horizontal" id="SettingsForm">
       <h3 class="col-sm-offset-2">Slides</h3>
       <div class="form-group">
         <label for="DefaultDisplayTime" class="col-sm-2 control-label">Standaard Intervaltijd</label>
         <div class="input-group col-md-5">
-            <input type="number" class="form-control" id="DefaultDisplayTime" value="@Model.First(s => s.SettingName == "DefaultDisplayTime").SettingValue">
+            <input type="number" class="form-control" id="DefaultDisplayTime" value="@Model.First(s => s.SettingName == "DefaultDisplayTime").SettingValue" data-validation="number required">
             <span class="input-group-addon">seconden</span>
         </div>
       </div>
@@ -35,7 +35,7 @@
       <div class="form-group">
         <label for="TickerTime" class="col-sm-2 control-label">Ticker Intervaltijd</label>
         <div class="input-group col-md-5">
-            <input type="number" class="form-control" id="TickerTime" value="@TickerTimeSec">
+            <input type="number" class="form-control" id="TickerTime" value="@TickerTimeSec" data-validation="number required">
             <span class="input-group-addon">seconden</span>
         </div>
       </div>
@@ -89,7 +89,7 @@
       <div class="form-group">
         <label for="TickerTime" class="col-sm-2 control-label">Locatie</label>
         <div class="input-group col-md-5">
-            <input type="text" class="form-control" id="WeatherLocation" value='@Model.First(s => s.SettingName == "WeatherLocation").SettingValue'></div>
+            <input type="text" class="form-control" id="WeatherLocation" value='@Model.First(s => s.SettingName == "WeatherLocation").SettingValue' data-validation="required"></div>
       </div>
       <hr/>
       <div class="form-group">
@@ -97,10 +97,10 @@
           <button class="btn btn-primary" id="SaveSettings" >Opslaan</button>
         </div>
       </div>
-    </div>
+    </form>
   </div>
   <div role="tabpanel" class="tab-pane fade" id="prog">
-    <div class="form-horizontal" id="ProgSettingsForm">
+    <form class="form-horizontal" id="ProgSettingsForm">
       <h3 class="col-sm-offset-1">Gegevens</h3>
       @{
         //string titel = @Model.First(s => s.SettingName == "SlideTime").SettingValue)/1000;
@@ -108,7 +108,7 @@
       <div class="form-group">
         <label for="Title" class="col-sm-2 control-label">Titel</label>
         <div class="input-group col-md-5">
-          <input type="text" class="form-control" id="site-title" value='@Model.First(s => s.SettingName == "Title").SettingValue'></div>
+          <input type="text" class="form-control" id="site-title" value='@Model.First(s => s.SettingName == "Title").SettingValue'  data-validation="required"></div>
       </div>
       <div class="form-group">
         <label for="Logo" class="col-sm-2 control-label">Logo</label>
@@ -187,7 +187,7 @@
           <button class="btn btn-primary" id="SaveProgSettings" >Opslaan</button>
         </div>
       </div>
-    </div>
+    </form>
   </div>
   <div role="tabpanel" class="tab-pane fade" id="network">
   @await Html.PartialAsync("~/Views/Config/Settings/Network.cshtml", (List<Device>)ViewBag.Devices)
@@ -196,11 +196,63 @@
 
 
 <script>
-  $('input:checkbox').each(function () {
-            $(this).bootstrapToggle();
-        });
+    $.validate({
+        form : '#SettingsForm',
+        onError : function($form) {
+            //alert('Validation of form '+$form.attr('id')+' failed!');
+        },
+        onSuccess : function($form) {
+            //alert('The form '+$form.attr('id')+' is valid!');
+            
+            var parameters = new Object();
 
-  $("#f_UploadLogo").on('change', function () {
+            $("#SettingsForm :input").each(function (index, item) {
+                var input = $(this);
+
+                if (input.is(":button")) {
+                }
+                else {
+                    //if (input.attr('type')=='number'){
+                    if (input[0].id == 'TickerTime') {
+                        //console.log(input.attr('type') == 'number');
+                        parameters[input[0].id] = String(parseInt(input[0].value) * 1000);
+                    }
+                    else if (input.is(':checkbox')) {
+                        if (input.is(":checked")) parameters[input[0].id] = 'true';
+                        else parameters[input[0].id] = 'false';
+                    }
+                    else parameters[input[0].id] = input[0].value;
+                }
+            });
+
+
+            $.ajax({
+                type: "POST",
+                url: '/Config/SaveSettings',
+                data: parameters,
+                success: function (response, textStatus, jqXHR) {
+                    console.log(response);
+                    if (response.success) {
+                        //modal.close();
+                        alertify.success(response.message);
+                    }
+                    else {
+                        alertify.error(response.message);
+                    }
+                },
+                dataType: "json",
+                traditional: true
+            });
+            
+            return false;
+        }
+    });
+    
+    $('input:checkbox').each(function () {
+        $(this).bootstrapToggle();
+    });
+
+    $("#f_UploadLogo").on('change', function () {
     
         var label = $(this).val().replace(/\\/g, '/').replace(/.*\//, '');
         var input = $(this).parents('.input-group').find(':text');
@@ -222,44 +274,46 @@
 
     function show_logo(url){
         var image = $('<img />', {
-                id: 'prevLogo',
-                src: url,
-                style: "margin-top: 25px; margin-left: auto; margin-right: auto; width: 200px; display: block;"
-            });
-            $("#logoUploadPreview").html(image);
+            id: 'prevLogo',
+            src: url,
+            style: "margin-top: 25px; margin-left: auto; margin-right: auto; width: 200px; display: block;"
+        });
+        $("#logoUploadPreview").html(image);
 
     }
 
     show_logo("images/logo/@Model.First(s => s.SettingName == "LogoUrl").SettingValue")
 
-    $("#showRegisterUser").click(function(e){
-      $.get( "/Config/CreateUserView", function( data ) {
-        $( "#registerPane" ).html( data );
-        $('#showRegisterUser').hide();
-      });
+    $("#showRegisterUser").click(function(e) {
+        e.preventDefault();
+        
+        $.get( "/Config/CreateUserView", function( data ) {
+            $( "#registerPane" ).html( data );
+            $('#showRegisterUser').hide();
+        });
     });
 
     $('.deleteUser').click(function(){
-      var curRow = $(this).closest('tr');
-      var userid = $(this).attr('id');
-      var userUN = curRow.find('td:first').text();
-      var postData = { userId: userid };
-      console.log(postData);
-      alertify.confirm("Bent u zeker dat u gebruiker " + userUN + " wilt verwijderen?", function (e) {
-        console.log(e);
+        var curRow = $(this).closest('tr');
+        var userid = $(this).attr('id');
+        var userUN = curRow.find('td:first').text();
+        var postData = { userId: userid };
+        console.log(postData);
+        alertify.confirm("Bent u zeker dat u gebruiker " + userUN + " wilt verwijderen?", function (e) {
+            console.log(e);
             if (e) {
                 $.ajax({
-                  type: "POST",
-                  url: "/Config/DeleteUser",
-                  data: postData,
-                  success: function(response)
+                    type: "POST",
+                    url: "/Config/DeleteUser",
+                    data: postData,
+                    success: function(response)
                     {
-                      if(response.success) {
-                        curRow.remove();
-                      }
-                      else{
-                          alertify.error(response.message);
-                      }
+                        if(response.success) {
+                            curRow.remove();
+                        }
+                        else{
+                            alertify.error(response.message);
+                        }
                     }
                 });
             } else {
@@ -269,40 +323,82 @@
       
     });
 
-    $("#SaveProgSettings").click(function(e) {
-        e.preventDefault();
+    $.validate({
+        form: '#ProgSettingsForm',
+        onError: function($form) {
+            //alert('Validation of form '+$form.attr('id')+' failed!');
+        },
+        onSuccess: function($form) {
+            //alert('The form '+$form.attr('id')+' is valid!');
+            var frm = $("#ProgSettingsForm");
+            var title = frm.find("#site-title").val();
 
-        var frm = $("#ProgSettingsForm");
-        var title = frm.find("#site-title").val();
+            var data = new FormData();
+            data.append('logo', frm.find("#f_UploadLogo")[0].files[0]);
+            data.append('title', title);
 
-        var data = new FormData();
-        data.append('logo', frm.find("#f_UploadLogo")[0].files[0]);
-        data.append('title', title);
-
-        $.ajax({
-            type: 'post',
-            url: '/Config/SaveProgSettings',
-            data: data,
-            processData: false,
-            contentType: false,
-            success: function (response, textStatus, jqXHR) {
-                if(response.success) {
-                    modal.close();
+            $.ajax({
+                type: 'post',
+                url: '/Config/SaveProgSettings',
+                data: data,
+                processData: false,
+                contentType: false,
+                success: function (response, textStatus, jqXHR) {
+                    if(response.success) {
+                        //modal.close();
                     
-                    $("#progTitle").html("<b>" + title + "</b>");
-                    $("#progLogo").attr('src', 'images/logo/' + $("#logoUrlSpan").text());
+                        $("#progTitle").html("<b>" + title + "</b>");
+                        $("#progLogo").attr('src', 'images/logo/' + $("#logoUrlSpan").text());
 
-                    alertify.success(response.message);
+                        alertify.success(response.message);
+                    }
+                    else{
+                        alertify.error(response.message);
+                    }
+                },
+                error: function () {
+                    alert("Whoops something went wrong!");
                 }
-                else{
-                    alertify.error(response.message);
-                }
-            },
-            error: function () {
-                alert("Whoops something went wrong!");
-            }
-        });
+            });
 
+            return false;
+        }
     });
+    
+//    $("#SaveProgSettings").click(function(e) {
+//        e.preventDefault();
+//
+//        var frm = $("#ProgSettingsForm");
+//        var title = frm.find("#site-title").val();
+//
+//        var data = new FormData();
+//        data.append('logo', frm.find("#f_UploadLogo")[0].files[0]);
+//        data.append('title', title);
+//
+//        $.ajax({
+//            type: 'post',
+//            url: '/Config/SaveProgSettings',
+//            data: data,
+//            processData: false,
+//            contentType: false,
+//            success: function (response, textStatus, jqXHR) {
+//                if(response.success) {
+//                    modal.close();
+//                    
+//                    $("#progTitle").html("<b>" + title + "</b>");
+//                    $("#progLogo").attr('src', 'images/logo/' + $("#logoUrlSpan").text());
+//
+//                    alertify.success(response.message);
+//                }
+//                else{
+//                    alertify.error(response.message);
+//                }
+//            },
+//            error: function () {
+//                alert("Whoops something went wrong!");
+//            }
+//        });
+//
+//    });
 
 </script>

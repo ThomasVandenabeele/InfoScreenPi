@@ -4,6 +4,7 @@ namespace InfoScreenPi.Entities
         {
             public string Name { get; set; }
             public string IP { get; set; }
+            public string MAC { get; set; }
             public string Hostname { get; set; }
             public string OperateString { get; set; }
             public string CronString { get; set; }

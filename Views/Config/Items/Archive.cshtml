@@ -21,25 +21,26 @@
                         @{
                             string url = "";
                             string thumb = "";
-                            if(((IStatic)i).Background.Url.StartsWith("http://"))
-                            {
-                                url = ((IStatic)i).Background.Url;
-                                thumb = url;
-                            }
-                            else
-                            {
-                                url = "images/backgrounds/" + ((IStatic)i).Background.Url;
-                                thumb = "images/backgrounds/thumbnails/" + ((IStatic)i).Background.Url;
-                            }
-                            if (!((IStatic)i).Background.Url.Equals("black.jpg"))
-                            {
-                                <a href="@url" target="new" ><img src="@url" width="100px" /></a>
-                            }
-                            else
+                            
+                            if (i is VideoItem)
                             {
                                 <button type="button" class="btn btn-default" onClick="window.open('videos/@((VideoItem)i).URL');">
                                     <span class="glyphicon glyphicon-film" aria-hidden="true"></span> &nbsp; VIDEO
                                 </button>
+                            }
+                            else
+                            {
+                                if(((IStatic)i).Background.Url.StartsWith("http://"))
+                                {
+                                    url = ((IStatic)i).Background.Url;
+                                    thumb = url;
+                                }
+                                else
+                                {
+                                    url = "images/backgrounds/" + ((IStatic)i).Background.Url;
+                                    thumb = "images/backgrounds/thumbnails/" + ((IStatic)i).Background.Url;
+                                }
+                                <a href="@url" target="new" ><img src="@url" width="100px" /></a>
                             }
                         }
                     </td>
