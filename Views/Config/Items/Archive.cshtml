@@ -4,7 +4,7 @@
         <tr>
             <th style="display:none;">Id</th>
             <th width="10px"></th>
-            <th>Titel</th> 
+            <th>Titel</th>
             <th width="100px">Achtergrond</th>
             <th>Inhoud</th>
             <th width="5px"></th>
@@ -21,23 +21,23 @@
                         @{
                             string url = "";
                             string thumb = "";
-                            if(i.Background.Url.StartsWith("http://"))
+                            if(((IStatic)i).Background.Url.StartsWith("http://"))
                             {
-                                url = i.Background.Url;
+                                url = ((IStatic)i).Background.Url;
                                 thumb = url;
                             }
                             else
                             {
-                                url = "images/backgrounds/" + i.Background.Url;
-                                thumb = "images/backgrounds/thumbnails/" + i.Background.Url;
+                                url = "images/backgrounds/" + ((IStatic)i).Background.Url;
+                                thumb = "images/backgrounds/thumbnails/" + ((IStatic)i).Background.Url;
                             }
-                            if (!i.Background.Url.Equals("black.jpg"))
+                            if (!((IStatic)i).Background.Url.Equals("black.jpg"))
                             {
-                                <a href="@url" target="new" ><img src="@url" width="100px" /></a>       
+                                <a href="@url" target="new" ><img src="@url" width="100px" /></a>
                             }
                             else
                             {
-                                <button type="button" class="btn btn-default" onClick="window.open('videos/@i.Content');">
+                                <button type="button" class="btn btn-default" onClick="window.open('videos/@((VideoItem)i).URL');">
                                     <span class="glyphicon glyphicon-film" aria-hidden="true"></span> &nbsp; VIDEO
                                 </button>
                             }
@@ -46,8 +46,8 @@
                     <td>
                         @{
                             string content = "", content2 = "";
-                            if(i.Content != null){
-                                content = System.Text.RegularExpressions.Regex.Replace(i.Content, "<.*?>", String.Empty);
+                            if(((IStatic)i).Content != null){
+                                content = System.Text.RegularExpressions.Regex.Replace(((IStatic)i).Content, "<.*?>", String.Empty);
                                 content2 = System.Text.RegularExpressions.Regex.Replace(content, "&.*?;", " ");
                             }
                         }

@@ -18,17 +18,17 @@ namespace InfoScreenPi.Infrastructure.Services
         {
             _context = context;
         }
-        private IQueryable<T> ConstructQuery<T>(params Expression<Func<T, object>>[] includeProperties) where T : Entity
+        public IQueryable<T> ConstructQuery<T>(params Expression<Func<T, object>>[] includeProperties) where T : Entity
         {
           return includeProperties.Aggregate((IQueryable<T>)_context.Set<T>(),(q,p)=>q.Include(p));//.AsNoTracking();
         }
         public IEnumerable<T> GetAll<T>(Expression<Func<T,bool>> predicate, params Expression<Func<T, object>>[] includeProperties) where T : Entity
         {
-            return ConstructQuery<T>(includeProperties).Where(predicate).AsEnumerable();
+            return ConstructQuery<T>(includeProperties).Where(predicate);
         }
         public IEnumerable<T> GetAll<T>(params Expression<Func<T, object>>[] includeProperties) where T : Entity
         {
-            return ConstructQuery<T>(includeProperties).AsEnumerable();
+            return ConstructQuery<T>(includeProperties);
         }
         public T GetSingle<T>(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includeProperties) where T : Entity
         {
