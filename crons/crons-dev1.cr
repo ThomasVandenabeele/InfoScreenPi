@@ -1,0 +1,12 @@
+0 7 * * 1 echo on 0 | /usr/bin/cec-client -s -d 1 >/dev/null 2>&1
+0 7 * * 2 echo on 0 | /usr/bin/cec-client -s -d 1 >/dev/null 2>&1
+0 7 * * 3 echo on 0 | /usr/bin/cec-client -s -d 1 >/dev/null 2>&1
+0 7 * * 4 echo on 0 | /usr/bin/cec-client -s -d 1 >/dev/null 2>&1
+0 7 * * 5 echo on 0 | /usr/bin/cec-client -s -d 1 >/dev/null 2>&1
+0 7 * * 6 echo on 0 | /usr/bin/cec-client -s -d 1 >/dev/null 2>&1
+0 22 * * 1 echo standby 0 | /usr/bin/cec-client -s -d 1 >/dev/null 2>&1
+0 22 * * 2 echo standby 0 | /usr/bin/cec-client -s -d 1 >/dev/null 2>&1
+0 22 * * 3 echo standby 0 | /usr/bin/cec-client -s -d 1 >/dev/null 2>&1
+0 22 * * 4 echo standby 0 | /usr/bin/cec-client -s -d 1 >/dev/null 2>&1
+0 22 * * 5 echo standby 0 | /usr/bin/cec-client -s -d 1 >/dev/null 2>&1
+0 12 * * 6 echo standby 0 | /usr/bin/cec-client -s -d 1 >/dev/null 2>&1

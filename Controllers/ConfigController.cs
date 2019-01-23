@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +18,8 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Authentication;
 using System.IO;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace InfoScreenPi.Controllers
 {
@@ -26,6 +29,7 @@ namespace InfoScreenPi.Controllers
         private InfoScreenContext _context;
         private readonly IMembershipService _membershipService;
         private readonly IEncryptionService _encryptionService;
+        private readonly IHostingEnvironment _hostingEnvironment;
 
         public ConfigController(InfoScreenContext context,
                                 IMembershipService membershipService,
@@ -38,6 +42,7 @@ namespace InfoScreenPi.Controllers
             _context = context;
             _membershipService = membershipService;
             _encryptionService = encryptionService;
+            _hostingEnvironment = hostEnvironment;
         }
 
         public IActionResult Index()
@@ -221,6 +226,73 @@ namespace InfoScreenPi.Controllers
             return PartialView("~/Views/Config/Account/Details.cshtml", model);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetOperatingTableView(int devideId)
+        {
+            //String JSONString = "{\"screenOn\":[{\"day\":2,\"hour\":9,\"minutes\":0},{\"day\":3,\"hour\":8,\"minutes\":45},{\"day\":4,\"hour\":9,\"minutes\":45},{\"day\":5,\"hour\":7,\"minutes\":30},{\"day\":6,\"hour\":10,\"minutes\":45}],\"screenOff\":[{\"day\":2,\"hour\":11,\"minutes\":15},{\"day\":3,\"hour\":10,\"minutes\":30},{\"day\":4,\"hour\":11,\"minutes\":0},{\"day\":5,\"hour\":9,\"minutes\":30},{\"day\":6,\"hour\":12,\"minutes\":15}]}";
+            //String JSONString =
+            //    "{\"screenOn\":[{\"day\":1,\"hour\":8,\"minutes\":15},{\"day\":1,\"hour\":17,\"minutes\":0},{\"day\":2,\"hour\":17,\"minutes\":0},{\"day\":2,\"hour\":8,\"minutes\":15},{\"day\":3,\"hour\":17,\"minutes\":0},{\"day\":3,\"hour\":13,\"minutes\":30},{\"day\":3,\"hour\":8,\"minutes\":15},{\"day\":4,\"hour\":17,\"minutes\":0},{\"day\":4,\"hour\":8,\"minutes\":15},{\"day\":5,\"hour\":17,\"minutes\":0},{\"day\":5,\"hour\":8,\"minutes\":15},{\"day\":6,\"hour\":8,\"minutes\":15}],\"screenOff\":[{\"day\":1,\"hour\":12,\"minutes\":0},{\"day\":1,\"hour\":20,\"minutes\":30},{\"day\":2,\"hour\":20,\"minutes\":30},{\"day\":2,\"hour\":12,\"minutes\":0},{\"day\":3,\"hour\":20,\"minutes\":30},{\"day\":3,\"hour\":15,\"minutes\":30},{\"day\":3,\"hour\":12,\"minutes\":0},{\"day\":4,\"hour\":20,\"minutes\":30},{\"day\":4,\"hour\":12,\"minutes\":0},{\"day\":5,\"hour\":20,\"minutes\":30},{\"day\":5,\"hour\":12,\"minutes\":0},{\"day\":6,\"hour\":12,\"minutes\":0}]}";
+
+            String JSONString = _data.GetSingle<Device>(i => i.Id == devideId).OperateString;
+            return PartialView("~/Views/Config/Settings/OperatingTable.cshtml", JSONString);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SaveOperatingTimes(string operatingString, int deviceId)
+        {
+            
+            Device edit = _data.GetSingle<Device>(d => d.Id == deviceId);
+            
+            string cronstring = GenerateCronJobList(operatingString, deviceId);
+
+            string path = _hostingEnvironment.ContentRootPath;
+            string fn = "crons-dev" + deviceId + ".cr";
+            string fileName = Path.Combine(path, "crons", fn);
+            using (StreamWriter outFile = new StreamWriter(fileName))
+            {
+                outFile.Write(cronstring);
+            }
+            
+            // copy cronlist to remote rpi screen
+            string scpCommand = "scp " + fileName + " pi@" + edit.IP + ":~/cron/" + fn;
+            var outputScp = scpCommand.Bash();
+            
+            // renew crons on remote rpi with crontab
+            string sshCommand = "ssh pi@" + edit.IP + " '" + edit.CronCommand + " ~/cron/" + fn + "'";
+            var outputSsh = sshCommand.Bash();
+            
+            
+            
+            edit.OperateString = operatingString;
+            edit.CronString = cronstring;
+            _data.Edit(edit);
+            _data.Commit();
+            
+            
+            return Success("Werkingstijden opgeslagen");
+        }
+
+        public string GenerateCronJobList(string operatingString, int deviceId)
+        {
+            string scrOnCmd = _data.GetSingle<Device>(d => d.Id == deviceId).ScreenOnCommand;
+            string scrOffCmd = _data.GetSingle<Device>(d => d.Id == deviceId).ScreenOffCommand;
+            
+            //var json = JsonConvert.DeserializeObject(operatingString);
+            var json = JObject.Parse(operatingString);
+            var cronString = "";
+            foreach (var scOn in json["screenOn"])
+            {
+                cronString = cronString + scOn["minutes"] + " " + scOn["hour"] + " * * " + scOn["day"] + " " + scrOnCmd + "\n";
+            }
+            foreach (var scOff in json["screenOff"])
+            {
+                cronString = cronString + scOff["minutes"] + " " + scOff["hour"] + " * * " + scOff["day"] + " " + scrOffCmd + "\n";
+            }
+
+            return cronString;
+        }
+        
+        
         public IActionResult About()
         {
             ViewData["Message"] = "Your application description page.";
@@ -313,6 +385,7 @@ namespace InfoScreenPi.Controllers
             List<User> gebruikers = _context.Set<User>().Include(x => x.UserRoles).ThenInclude(x => x.Role).ToList();
 
             ViewBag.Users = gebruikers;
+            ViewBag.Devices = _data.GetAll<Device>().ToList();
             return PartialView("~/Views/Config/Settings/Modify.cshtml", model);
         }
 
@@ -373,4 +446,43 @@ namespace InfoScreenPi.Controllers
             return Json(new {success = true, status = RefreshStatus, message="Gelukt"});
         }
     }
+
+    public static class ExtensionMethods
+    {
+        public static string Bash(this string cmd)
+        {
+            var escapedArgs = cmd.Replace("\"", "\\\"");
+            
+            var process = new Process()
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "/bin/bash",
+                    Arguments = $"-c \"{escapedArgs}\"",
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                }
+            };
+            process.Start();
+            string result = process.StandardOutput.ReadToEnd();
+            process.WaitForExit();
+            return result;
+        }
+    }
+    
+    public class TimeAction
+    {
+        public int Day { get; set; }
+        public int Hour  { get; set; }
+        public int Minutes { get; set; }
+    }
+
+    public class OperatingTimes
+    {
+        public int DeviceId { get; set; }
+        public List<TimeAction> ScreenOnList { get; set; }
+        public List<TimeAction> ScreenOffList { get; set; }
+    }
+
 }

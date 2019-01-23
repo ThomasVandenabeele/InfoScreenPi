@@ -28,7 +28,7 @@ namespace InfoScreenPi.Infrastructure.Services
     }
     public IEnumerable<Item> GetAllCustomItems()
     {
-        return GetAll<Item>(i => (i.Soort.Description == "CUSTOM" || i.Soort.Description == "VIDEO"),
+        return GetAll<Item>(i => (i.Soort.Description == "CUSTOM" || i.Soort.Description == "VIDEO" || i.Soort.Description == "CLOCK" || i.Soort.Description == "WEATHER"),
                       i => i.Soort, i => i.Background);
     }
     public IEnumerable<Item> GetAllActiveCustomItems()

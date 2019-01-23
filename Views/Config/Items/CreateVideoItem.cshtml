@@ -1,12 +1,12 @@
 <form id="new_video_form">
     <div class="form-group">
         <label for="title">Title</label>
-        <input type="text" class="form-control" id="ItemTitle" name="itemTitle" placeholder="Titel">
+        <input type="text" class="form-control" id="ItemTitle" name="itemTitle" placeholder="Titel" data-validation="required">
     </div>
     <div class="form-group">
         <label for="title">Vervaldatum en -uur</label>
         <div class='input-group date' id='expiredatetimepicker'>
-            <input type='text' name="expireDateTime" class="form-control" id="expireDateTime"/>
+            <input type='text' name="expireDateTime" class="form-control" id="expireDateTime" data-validation="required"/>
             <span class="input-group-addon" for="expireDateTime">
                 <span class="glyphicon glyphicon-calendar"></span>
             </span>
@@ -19,9 +19,8 @@
                 Browse &hellip; <input type="file" class="upload" name="video" id="f_UploadVideo" style="display: none;" accept="video/*">
             </span>
         </label>
-        <input type="text" class="form-control" placeholder="Upload nieuwe video" id="placeholderUploadVideo" readonly>
+        <input type="text" class="form-control" placeholder="Upload nieuwe video" id="placeholderUploadVideo" data-validation="required" readonly>
     </div>
-</form>
 
 <div id="videoUploadPreview"></div><br />
 
@@ -37,6 +36,7 @@
 
 </div>
 
+</form>
 
 
 <script>
@@ -48,7 +48,17 @@
     });
 </script>
 <script>
-    
+    $.validate({
+        form : '#new_video_form',
+        onError : function($form) {
+            //alert('Validation of form '+$form.attr('id')+' failed!');
+        },
+        onSuccess : function($form) {
+            //alert('The form '+$form.attr('id')+' is valid!');
+            RegisterVideoItem();
+            return false; // Will stop the submission of the form
+        }
+    });
     $("#f_UploadVideo").on('change', function () {
     
         var label = $(this).val().replace(/\\/g, '/').replace(/.*\//, '');
@@ -87,7 +97,8 @@
 
     update_progressbar(0);
  
-    $("#registerNewItem").click(function(e) {
+    //$("#registerNewItem").click(function(e) {
+    function RegisterVideoItem(){
         $("#loadingVideo").show();
         e.preventDefault();
 
@@ -158,6 +169,6 @@
             }
         });
 
-    });
+    };
 
 </script>
