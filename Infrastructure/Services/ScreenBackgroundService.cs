@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace InfoScreenPi.Infrastructure.Services
 {
@@ -71,9 +73,7 @@ public class ScreenBackgroundService : BackgroundService
 
                     // Obtain new item
                     Random r = new Random();
-                    bool checkIfRSSFeedActive =_data.ConstructQuery<RSSFeed>()
-                                                           .AsNoTracking()
-                                                           .Any(rf => rf.Active);
+                    bool checkIfRSSFeedActive = _data.AnyRssFeedActive();
                     bool checkIfRssItemsExist = activeRSSItems.ToList().Count > 0;
                     bool checkIfRssShow = r.NextBool(25);
 

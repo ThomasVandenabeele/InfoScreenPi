@@ -28,7 +28,13 @@ namespace InfoScreenPi.Infrastructure.Services
     }
     public IEnumerable<T> GetAllActive<T>() where T : Item
     {
-      return GetAll<T>(i=>i.Active, i => i is IStatic ? ((IStatic)i).Background : null);
+      return ConstructQuery<T>(i=>i.Active).AsNoTracking().AsEnumerable();
+    }
+    public bool AnyRssFeedActive()
+    {
+      return ConstructQuery<RssFeed>()
+                    .AsNoTracking()
+                    .Any(rf => rf.Active);
     }
     /*public IEnumerable<Item> GetAllCustomItems()
     {
@@ -77,6 +83,7 @@ namespace InfoScreenPi.Infrastructure.Services
       if(user != null) return user.UserRoles.Select(ur => _context.Roles.FirstOrDefault(r => r.Id == ur.RoleId)).AsEnumerable();
       else return null;
     }
+
 
     public IEnumerable<IStatic> GetAllStatic(params Expression<Func<Item, object>>[] includeProperties)
     {

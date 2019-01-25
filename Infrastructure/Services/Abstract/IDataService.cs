@@ -12,10 +12,11 @@ namespace InfoScreenPi.Infrastructure.Services
     {
         IEnumerable<Background> GetBackgroundsNoRSS(bool archieved);
         IEnumerable<Item> GetItemsNoRss(bool archived);
-        IEnumerable<Item> GetAllCustomItems();
-        IEnumerable<Item> GetAllActiveCustomItems();
-        IEnumerable<Item> GetAllActiveRSSItems();
+        //IEnumerable<Item> GetAllCustomItems();
+        //IEnumerable<Item> GetAllActiveCustomItems();
+        //IEnumerable<Item> GetAllActiveRSSItems();
         IEnumerable<T> GetAllActive<T>() where T : Item;
+        bool AnyRssFeedActive();
         bool CheckItemState();
         string GetSettingByName(string setting);
         void SetSettingByName(string key, string value);

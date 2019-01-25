@@ -18,7 +18,7 @@ namespace InfoScreenPi.Infrastructure.Services
         {
             _context = context;
         }
-        public IQueryable<T> ConstructQuery<T>(params Expression<Func<T, object>>[] includeProperties) where T : Entity
+        protected IQueryable<T> ConstructQuery<T>(params Expression<Func<T, object>>[] includeProperties) where T : Entity
         {
           return includeProperties.Aggregate((IQueryable<T>)_context.Set<T>(),(q,p)=>q.Include(p));//.AsNoTracking();
         }
