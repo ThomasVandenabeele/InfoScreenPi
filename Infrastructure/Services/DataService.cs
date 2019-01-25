@@ -17,37 +17,14 @@ namespace InfoScreenPi.Infrastructure.Services
 
     public IEnumerable<Background> GetBackgroundsNoRSS(bool archieved)
     {
-      List<Background> exclAchtergronden = GetAll<Item>(i => i is RSSItem  || (archieved? false : ((IExpiring)i).Archieved),
-                                                        i => ((IStatic)i).Background)
-                                           .Select(i => ((IStatic)i).Background).ToList();
-      return GetAll<Background>(a => !exclAchtergronden.Contains(a) && !a.Url.Equals("black.jpg"));
+      List<int> exclAchtergronden = GetAll<Item>(i => i is IStatic && (i is RSSItem  || (archieved? false : ((IExpiring)i).Archieved)))
+                                           .Select(i => ((IStatic) i).BackgroundId).ToList();
+      return GetAll<Background>(a => !exclAchtergronden.Contains(a.Id));
     }
     public IEnumerable<Item> GetItemsNoRss(bool archived)
     {
-      return GetAll<Item>(i => !(i is RSSItem) && ((IExpiring)i).Archieved == archived, a => ((IStatic)a).Background);
+      return GetAll<Item>(i => !(i is RSSItem) && ((IExpiring)i).Archieved == archived);
     }
-    public IEnumerable<T> GetAllActive<T>() where T : Item
-    {
-      return ConstructQuery<T>(i=>i.Active).AsNoTracking().AsEnumerable();
-    }
-    public bool AnyRssFeedActive()
-    {
-      return ConstructQuery<RssFeed>()
-                    .AsNoTracking()
-                    .Any(rf => rf.Active);
-    }
-    /*public IEnumerable<Item> GetAllCustomItems()
-    {
-        return GetAll<Item>(i => !(i is RSSItem), i => ((IStatic)i).Background);
-    }
-    /*public IEnumerable<Item> GetAllActiveCustomItems()
-    {
-        return GetAllCustomItems().Where(i => i.Active && !((IExpiring)i).Archieved);
-    }
-    public IEnumerable<Item> GetAllActiveRSSItems()
-    {
-        return GetAll<RSSItem>(i=>i.Active, i=>i.Background, i=>i.RssFeed);
-    }*/
     public bool CheckItemState()
     {
       bool any = false;
@@ -83,31 +60,23 @@ namespace InfoScreenPi.Infrastructure.Services
       if(user != null) return user.UserRoles.Select(ur => _context.Roles.FirstOrDefault(r => r.Id == ur.RoleId)).AsEnumerable();
       else return null;
     }
-
-
+    /*
     public IEnumerable<IStatic> GetAllStatic(params Expression<Func<Item, object>>[] includeProperties)
     {
-      //return (IEnumerable<IStatic>)GetAll<RSSItem>(includeProperties) + (IEnumerable<IStatic>)GetAll<CustomItem>(includeProperties);
       return (IEnumerable<IStatic>)GetAll<Item>(includeProperties).Where(i=>i is IStatic);
     }
     public IEnumerable<IExpiring> GetAllExpiring(params Expression<Func<Item, object>>[] includeProperties)
     {
-      //return (IEnumerable<IExpiring>)GetAll<VideoItem>(includeProperties) + (IEnumerable<IExpiring>)GetAll<CustomItem>(includeProperties);
       return (IEnumerable<IExpiring>)GetAll<Item>(includeProperties).Where(i=>i is IExpiring);
     }
-    /*public IStatic GetStatic*/
-    public IEnumerable<IStatic> GetAllStatic(Expression<Func<Item,bool>> predicate, params Expression<Func<Item, object>>[] includeProperties)
+    public IEnumerable<IStatic> GetAllStatic(Expression<Func<IStatic,bool>> predicate, params Expression<Func<Item, object>>[] includeProperties)
     {
-      //return (IEnumerable<IStatic>)GetAll<RSSItem>((Expression<Func<RSSItem,bool>>)predicate, (Expression<Func<RSSItem, object>>[])includeProperties) + (IEnumerable<IStatic>)GetAll<CustomItem>((Expression<Func<CustomItem,bool>>)predicate, (Expression<Func<CustomItem, object>>[])includeProperties);
-      //return (IEnumerable<IStatic>)GetAll<Item>(predicate,includeProperties).Where(i=>i is RSSItem || i is CustomItem);
-      return (IEnumerable<IStatic>)((IQueryable<Item>)GetAllStatic(includeProperties)).Where(predicate);
+      return ((IQueryable<IStatic>)GetAllStatic(includeProperties)).Where(predicate).AsEnumerable();
     }
-    public IEnumerable<IExpiring> GetAllExpiring(Expression<Func<Item,bool>> predicate, params Expression<Func<Item, object>>[] includeProperties)
+    public IEnumerable<IExpiring> GetAllExpiring(Expression<Func<IExpiring,bool>> predicate, params Expression<Func<Item, object>>[] includeProperties)
     {
-      //return (IEnumerable<IExpiring>)GetAll<VideoItem>(predicate, includeProperties) + (IEnumerable<IExpiring>)GetAll<CustomItem>(predicate, includeProperties);
-      //return (IEnumerable<IExpiring>)GetAll<Item>(predicate,includeProperties).Where(i=>i is VideoItem || i is CustomItem);
-      return (IEnumerable<IExpiring>)((IQueryable<Item>)GetAllExpiring(includeProperties)).Where(predicate);
+      return ((IQueryable<IExpiring>)GetAllExpiring(includeProperties)).Where(predicate).AsEnumerable();
     }
-
+    */
   }
 }

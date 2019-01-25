@@ -22,7 +22,7 @@ public class ScreenBackgroundService : BackgroundService
     private readonly ILogger _logger;
     private readonly IServiceScopeFactory _scopeFactory;
     private IHubContext<WebSocketHub, IWebSocketClient> _hubContext;
-    private IDataService _data;
+    private IVolatileDataService _data;
 
 
     public ScreenBackgroundService(ILoggerFactory loggerFactory,
@@ -41,18 +41,18 @@ public class ScreenBackgroundService : BackgroundService
         var counter = 0;
         using (var scope = _scopeFactory.CreateScope())
         {
-            _data = scope.ServiceProvider.GetRequiredService<IDataService>();
+            _data = scope.ServiceProvider.GetRequiredService<IVolatileDataService>();
+            IEnumerable<CustomItem> activeCustomItems = _data.GetAllActive<CustomItem>();
+            IEnumerable<RSSItem> activeRSSItems = _data.GetAllActive<RSSItem>();
+
+            Item currentItem = activeCustomItems.FirstOrDefault();
+            Item screenItem = currentItem;
+            Item currentRssItem = null;
 
             while (!cancellationToken.IsCancellationRequested)
             {
-
-              IEnumerable<CustomItem> activeCustomItems = _data.GetAllActive<CustomItem>();
-              IEnumerable<RSSItem> activeRSSItems = _data.GetAllActive<RSSItem>();
-
-              Item currentItem = activeCustomItems.FirstOrDefault();
-              Item screenItem = currentItem;
-              Item currentRssItem = null;
-
+              activeCustomItems = _data.GetAllActive<CustomItem>();
+              activeRSSItems = _data.GetAllActive<RSSItem>();
                 try
                 {
                     if (screenItem != null)
@@ -112,7 +112,8 @@ public class ScreenBackgroundService : BackgroundService
     T GetNextItem<T>(T currentItem, IEnumerable<T> activeItems) where T : Item
     {
         if(activeItems.Count() == 1) return activeItems.First();
-        T next = activeItems.SkipWhile(i => !i.Id.Equals(currentItem.Id)).Skip(1).FirstOrDefault();
+        T next = null;
+        if (currentItem != null) next = activeItems.SkipWhile(i => !i.Id.Equals(currentItem.Id)).Skip(1).FirstOrDefault();
         if(next == null) next = activeItems.FirstOrDefault();
         return next;
         //return activeCustomItems.SkipWhile(i => i.Equals(currentItem)).Skip(1).FirstOrDefault();

@@ -4,6 +4,6 @@ namespace InfoScreenPi.Entities
     {
         public int UserId { get; set; }
         public int RoleId { get; set; }
-        public virtual Role Role { get; set; }
+        public Role Role { get; set; }
     }
 }

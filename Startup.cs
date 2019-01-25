@@ -44,7 +44,7 @@ namespace InfoScreenPi
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddDbContext<InfoScreenContext>(options => options
-                                                                .UseLazyLoadingProxies()
+                                                                //.UseLazyLoadingProxies()
                                                                 .UseSqlite("Data Source=db/InfoScreenDB.db"));
 
             // Services
@@ -52,6 +52,7 @@ namespace InfoScreenPi
             services.AddScoped<IMembershipService, MembershipService>();
             services.AddScoped<IEncryptionService, EncryptionService>();
             services.AddScoped<IRSSService, RSSService>();
+            services.AddSingleton<IVolatileDataService, VolatileDataService>();
 
             services.AddDataProtection();
             //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -81,7 +82,7 @@ namespace InfoScreenPi
             //services.AddHostedService<RefreshRSSTimedHostedService>();
             //services.AddHostedService<CheckItemStateTimedHostedService>();
             //services.AddHostedService<ScreenTimedHostedService>();
-            //services.AddHostedService<ScreenBackgroundService>();
+            services.AddHostedService<ScreenBackgroundService>();
             services.Configure<FormOptions>(x => x.MultipartBodyLengthLimit = 1_074_790_400);
         }
 

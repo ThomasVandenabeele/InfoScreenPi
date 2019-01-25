@@ -19,6 +19,6 @@ namespace InfoScreenPi.Entities
         public DateTime DateCreated { get; set; }
         public DateTime LastLogin { get; set; }
 
-        public virtual ICollection<UserRole> UserRoles { get; set; }
+        public ICollection<UserRole> UserRoles { get; set; }
     }
 }

@@ -15,16 +15,14 @@ namespace InfoScreenPi.Infrastructure.Services
         //IEnumerable<Item> GetAllCustomItems();
         //IEnumerable<Item> GetAllActiveCustomItems();
         //IEnumerable<Item> GetAllActiveRSSItems();
-        IEnumerable<T> GetAllActive<T>() where T : Item;
-        bool AnyRssFeedActive();
         bool CheckItemState();
         string GetSettingByName(string setting);
         void SetSettingByName(string key, string value);
         User GetSingleByUsername(string username);
-        IEnumerable<Role> GetUserRoles(string username);
-        IEnumerable<IStatic> GetAllStatic(Expression<Func<Item,bool>> predicate, params Expression<Func<Item, object>>[] includeProperties);
+        /*IEnumerable<Role> GetUserRoles(string username);
+        IEnumerable<IStatic> GetAllStatic(Expression<Func<IStatic,bool>> predicate, params Expression<Func<Item, object>>[] includeProperties);
         IEnumerable<IStatic> GetAllStatic(params Expression<Func<Item, object>>[] includeProperties);
-        IEnumerable<IExpiring> GetAllExpiring(Expression<Func<Item,bool>> predicate, params Expression<Func<Item, object>>[] includeProperties);
-        IEnumerable<IExpiring> GetAllExpiring(params Expression<Func<Item, object>>[] includeProperties);
+        IEnumerable<IExpiring> GetAllExpiring(Expression<Func<IExpiring,bool>> predicate, params Expression<Func<Item, object>>[] includeProperties);
+        IEnumerable<IExpiring> GetAllExpiring(params Expression<Func<Item, object>>[] includeProperties);*/
     }
 }

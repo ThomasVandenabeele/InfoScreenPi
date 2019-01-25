@@ -83,6 +83,13 @@ namespace InfoScreenPi.Controllers
             /*var test = _data.GetAll<RSSItem>().ToList();
             var a = 0;
             return Success(""+test[0].Title);*/
+            /*bool archieved = true;
+            List<Background> exclAchtergronden = _data.GetAll<Item>(i => i is IStatic && (i is RSSItem  || (archieved? false : ((IExpiring)i).Archieved)))
+                                                 .Select(i => ((IStatic) i).Background).ToList();
+            archieved = false;
+            List<Background> exclAchtergronden2 = _data.GetAll<Item>(i => i is IStatic && (i is RSSItem  || (archieved? false : ((IExpiring)i).Archieved)))
+                                                 .Select(i => ((IStatic) i).Background).ToList();
+            return Success("Archived = true: "+exclAchtergronden.Count()+" Archived = false: "+exclAchtergronden2.Count());*/
         }
 
         [HttpPost]
@@ -244,9 +251,9 @@ namespace InfoScreenPi.Controllers
         [HttpPost]
         public async Task<IActionResult> SaveOperatingTimes(string operatingString, int deviceId)
         {
-            
+
             Device edit = _data.GetSingle<Device>(d => d.Id == deviceId);
-            
+
             string cronstring = GenerateCronJobList(operatingString, deviceId);
 
             string path = _hostingEnvironment.ContentRootPath;
@@ -256,23 +263,23 @@ namespace InfoScreenPi.Controllers
             {
                 outFile.Write(cronstring);
             }
-            
+
             // copy cronlist to remote rpi screen
             string scpCommand = "scp " + fileName + " pi@" + edit.IP + ":~/cron/" + fn;
             //var outputScp = scpCommand.Bash();
-            
+
             // renew crons on remote rpi with crontab
             string sshCommand = "ssh pi@" + edit.IP + " '" + edit.CronCommand + " ~/cron/" + fn + "'";
             //var outputSsh = sshCommand.Bash();
-            
-            
-            
+
+
+
             edit.OperateString = operatingString;
             edit.CronString = cronstring;
             _data.Edit(edit);
             _data.Commit();
-            
-            
+
+
             return Success("Werkingstijden opgeslagen");
         }
 
@@ -280,7 +287,7 @@ namespace InfoScreenPi.Controllers
         {
             string scrOnCmd = _data.GetSingle<Device>(d => d.Id == deviceId).ScreenOnCommand;
             string scrOffCmd = _data.GetSingle<Device>(d => d.Id == deviceId).ScreenOffCommand;
-            
+
             //var json = JsonConvert.DeserializeObject(operatingString);
             var json = JObject.Parse(operatingString);
             var cronString = "";
@@ -295,8 +302,8 @@ namespace InfoScreenPi.Controllers
 
             return cronString;
         }
-        
-        
+
+
         public IActionResult About()
         {
             ViewData["Message"] = "Your application description page.";
@@ -456,7 +463,7 @@ namespace InfoScreenPi.Controllers
         public static string Bash(this string cmd)
         {
             var escapedArgs = cmd.Replace("\"", "\\\"");
-            
+
             var process = new Process()
             {
                 StartInfo = new ProcessStartInfo
@@ -474,7 +481,7 @@ namespace InfoScreenPi.Controllers
             return result;
         }
     }
-    
+
     public class TimeAction
     {
         public int Day { get; set; }
