@@ -15,6 +15,7 @@ namespace InfoScreenPi.Infrastructure.Services
         IEnumerable<Item> GetAllCustomItems();
         IEnumerable<Item> GetAllActiveCustomItems();
         IEnumerable<Item> GetAllActiveRSSItems();
+        IEnumerable<T> GetAllActive<T>() where T : Item;
         bool CheckItemState();
         string GetSettingByName(string setting);
         void SetSettingByName(string key, string value);

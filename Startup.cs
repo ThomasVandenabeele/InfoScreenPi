@@ -43,7 +43,9 @@ namespace InfoScreenPi
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            services.AddDbContext<InfoScreenContext>(options => options.UseSqlite("Data Source=db/InfoScreenDB.db"));
+            services.AddDbContext<InfoScreenContext>(options => options
+                                                                .UseLazyLoadingProxies()
+                                                                .UseSqlite("Data Source=db/InfoScreenDB.db"));
 
             // Services
             services.AddScoped<IDataService, DataService>();

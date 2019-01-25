@@ -26,18 +26,22 @@ namespace InfoScreenPi.Infrastructure.Services
     {
       return GetAll<Item>(i => !(i is RSSItem) && ((IExpiring)i).Archieved == archived, a => ((IStatic)a).Background);
     }
-    public IEnumerable<Item> GetAllCustomItems()
+    public IEnumerable<T> GetAllActive<T>() where T : Item
+    {
+      return GetAll<T>(i=>i.Active, i => i is IStatic ? ((IStatic)i).Background : null);
+    }
+    /*public IEnumerable<Item> GetAllCustomItems()
     {
         return GetAll<Item>(i => !(i is RSSItem), i => ((IStatic)i).Background);
     }
-    public IEnumerable<Item> GetAllActiveCustomItems()
+    /*public IEnumerable<Item> GetAllActiveCustomItems()
     {
         return GetAllCustomItems().Where(i => i.Active && !((IExpiring)i).Archieved);
     }
     public IEnumerable<Item> GetAllActiveRSSItems()
     {
         return GetAll<RSSItem>(i=>i.Active, i=>i.Background, i=>i.RssFeed);
-    }
+    }*/
     public bool CheckItemState()
     {
       bool any = false;

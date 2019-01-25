@@ -13,7 +13,7 @@ namespace InfoScreenPi.Entities
         //public int BackgroundId {get; set;}
         //[ForeignKey("BackgroundId")]
         public int BackgroundId {get; set;}
-        public Background Background { get; set; }
+        public virtual Background Background { get; set; }
         [Column("Content")]
         public string Content { get; set; }
     }

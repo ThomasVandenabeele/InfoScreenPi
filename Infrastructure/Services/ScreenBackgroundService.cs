@@ -15,14 +15,12 @@ using Microsoft.Extensions.Logging;
 namespace InfoScreenPi.Infrastructure.Services
 {
 
-public class Whatever{}
-}
-
 public class ScreenBackgroundService : BackgroundService
 {
     private readonly ILogger _logger;
     private readonly IServiceScopeFactory _scopeFactory;
     private IHubContext<WebSocketHub, IWebSocketClient> _hubContext;
+    private IDataService _data;
 
 
     public ScreenBackgroundService(ILoggerFactory loggerFactory,
@@ -41,13 +39,13 @@ public class ScreenBackgroundService : BackgroundService
         var counter = 0;
         using (var scope = _scopeFactory.CreateScope())
         {
-            var _dataService = scope.ServiceProvider.GetRequiredService<IDataService>();
+            _data = scope.ServiceProvider.GetRequiredService<IDataService>();
 
             while (!cancellationToken.IsCancellationRequested)
             {
 
-              IEnumerable<Item> activeCustomItems = _dataService.GetAllActiveCustomItems();
-              IEnumerable<Item> activeRSSItems = _dataService.GetAllActiveRSSItems();
+              IEnumerable<CustomItem> activeCustomItems = _data.GetAllActive<CustomItem>();
+              IEnumerable<RSSItem> activeRSSItems = _data.GetAllActive<RSSItem>();
 
               Item currentItem = activeCustomItems.FirstOrDefault();
               Item screenItem = currentItem;
@@ -73,7 +71,7 @@ public class ScreenBackgroundService : BackgroundService
 
                     // Obtain new item
                     Random r = new Random();
-                    bool checkIfRSSFeedActive =_dataService.ConstructQuery<RSSFeed>()
+                    bool checkIfRSSFeedActive =_data.ConstructQuery<RSSFeed>()
                                                            .AsNoTracking()
                                                            .Any(rf => rf.Active);
                     bool checkIfRssItemsExist = activeRSSItems.ToList().Count > 0;
@@ -81,20 +79,20 @@ public class ScreenBackgroundService : BackgroundService
 
                     if(checkIfRSSFeedActive && checkIfRssItemsExist && checkIfRssShow){
                         // Toon RSS Item als er actieve RSS feeds zijn en met een (pseudo) kans van 25%
-                        if(currentRssItem == null){
+                        /*if(currentRssItem == null){
                             currentRssItem = activeRSSItems.First();
                         } else{
                             if (activeRSSItems.Count() == 1) currentRssItem = activeRSSItems.First();
                             else{
                             Item next = activeRSSItems.SkipWhile(i => !i.Id.Equals(currentRssItem.Id)).Skip(1).FirstOrDefault();
                             if(next == null) currentRssItem = activeRSSItems.FirstOrDefault();
-                          }
-                            //currentRssItem = GetNextRssItem(currentRssItem, _dataService);
-                        }
+                          }*/
+                        currentRssItem = GetNextItem(currentRssItem, activeRSSItems);
+                        //}
                         screenItem = currentRssItem ?? screenItem;
                     }
                     else{
-                        currentItem = GetNextItem(currentItem, _dataService);
+                        currentItem = GetNextItem(currentItem, activeCustomItems);
                         screenItem = currentItem ?? screenItem;
                     }
 
@@ -111,20 +109,15 @@ public class ScreenBackgroundService : BackgroundService
 
     }
 
-    Item GetNextItem(Item currentItem, IDataService _dataService)
+    T GetNextItem<T>(T currentItem, IEnumerable<T> activeItems) where T : Item
     {
-        GetItemLists(_dataService);
-        if(activeCustomItems.Count() == 1) return activeCustomItems.First();
-        Item next = activeCustomItems.SkipWhile(i => !i.Id.Equals(currentItem.Id)).Skip(1).FirstOrDefault();
-        if(next == null)
-        {
-            //RefreshItemLists(_dataService);
-            next = activeCustomItems.FirstOrDefault();
-        }
+        if(activeItems.Count() == 1) return activeItems.First();
+        T next = activeItems.SkipWhile(i => !i.Id.Equals(currentItem.Id)).Skip(1).FirstOrDefault();
+        if(next == null) next = activeItems.FirstOrDefault();
         return next;
         //return activeCustomItems.SkipWhile(i => i.Equals(currentItem)).Skip(1).FirstOrDefault();
     }
-    Item GetNextRssItem(Item currentRssItem, IDataService _dataService)
+    /*Item GetNextRssItem(Item currentRssItem, IDataService _dataService)
     {
         GetItemLists(_dataService);
         if (activeRSSItems.Count() == 1) return activeRSSItems.First();
@@ -136,16 +129,16 @@ public class ScreenBackgroundService : BackgroundService
         }
         return next;
         //return activeCustomItems.SkipWhile(i => i.Equals(currentItem)).Skip(1).FirstOrDefault();
-    }
+    }*/
 
-    public IEnumerable<IExpiring> GetAllCustomItems()
+    /*public IEnumerable<IExpiring> GetAllCustomItems()
     {
         return _data.GetAllExpiring();
     }
     public IEnumerable<IExpiring> GetAllActiveCustomItems()
     {
         return GetAllCustomItems().Where(i => i.Active && !i.Archieved);
-    }
+    }**/
 }
 
 public static class ExtensionMethods
@@ -154,4 +147,6 @@ public static class ExtensionMethods
     {
         return r.NextDouble() < truePercentage / 100.0;
     }
+}
+
 }
