@@ -1,5 +1,5 @@
 @using InfoScreenPi.Entities
-@model Item
+@model CustomItem
 
 <form>
     <div class="form-group">
@@ -34,7 +34,7 @@
     <div class="form-group">
         <label for="content">Inhoud</label>
         <textarea name="editorEditItem" id="editorEditItem" rows="20" cols="80">
-            @Html.Raw(((IStatic)Model).Content)
+            @Html.Raw(Model.Content)
         </textarea>
     </div>
     <div class="form-group">
@@ -60,9 +60,9 @@
 
         $(function () {
             $('#EditItemTitle').val('@Model.Title');
-            $('#EditExpireDateTime').val('@((IExpiring)Model).ExpireDateTime');
+            $('#EditExpireDateTime').val('@Model.ExpireDateTime');
             $('#EditDisplayTime').val('@Model.DisplayTime');
-            var selectedImgId = parseInt(@((IStatic)Model).Background.Id);
+            var selectedImgId = parseInt(@Model.Background.Id);
             var img = ($( "#backgroundSelectionGrid" ).find( "#" + selectedImgId ))[0];
             var thumbnail = ($(img).closest('a'))[0];
             $(".selectedBg").removeClass("selectedBg");

@@ -26,6 +26,7 @@ namespace InfoScreenPi.Infrastructure
         public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<Error> Errors { get; set; }
         public DbSet<Setting> Settings { get; set; }
+        public DbSet<Device> Device { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

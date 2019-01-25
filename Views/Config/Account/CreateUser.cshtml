@@ -1,14 +1,14 @@
 @using InfoScreenPi.ViewModels
 @model RegisterUserViewModel
 
-<div class="form-horizontal col-md-9" method="post" id="newUser">
+<form class="form-horizontal col-md-9" method="post" id="newUser">
     <div class="form-group">
         <label asp-for="Username" for="Username" class="cols-sm-2 control-label">Gebruikersnaam</label>
         <div class="cols-sm-10">
             <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-user fa" aria-hidden="true"></i></span>
-                <input type="text" asp-for="Username" class="form-control" name="Username" id="Username"  placeholder="Gebruikersnaam"/>
-                <span asp-validation-for = "Username"></span> 
+                <input type="text" asp-for="Username" class="form-control" name="Username" id="Username"  placeholder="Gebruikersnaam" data-validation="length required" data-validation-length="max15"/>
+                
             </div>
         </div>
     </div>
@@ -18,7 +18,7 @@
         <div class="cols-sm-10">
             <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-envelope fa" aria-hidden="true"></i></span>
-                <input type="text" asp-for="Email" class="form-control" name="Email" id="Email"  placeholder="Email"/>
+                <input type="text" asp-for="Email" class="form-control" name="Email" id="Email"  placeholder="Email" data-validation="email"/>
             </div>
         </div>
     </div>
@@ -28,7 +28,7 @@
         <div class="cols-sm-10">
             <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-users fa" aria-hidden="true"></i></span>
-                <input type="text" asp-for="FirstName" class="form-control" name="FirstName" id="FirstName"  placeholder="Voornaam"/>
+                <input type="text" asp-for="FirstName" class="form-control" name="FirstName" id="FirstName"  placeholder="Voornaam" data-validation="required"/>
             </div>
         </div>
     </div>
@@ -38,7 +38,7 @@
         <div class="cols-sm-10">
             <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-users fa" aria-hidden="true"></i></span>
-                <input type="text" asp-for="LastName" class="form-control" name="LastName" id="LastName"  placeholder="Achternaam"/>
+                <input type="text" asp-for="LastName" class="form-control" name="LastName" id="LastName"  placeholder="Achternaam" data-validation="required"/>
             </div>
         </div>
     </div>
@@ -48,7 +48,7 @@
         <div class="cols-sm-10">
             <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-lock fa-lg" aria-hidden="true"></i></span>
-                <input type="password" asp-for="Password" class="form-control" name="Password" id="Password"  placeholder="Wachtwoord"/>
+                <input type="password" asp-for="Password" class="form-control" name="Password" id="Password"  placeholder="Wachtwoord" data-validation="required"/>
             </div>
         </div>
     </div>
@@ -58,7 +58,7 @@
         <div class="cols-sm-10">
             <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-lock fa-lg" aria-hidden="true"></i></span>
-                <input type="password" asp-for="VerifyPassword" class="form-control" name="VerifyPassword" id="VerifyPassword"  placeholder="Bevestig Wachtwoord"/>
+                <input type="password" asp-for="VerifyPassword" class="form-control" name="VerifyPassword" id="VerifyPassword"  placeholder="Bevestig Wachtwoord" data-validation="required"/>
             </div>
         </div>
     </div>
@@ -72,12 +72,18 @@
     <div class="form-group ">
         <button type="submit" class="btn btn-primary btn-lg btn-block login-button" id="btnRegisterUser">Registreer</button>
     </div>
-</div>
+</form>
 
 <script>
-    $(document).ready(function() {
-        $('#btnRegisterUser').off().on('click',function(e){
-            e.preventDefault(); // avoid to execute the actual submit of the form.
+    $.validate({
+        form: '#newUser',
+        onError: function($form) {
+            //alert('Validation of form '+$form.attr('id')+' failed!');
+        },
+        onSuccess: function($form) {
+            //$(document).ready(function() {
+            //$('#btnRegisterUser').off().on('click',function(e){
+            //e.preventDefault(); // avoid to execute the actual submit of the form.
             console.log("clicked");
             var form = $("#newUser :input");
             var formData = form.serialize();
@@ -113,9 +119,10 @@
                         alertify.error(response.message);
                     }
                 }
-                });
+            });
 
-                e.preventDefault();
+            return false;
+        }
         });
-    });
+    //});
 </script>

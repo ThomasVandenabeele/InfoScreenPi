@@ -64,7 +64,7 @@
                         @weergavetijd
                     </td>
                     <td>
-                        @if(i is IExpiring && i.Active){
+                        @if(i.Active){
                             <input type="checkbox" class="stateCheckItems" checked data-toggle="toggle" data-style="ios" data-size="mini" data-on="Actief" data-off="Inactief"data-onstyle="success" data-offstyle="danger">
                         }
                         else
@@ -73,7 +73,12 @@
                         }
                     </td>
                     <td><span class="glyphicon glyphicon-trash verwijder spanLink" aria-hidden="true" title="Verwijder '@i.Title'"></span></td>
-                    <td><span class="glyphicon glyphicon-pencil wijzigItem spanLink" aria-hidden="true" title="Wijzig '@i.Title'"></span></td>
+                    <td>
+                        @if (!(i is VideoItem))
+                        {
+                            <span class="glyphicon glyphicon-pencil wijzigItem spanLink" aria-hidden="true" title="Wijzig '@i.Title'"></span>   
+                        }
+                    </td>
                 </tr>
                 index++;
             }

@@ -39,6 +39,16 @@ connection.on("BroadcastSlide", function(currentSlide){
                             'Your browser does not support the video tag.\n' +
                             '</video>\n');
         }
+        else if(currentSlide.soort.description == "CLOCK"){
+            nextSlide.load('clock.html');
+            // nextSlide.html( '<div class="fill" style="background-color: #1FABD5;"></div>' +
+            //                 'CLOCK');
+        }
+        else if(currentSlide.soort.description == "WEATHER"){
+            nextSlide.load('forecast.html');
+            // nextSlide.html( '<div class="fill" style="background-color: #1FABD5;"></div>' +
+            //                 'CLOCK');
+        }
         else if(currentSlide.soort.description == "RSS"){
             nextSlide.html( '<div class="fill" style="background-image:url(\'' + currentSlide.background.url + '\')"></div>\n' +
                             '<div class="carousel-caption" style="font-weight: 900;">\n' +

@@ -93,12 +93,12 @@ namespace InfoScreenPi.Controllers
         }
 
         [HttpGet]
-        public ActionResult Edit(int id)
+        public ActionResult EditCustomItem(int id)
         {
             ViewBag.SelectionGrid = (List<Background>) _data.GetBackgroundsNoRSS(true).ToList();
-            Item model = _data.GetSingle<Item>(id);
-            if (model is IStatic) model = _data.GetSingle<Item>(id, i => ((IStatic)i).Background);
-            return PartialView("~/Views/Config/Items/EditItem.cshtml", model);
+            CustomItem model = _data.GetSingle<CustomItem>(id, i => i.Background);
+            //if (model is IStatic) model = _data.GetSingle<Item>(id, i => ((IStatic)i).Background);
+            return PartialView("~/Views/Config/Items/EditCustomItem.cshtml", model);
         }
 
         [HttpPost]

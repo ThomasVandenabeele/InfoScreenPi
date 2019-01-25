@@ -1,12 +1,12 @@
 <form id="new_video_form">
     <div class="form-group">
         <label for="title">Title</label>
-        <input type="text" class="form-control" id="ItemTitle" name="itemTitle" placeholder="Titel">
+        <input type="text" class="form-control" id="ItemTitle" name="itemTitle" placeholder="Titel" data-validation="required">
     </div>
     <div class="form-group">
         <label for="title">Vervaldatum en -uur</label>
         <div class='input-group date' id='expiredatetimepicker'>
-            <input type='text' name="expireDateTime" class="form-control" id="expireDateTime"/>
+            <input type='text' name="expireDateTime" class="form-control" id="expireDateTime" data-validation="required"/>
             <span class="input-group-addon" for="expireDateTime">
                 <span class="glyphicon glyphicon-calendar"></span>
             </span>
@@ -19,9 +19,8 @@
                 Browse &hellip; <input type="file" class="upload" name="video" id="f_UploadVideo" style="display: none;" accept="video/*">
             </span>
         </label>
-        <input type="text" class="form-control" placeholder="Upload nieuwe video" id="placeholderUploadVideo" readonly>
+        <input type="text" class="form-control" placeholder="Upload nieuwe video" id="placeholderUploadVideo" data-validation="required" readonly>
     </div>
-</form>
 
 <div id="videoUploadPreview"></div><br />
 
@@ -37,6 +36,7 @@
 
 </div>
 
+</form>
 
 
 <script>
@@ -48,7 +48,64 @@
     });
 </script>
 <script>
+    $.validate({
+        form : '#new_video_form',
+        onError : function($form) {
+            //alert('Validation of form '+$form.attr('id')+' failed!');
+        },
+        onSuccess : function($form) {
+            //alert('The form '+$form.attr('id')+' is valid!');
+            $("#loadingVideo").show();
+            
+            var frm = $("#new_video_form");
     
+            var data = new FormData();
+            data.append('video', frm.find("#f_UploadVideo")[0].files[0]);
+            data.append('itemTitle', frm.find("#ItemTitle").val());
+            data.append('expireDateTime', frm.find("#expireDateTime").val());
+            data.append('displayTime', Math.round(document.getElementById("videoPrev").duration));
+    
+            console.log(data);
+    
+            $.ajax({
+                type: 'post',
+                url: '/Config/Items/UploadVideoItem',
+                data: data,
+                processData: false,
+                contentType: false,
+                xhr: function() {
+                    var xhr = new window.XMLHttpRequest();
+                    xhr.upload.addEventListener("progress",
+                        function(evt) {
+                            if (evt.lengthComputable) {
+                                var progress = Math.round((evt.loaded / evt.total) * 100);
+                                update_progressbar(progress);
+                            }
+                        },
+                        false);
+                    return xhr;
+                },
+                success: function (response, textStatus, jqXHR) {
+                    if(response.success) {
+                        
+                        renewItemsGrid();
+                        
+                        modal.close();
+                        alertify.success(response.message);
+                        
+                    }
+                    else{
+                        alertify.error(response.message);
+                    }
+                },
+                error: function () {
+                    alert("Whoops something went wrong!");
+                }
+            });
+            return false;
+            
+        }
+    });
     $("#f_UploadVideo").on('change', function () {
     
         var label = $(this).val().replace(/\\/g, '/').replace(/.*\//, '');
@@ -87,77 +144,80 @@
 
     update_progressbar(0);
  
-    $("#registerNewItem").click(function(e) {
-        $("#loadingVideo").show();
-        e.preventDefault();
-
-        var frm = $("#new_video_form");
-
-        var data = new FormData();
-        data.append('video', frm.find("#f_UploadVideo")[0].files[0]);
-        data.append('itemTitle', frm.find("#ItemTitle").val());
-        data.append('expireDateTime', frm.find("#expireDateTime").val());
-        data.append('displayTime', Math.round(document.getElementById("videoPrev").duration));
-
-//        var ajax = new XMLHttpRequest();
-//        ajax.addEventListener('progress', function(evt) {
-//            var percentage = (evt.loaded / evt.total) * 100;
-//            update_progressbar(Math.round(percentage));
-//        });
-//        ajax.addEventListener('load', function(response) {
-//            if(response.success) {
-//                console.log("images uploaded");
-//            }
-//            else{
-//                alertify.error(response.message);
-//            }
-//        });
-//        ajax.open('POST', '/Config/Items/UploadVideoItem');
-//        ajax.send(data);
-
-
-//        var title = $("#ItemTitle").val();
-//        var expDT = $("#expireDateTime").val();
-//        var file = $("#f_UploadVideo")[0].files[0];
+    //$("#registerNewItem").click(function(e) {
+    //function RegisterVideoItem(){
+//        $("#loadingVideo").show();
+//        e.preventDefault();
 //        
-//        var formData = new FormData();
-//        formData.append('video', file);
-        $.ajax({
-            type: 'post',
-            url: '/Config/Items/UploadVideoItem',
-            data: data,
-            processData: false,
-            contentType: false,
-            xhr: function() {
-                var xhr = new window.XMLHttpRequest();
-                xhr.upload.addEventListener("progress",
-                    function(evt) {
-                        if (evt.lengthComputable) {
-                            var progress = Math.round((evt.loaded / evt.total) * 100);
-                            update_progressbar(progress);
-                        }
-                    },
-                    false);
-                return xhr;
-            },
-            success: function (response, textStatus, jqXHR) {
-                if(response.success) {
-                    
-                    renewItemsGrid();
-                    
-                    modal.close();
-                    alertify.success(response.message);
-                    
-                }
-                else{
-                    alertify.error(response.message);
-                }
-            },
-            error: function () {
-                alert("Whoops something went wrong!");
-            }
-        });
-
-    });
+//        var frm = $("#new_video_form");
+//
+//        var data = new FormData();
+//        data.append('video', frm.find("#f_UploadVideo")[0].files[0]);
+//        data.append('itemTitle', frm.find("#ItemTitle").val());
+//        data.append('expireDateTime', frm.find("#expireDateTime").val());
+//        data.append('displayTime', Math.round(document.getElementById("videoPrev").duration));
+//
+//        console.log(data);
+//
+////        var ajax = new XMLHttpRequest();
+////        ajax.addEventListener('progress', function(evt) {
+////            var percentage = (evt.loaded / evt.total) * 100;
+////            update_progressbar(Math.round(percentage));
+////        });
+////        ajax.addEventListener('load', function(response) {
+////            if(response.success) {
+////                console.log("images uploaded");
+////            }
+////            else{
+////                alertify.error(response.message);
+////            }
+////        });
+////        ajax.open('POST', '/Config/Items/UploadVideoItem');
+////        ajax.send(data);
+//
+//
+////        var title = $("#ItemTitle").val();
+////        var expDT = $("#expireDateTime").val();
+////        var file = $("#f_UploadVideo")[0].files[0];
+////        
+////        var formData = new FormData();
+////        formData.append('video', file);
+//        $.ajax({
+//            type: 'post',
+//            url: '/Config/Items/UploadVideoItem',
+//            data: data,
+//            processData: false,
+//            contentType: false,
+//            xhr: function() {
+//                var xhr = new window.XMLHttpRequest();
+//                xhr.upload.addEventListener("progress",
+//                    function(evt) {
+//                        if (evt.lengthComputable) {
+//                            var progress = Math.round((evt.loaded / evt.total) * 100);
+//                            update_progressbar(progress);
+//                        }
+//                    },
+//                    false);
+//                return xhr;
+//            },
+//            success: function (response, textStatus, jqXHR) {
+//                if(response.success) {
+//                    
+//                    renewItemsGrid();
+//                    
+//                    modal.close();
+//                    alertify.success(response.message);
+//                    
+//                }
+//                else{
+//                    alertify.error(response.message);
+//                }
+//            },
+//            error: function () {
+//                alert("Whoops something went wrong!");
+//            }
+//        });
+//
+//    });
 
 </script>

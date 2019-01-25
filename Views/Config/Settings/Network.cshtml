@@ -1,0 +1,82 @@
+@*model TModel
+
+*@
+@using InfoScreenPi.Entities
+@model List<Device>
+
+<h3 class="">Toestellen</h3>
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+  @{
+    int index = 1;
+    foreach (Device i in Model)
+    {
+      string inClass = "";
+      if(index == 1){ inClass = ""; }
+        
+      <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="headingOne">
+          <h4 class="panel-title">
+            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapse-@i.Id" aria-expanded="true" aria-controls="collapse-@i.Id">
+              Scherm @index  -  @i.Name
+            </a>
+          </h4>
+        </div>
+        <div id="collapse-@i.Id" class="panel-collapse collapse @inClass" role="tabpanel" aria-labelledby="heading-@i.Id">
+          <div class="panel-body">
+            <h3><small>Eigenschappen</small></h3>
+            <dl class="dl-horizontal">
+              <dt>Naam</dt>
+              <dd>@i.Name</dd>
+
+              <dt>Hostname</dt>
+              <dd>@i.Hostname</dd>
+
+              <dt>IP-Adres</dt>
+              <dd>@i.IP</dd>
+              
+              <dt>MAC</dt>
+              <dd>@i.MAC</dd>
+            </dl>
+            
+            <h3><small>Werkingstijden</small></h3>
+            <div class="media">
+              <div class="media-left media-top">
+                <span class="glyphicon glyphicon-question-sign text-muted" aria-hidden="true"></span> 
+              </div>
+              <div class="media-body">
+                <p class="text-muted">
+                  Pas hier de operationele schermtijden van ieder infoscherm aan.<br/>
+                  De schermen zullen via HDMI CEC aan- of uitgeschakeld worden op basis van de gekozen tijdsslots.<br />
+                  Maak nieuwe tijdsslots aan, wijzig bestaande tijdsslots en sla je wijzigingen op.
+                </p>
+              </div>
+            </div><br/>
+            <div id="body-@i.Id"></div>
+
+          </div>
+        </div>
+      </div>
+      index++;
+      <script>
+        $(function() {
+
+          $('#collapse-@i.Id').on('show.bs.collapse',
+            function() {
+              console.log("clicked");
+              $.get("/Config/GetOperatingTableView", { devideId: @i.Id },
+                function(data) {
+                  //console.log(data);
+                  $("#body-@i.Id").html(data);
+                  deviceId = @i.Id;
+                });
+            });
+          $('#collapse-@i.Id').on('hide.bs.collapse',
+            function() {
+              $("#body-@i.Id").empty();
+            });
+        });
+      </script>
+    }
+  }
+
+</div>
