@@ -52,7 +52,7 @@ namespace InfoScreenPi
             services.AddScoped<IMembershipService, MembershipService>();
             services.AddScoped<IEncryptionService, EncryptionService>();
             services.AddScoped<IRSSService, RSSService>();
-            services.AddSingleton<IVolatileDataService, VolatileDataService>();
+            services.AddScoped<IVolatileDataService, VolatileDataService>();
 
             services.AddDataProtection();
             //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

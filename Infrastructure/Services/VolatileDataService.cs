@@ -17,13 +17,17 @@ namespace InfoScreenPi.Infrastructure.Services
 
     protected override IQueryable<T> ConstructQuery<T>(params Expression<Func<T, object>>[] includeProperties)
     {
-      return includeProperties.Aggregate((IQueryable<T>)_context.Set<T>(),(q,p)=>q.Include(p)).AsNoTracking();//.AsNoTracking();
+      return includeProperties.Aggregate((IQueryable<T>)_context.Set<T>(),(q,p)=>q.Include(p)).AsNoTracking();
     }
 
     public IEnumerable<T> GetAllActive<T>() where T : Item
     {
-      return GetAll<T>(i=>i.Active);
+      //return GetAll<T>(i => i.Active, (typeof(T) is IStatic)? i => ((IStatic) i).Background);
+      //return GetAll<T>(i => i.Active);
+      return GetAll<Item>(i => i is IStatic, i => ((IStatic) i).Background).Concat(GetAll<Item>(i => !(i is IStatic)).ToList()).ToList().Cast<T>();
     }
+    
+    
     public bool AnyRssFeedActive()
     {
       return GetAll<RssFeed>(f=>f.Active).FirstOrDefault() != null;

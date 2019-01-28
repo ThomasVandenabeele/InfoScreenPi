@@ -1,6 +1,7 @@
 using InfoScreenPi.Entities;
 using Microsoft.AspNetCore.SignalR;
 using System.Threading.Tasks;
+using InfoScreenPi.ViewModels;
 
 namespace InfoScreenPi.Hubs
 {
@@ -13,7 +14,7 @@ namespace InfoScreenPi.Hubs
             //await Clients.All.SendAsync("Refresh");
         }
 
-        public async Task BroadcastSlide(Item currentSlide)
+        public async Task BroadcastSlide(ScreenItemViewModel currentSlide)
         {
             await Clients.AllExcept(new [] {Context.ConnectionId}).BroadcastSlide(currentSlide);
 

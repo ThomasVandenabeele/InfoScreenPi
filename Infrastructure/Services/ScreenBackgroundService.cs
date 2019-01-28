@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using InfoScreenPi.Entities;
 using InfoScreenPi.Hubs;
 using InfoScreenPi.Infrastructure.Services;
+using InfoScreenPi.ViewModels;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -60,7 +61,7 @@ public class ScreenBackgroundService : BackgroundService
                         // Send item to clients via websockets
                         _logger.LogInformation($"Send item: {(screenItem.Title)} with counter {counter}.");
                         //SEND TO CLIENTS
-                        await _hubContext.Clients.All.BroadcastSlide(screenItem);
+                        await _hubContext.Clients.All.BroadcastSlide(new ScreenItemViewModel(screenItem));
 
                         await Task.Delay(TimeSpan.FromSeconds(screenItem.DisplayTime));
                     }
