@@ -10,7 +10,7 @@ namespace InfoScreenPi.Infrastructure.Services
 {
     public interface IVolatileDataService : IDataService
     {
-        IEnumerable<T> GetAllActive<T>() where T : Item;
+        IEnumerable<Item> GetAllActive();
         bool AnyRssFeedActive();
     }
 }

@@ -43,8 +43,8 @@ public class ScreenBackgroundService : BackgroundService
         using (var scope = _scopeFactory.CreateScope())
         {
             _data = scope.ServiceProvider.GetRequiredService<IVolatileDataService>();
-            IEnumerable<CustomItem> activeCustomItems = _data.GetAllActive<CustomItem>();
-            IEnumerable<RSSItem> activeRSSItems = _data.GetAllActive<RSSItem>();
+            IEnumerable<Item> activeCustomItems = _data.GetAllActive().Where(i => !(i is RSSItem));
+            IEnumerable<Item> activeRSSItems = _data.GetAllActive().Where(i => i is RSSItem);
 
             Item currentItem = activeCustomItems.FirstOrDefault();
             Item screenItem = currentItem;
@@ -52,8 +52,8 @@ public class ScreenBackgroundService : BackgroundService
 
             while (!cancellationToken.IsCancellationRequested)
             {
-              activeCustomItems = _data.GetAllActive<CustomItem>();
-              activeRSSItems = _data.GetAllActive<RSSItem>();
+              activeCustomItems = _data.GetAllActive().Where(i => !(i is RSSItem));
+              activeRSSItems = _data.GetAllActive().Where(i => i is RSSItem);
                 try
                 {
                     if (screenItem != null)

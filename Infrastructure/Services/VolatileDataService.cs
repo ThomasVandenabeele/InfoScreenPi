@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace InfoScreenPi.Infrastructure.Services
 {
@@ -20,11 +21,22 @@ namespace InfoScreenPi.Infrastructure.Services
       return includeProperties.Aggregate((IQueryable<T>)_context.Set<T>(),(q,p)=>q.Include(p)).AsNoTracking();
     }
 
-    public IEnumerable<T> GetAllActive<T>() where T : Item
+//    public IEnumerable<T> GetAllActive<T>() where T : Item
+//    {
+//      //return GetAll<T>(i => i.Active, (typeof(T) is IStatic)? i => ((IStatic) i).Background);
+//      //return GetAll<T>(i => i.Active);
+//      return GetAll<T>(i =>  i is RSSItem, i => (RssFeed) i).Background);
+//        
+//                         .Concat(GetAll<T>(i => i is IStatic && !(i is RSSItem), (IStatic i) => i.Background))
+//                         .Concat(GetAll<T>(i => !(i is IStatic)));
+//    }
+
+    public IEnumerable<Item> GetAllActive()
     {
-      //return GetAll<T>(i => i.Active, (typeof(T) is IStatic)? i => ((IStatic) i).Background);
-      //return GetAll<T>(i => i.Active);
-      return GetAll<Item>(i => i is IStatic, i => ((IStatic) i).Background).Concat(GetAll<Item>(i => !(i is IStatic)).ToList()).ToList().Cast<T>();
+      return GetAll<RSSItem>(i => i.Background, i => i.RssFeed)
+                   .Concat(GetAll<Item>(i => i is IStatic && !(i is RSSItem), i => ((IStatic) i).Background))
+                   .Concat(GetAll<Item>(i => !(i is IStatic))).Where(i=>i.Active);
+      
     }
     
     

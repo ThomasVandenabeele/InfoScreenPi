@@ -37,7 +37,7 @@ connection.on("BroadcastSlide", function(currentSlide){
         }
         else if(soort == "VideoItem"){
             nextSlide.html( '<video autoplay muted loop width="1920" height="1080">\n' +
-                            '<source src="videos/' + item.content + '" type="video/mp4"/>\n' +
+                            '<source src="videos/' + item.url + '" type="video/mp4"/>\n' +
                             'Your browser does not support the video tag.\n' +
                             '</video>\n');
         }
