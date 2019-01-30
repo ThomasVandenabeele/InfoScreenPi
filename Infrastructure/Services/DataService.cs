@@ -28,7 +28,7 @@ namespace InfoScreenPi.Infrastructure.Services
     public bool CheckItemState()
     {
       bool any = false;
-      GetAll<Item>(i => i.Active && DateTime.Compare(((IExpiring)i).ExpireDateTime, DateTime.Now) <= 0)
+      GetAll<Item>(i => !(i is RSSItem) && i.Active && DateTime.Compare(((IExpiring)i).ExpireDateTime, DateTime.Now) <= 0)
                .ToList().ForEach(i=>
                 {
                     any = true;
