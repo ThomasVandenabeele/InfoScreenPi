@@ -397,11 +397,38 @@ namespace InfoScreenPi.Controllers
 
             ViewBag.Users = gebruikers;
             ViewBag.Devices = _data.GetAll<Device>().ToList();
+            ViewBag.WeatherSlide = _data.GetSingle<WeatherItem>();
+            ViewBag.ClockSlide = _data.GetSingle<ClockItem>();
+            
+            
             return PartialView("~/Views/Config/Settings/Modify.cshtml", model);
         }
 
         [HttpPost]
-        public IActionResult SaveSettings(Dictionary<string, string> parameters)
+        public IActionResult SaveSettingsScreen(string slideTime, bool clockSlideActive, int clockSlideInterval, bool weatherSlideActive, int weatherSlideInterval, string weatherSlideLocation)
+        {
+            ClockItem clock = _data.GetSingle<ClockItem>();
+            WeatherItem weather = _data.GetSingle<WeatherItem>();
+
+            clock.Active = clockSlideActive;
+            clock.DisplayTime = clockSlideInterval;
+            weather.Active = weatherSlideActive;
+            weather.DisplayTime = weatherSlideInterval;
+            
+            _data.Edit(clock);
+            _data.Edit(weather);
+            
+            _data.SetSettingByName("WeatherLocation", weatherSlideLocation);
+            _data.SetSettingByName("DefaultDisplayTime", slideTime);
+            
+            _data.Commit();
+
+            
+            return Success();
+        }
+        
+        [HttpPost]
+        public IActionResult SaveSettingsInfoBalk(Dictionary<string, string> parameters)
         {
             foreach(var setting in parameters)
             {

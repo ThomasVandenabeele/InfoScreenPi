@@ -23,12 +23,12 @@ namespace InfoScreenPi.Infrastructure.Services
     }
     public IEnumerable<Item> GetItemsNoRss(bool archived)
     {
-      return GetAll<Item>(i => !(i is RSSItem) && ((IExpiring)i).Archieved == archived);
+      return GetAll<Item>(i => !(i is RSSItem) && !(i is ClockItem) && !(i is WeatherItem) && ((IExpiring)i).Archieved == archived);
     }
     public bool CheckItemState()
     {
       bool any = false;
-      GetAll<Item>(i => !(i is RSSItem) && i.Active && DateTime.Compare(((IExpiring)i).ExpireDateTime, DateTime.Now) <= 0)
+      GetAll<Item>(i => !(i is RSSItem) && !(i is ClockItem) && !(i is WeatherItem) && i.Active && DateTime.Compare(((IExpiring)i).ExpireDateTime, DateTime.Now) <= 0)
                .ToList().ForEach(i=>
                 {
                     any = true;

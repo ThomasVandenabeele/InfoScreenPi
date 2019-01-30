@@ -9,22 +9,77 @@
 
 <!-- Nav tabs -->
 <ul class="nav nav-tabs" role="tablist">
-  <li role="presentation" class="active"><a href="#screen" aria-controls="screen" role="tab" data-toggle="tab">Scherm</a></li>
+    <li role="presentation" class="active"><a href="#screen" aria-controls="screen" role="tab" data-toggle="tab">Scherm</a></li>
+    <li role="presentation"><a href="#infobalk" aria-controls="infobalk" role="tab" data-toggle="tab">Infobalk</a></li>
   <li role="presentation"><a href="#prog" aria-controls="prog" role="tab" data-toggle="tab">InfoScreenPi</a></li>
   <li role="presentation"><a href="#network" aria-controls="network" role="tab" data-toggle="tab">Netwerk</a></li>
 </ul>
 <div class="tab-content">
-  <div role="tabpanel" class="tab-pane fade in active" id="screen">
-    <form class="form-horizontal" id="SettingsForm">
-      <h3 class="col-sm-offset-2">Slides</h3>
-      <div class="form-group">
-        <label for="DefaultDisplayTime" class="col-sm-2 control-label">Standaard Intervaltijd</label>
-        <div class="input-group col-md-5">
-            <input type="number" class="form-control" id="DefaultDisplayTime" value="@Model.First(s => s.SettingName == "DefaultDisplayTime").SettingValue" data-validation="number required">
-            <span class="input-group-addon">seconden</span>
-        </div>
-      </div>
-      <hr/>
+    <div role="tabpanel" class="tab-pane fade in active" id="screen">
+        <form class="form-horizontal" id="SettingsForm">
+            <h3 class="col-sm-offset-2">Slides</h3>
+            <div class="form-group">
+                <label for="DefaultDisplayTime" class="col-sm-2 control-label">Standaard Intervaltijd</label>
+                <div class="input-group col-md-5">
+                    <input type="number" class="form-control" id="DefaultDisplayTime" value="@Model.First(s => s.SettingName == "DefaultDisplayTime").SettingValue" data-validation="number required">
+                    <span class="input-group-addon">seconden</span>
+                </div>
+            </div>
+            <hr/>
+            <h3 class="col-sm-offset-2">Klok Slide</h3>
+            <div class="form-group">
+                <label for="ShowTicker" class="col-sm-2 control-label">Toon Slide</label>
+                <div class="input-group col-md-5">
+                    @{
+                        ClockItem klok = ViewBag.ClockSlide;
+                        string check = "";
+                        if (klok.Active){ check = "checked"; }
+                    }
+                    <input type="checkbox" id="ClockSlideActive" class="ClockSlideShow" @check data-toggle="toggle" data-style="ios" data-size="small" data-on="Toon" data-off="Verberg" data-onstyle="success" data-offstyle="danger">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="TickerTime" class="col-sm-2 control-label">Intervaltijd</label>
+                <div class="input-group col-md-5">
+                    <input type="number" class="form-control" id="ClockSlideInterval" value="@klok.DisplayTime" data-validation="number required">
+                    <span class="input-group-addon">seconden</span>
+                </div>
+            </div>
+            <hr/>
+            <h3 class="col-sm-offset-2">Weer Slide</h3>
+            <div class="form-group">
+                <label for="TickerTime" class="col-sm-2 control-label">Toon Slide</label>
+                <div class="input-group col-md-5">
+                    @{
+                        WeatherItem weather = ViewBag.WeatherSlide;
+                        string checkW = "";
+                        if (weather.Active){ checkW = "checked"; }
+                    }
+                    <input type="checkbox" id="WeatherSlideActive" class="WeatherSlideActive" @checkW data-toggle="toggle" data-style="ios" data-size="small" data-on="Toon" data-off="Verberg" data-onstyle="success" data-offstyle="danger">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="TickerTime" class="col-sm-2 control-label">Intervaltijd</label>
+                <div class="input-group col-md-5">
+                    <input type="number" class="form-control" id="WeatherSlideInterval" value="@weather.DisplayTime" data-validation="number required">
+                    <span class="input-group-addon">seconden</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="TickerTime" class="col-sm-2 control-label">Locatie</label>
+                <div class="input-group col-md-5">
+                    <input type="text" class="form-control" id="WeatherSlideLocation" value='@Model.First(s => s.SettingName == "WeatherLocation").SettingValue' data-validation="required"></div>
+            </div>
+            <hr/>
+            <div class="form-group">
+                <div class="col-md-5"><br>
+                    <button class="btn btn-primary" id="SaveSettings" >Opslaan</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div role="tabpanel" class="tab-pane fade" id="infobalk">
+    <form class="form-horizontal" id="SettingsFormInfobalk">
       <h3 class="col-sm-offset-2">Ticker</h3>
       <div class="form-group">
         <label for="ShowTicker" class="col-sm-2 control-label">Toon Ticker</label>
@@ -94,7 +149,7 @@
       <hr/>
       <div class="form-group">
         <div class="col-md-5"><br>
-          <button class="btn btn-primary" id="SaveSettings" >Opslaan</button>
+          <button class="btn btn-primary" id="SaveSettingsInfoBalk" >Opslaan</button>
         </div>
       </div>
     </form>
@@ -203,10 +258,49 @@
         },
         onSuccess : function($form) {
             //alert('The form '+$form.attr('id')+' is valid!');
+
+            var postData = {
+                 slideTime: $("#DefaultDisplayTime").val(), 
+                 clockSlideActive: Boolean($("#ClockSlideActive").val()), 
+                 clockSlideInterval: $("#ClockSlideInterval").val(), 
+                 weatherSlideActive: Boolean($("#WeatherSlideActive").val()), 
+                 weatherSlideInterval: $("#WeatherSlideInterval").val(), 
+                 weatherSlideLocation: $("#WeatherSlideLocation").val()
+            };
+
+            
+            $.ajax({
+                type: "POST",
+                url: '/Config/SaveSettingsScreen',
+                data: postData,
+                success: function (response, textStatus, jqXHR) {
+                    console.log(response);
+                    if (response.success) {
+                        //modal.close();
+                        alertify.success(response.message);
+                    }
+                    else {
+                        alertify.error(response.message);
+                    }
+                },
+                dataType: "json",
+                traditional: true
+            });
+            
+            return false;
+        }
+    });
+    $.validate({
+        form : '#SettingsFormInfoBalk',
+        onError : function($form) {
+            //alert('Validation of form '+$form.attr('id')+' failed!');
+        },
+        onSuccess : function($form) {
+            //alert('The form '+$form.attr('id')+' is valid!');
             
             var parameters = new Object();
 
-            $("#SettingsForm :input").each(function (index, item) {
+            $("#SettingsFormInfobalk :input").each(function (index, item) {
                 var input = $(this);
 
                 if (input.is(":button")) {
@@ -228,7 +322,7 @@
 
             $.ajax({
                 type: "POST",
-                url: '/Config/SaveSettings',
+                url: '/Config/SaveSettingsInfobalk',
                 data: parameters,
                 success: function (response, textStatus, jqXHR) {
                     console.log(response);

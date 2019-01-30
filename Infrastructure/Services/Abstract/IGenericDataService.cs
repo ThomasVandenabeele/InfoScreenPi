@@ -12,6 +12,7 @@ namespace InfoScreenPi.Infrastructure.Services
     {
         IEnumerable<T> GetAll<T>(params Expression<Func<T, object>>[] includeProperties) where T : Entity;
         IEnumerable<T> GetAll<T>(Expression<Func<T,bool>> predicate, params Expression<Func<T, object>>[] includeProperties) where T : Entity;
+        T GetSingle<T>() where T : Entity;
         T GetSingle<T>(int id, params Expression<Func<T, object>>[] includeProperties) where T : Entity;
         T GetSingle<T>(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includeProperties) where T : Entity;
         Task<T> GetSingleAsync<T>(int id) where T : Entity;

@@ -34,6 +34,10 @@ namespace InfoScreenPi.Infrastructure.Services
         {
             return ConstructQuery<T>(includeProperties).FirstOrDefault(predicate);
         }
+        public T GetSingle<T>() where T : Entity
+        {
+            return ConstructQuery<T>().FirstOrDefault();
+        }
         public T GetSingle<T>(int id, params Expression<Func<T, object>>[] includeProperties) where T : Entity
         {
             return GetSingle<T>(x => x.Id == id, includeProperties);
