@@ -261,9 +261,9 @@
 
             var postData = {
                  slideTime: $("#DefaultDisplayTime").val(), 
-                 clockSlideActive: Boolean($("#ClockSlideActive").val()), 
+                 clockSlideActive: Boolean($("#ClockSlideActive").is(":checked")), 
                  clockSlideInterval: $("#ClockSlideInterval").val(), 
-                 weatherSlideActive: Boolean($("#WeatherSlideActive").val()), 
+                 weatherSlideActive: Boolean($("#WeatherSlideActive").is(":checked")), 
                  weatherSlideInterval: $("#WeatherSlideInterval").val(), 
                  weatherSlideLocation: $("#WeatherSlideLocation").val()
             };

@@ -43,16 +43,18 @@ public class ScreenBackgroundService : BackgroundService
         using (var scope = _scopeFactory.CreateScope())
         {
             _data = scope.ServiceProvider.GetRequiredService<IVolatileDataService>();
-            IEnumerable<Item> activeCustomItems = _data.GetAllActive().Where(i => !(i is RSSItem));
+            IEnumerable<Item> activeCustomItems = _data.GetAllActive().Where(i => !(i is RSSItem || i is ClockItem || i is WeatherItem));
             IEnumerable<Item> activeRSSItems = _data.GetAllActive().Where(i => i is RSSItem);
 
             Item currentItem = activeCustomItems.FirstOrDefault();
             Item screenItem = currentItem;
             Item currentRssItem = null;
 
+            bool showClock = true;
+
             while (!cancellationToken.IsCancellationRequested)
             {
-              activeCustomItems = _data.GetAllActive().Where(i => !(i is RSSItem));
+              activeCustomItems = _data.GetAllActive().Where(i => !(i is RSSItem || i is ClockItem || i is WeatherItem));
               activeRSSItems = _data.GetAllActive().Where(i => i is RSSItem);
                 try
                 {
@@ -74,11 +76,13 @@ public class ScreenBackgroundService : BackgroundService
 
                     // Obtain new item
                     Random r = new Random();
-                    bool checkIfRSSFeedActive = _data.AnyRssFeedActive();
-                    bool checkIfRssItemsExist = activeRSSItems.ToList().Count > 0;
-                    bool checkIfRssShow = r.NextBool(25);
+                    ClockItem clock = _data.GetSingle<ClockItem>();
+                    WeatherItem weather = _data.GetSingle<WeatherItem>();
+//                    bool checkIfRSSFeedActive = _data.AnyRssFeedActive();
+//                    bool checkIfRssItemsExist = activeRSSItems.ToList().Count > 0;
+//                    bool checkIfRssShow = r.NextBool(25);
 
-                    if(checkIfRSSFeedActive && checkIfRssItemsExist && checkIfRssShow){
+                    if(_data.AnyRssFeedActive() && activeRSSItems.ToList().Count > 0 && r.NextBool(25)){
                         // Toon RSS Item als er actieve RSS feeds zijn en met een (pseudo) kans van 25%
                         /*if(currentRssItem == null){
                             currentRssItem = activeRSSItems.First();
@@ -92,11 +96,15 @@ public class ScreenBackgroundService : BackgroundService
                         //}
                         screenItem = currentRssItem ?? screenItem;
                     }
+                    else if(!(screenItem is ClockItem || screenItem is WeatherItem) && r.NextBool(35) && ((showClock && clock.Active) || (!showClock && weather.Active)))
+                    {
+                        screenItem = showClock? (Item) clock : weather;
+                        showClock = !showClock;
+                    }
                     else{
                         currentItem = GetNextItem(currentItem, activeCustomItems);
                         screenItem = currentItem ?? screenItem;
                     }
-
 
                 }
                 catch (Exception ex)

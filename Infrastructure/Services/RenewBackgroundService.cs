@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
@@ -51,8 +52,32 @@ namespace InfoScreenPi.Infrastructure.Services
                         
                         if (counter >= CheckRSSRenewCount)
                         {
-                            _logger.LogInformation("Renewing RSSFeed items.");
+                            _logger.LogInformation("Renewing RSSFeed items and weather forecast.");
                             var renewed = _rss.RenewActiveRssFeeds().Result;
+
+                            using (var client = new HttpClient())
+                            {
+                                try
+                                {
+                                    client.BaseAddress = new Uri("https://api.openweathermap.org");
+                                    var city = _data.GetSettingByName("WeatherLocation");
+                                    var response = await client.GetAsync($"/data/2.5/forecast?q={city}&appid=e9e81d9533487c8075cd2f47af1ef9ae&units=metric&lang=nl");
+                                    response.EnsureSuccessStatusCode();
+
+                                    var stringResult = await response.Content.ReadAsStringAsync();
+
+                                    WeatherItem weather = _data.GetSingle<WeatherItem>();
+                                    weather.Forecast = stringResult;
+                                    _data.Edit(weather);
+                                    _data.Commit();
+                                    
+                                }
+                                catch (HttpRequestException httpRequestException)
+                                {
+                                    _logger.LogInformation($"Error getting weather from OpenWeather: {httpRequestException.Message}");
+                                }
+                            }
+                            
                             counter = 0;
                         }
     

@@ -70,5 +70,11 @@ namespace InfoScreenPi.Controllers
 
             return View();
         }
+
+        [HttpGet]
+        public string GetWeatherForecast()
+        {
+            return _data.GetSingle<WeatherItem>().Forecast;
+        }
     }
 }
