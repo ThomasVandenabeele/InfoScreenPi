@@ -23,7 +23,9 @@ namespace InfoScreenPi.Infrastructure.Services
     }
     public IEnumerable<Item> GetItemsNoRss(bool archived)
     {
-      return GetAll<Item>(i => !(i is RSSItem) && !(i is ClockItem) && !(i is WeatherItem) && ((IExpiring)i).Archieved == archived);
+      IQueryable<Item> items = ConstructQuery<Item>().Where(i => (i is IExpiring) && (((IExpiring)i).Archieved == archived));
+      IEnumerable<Item> items2 = items.Where(i => i is IStatic).Include(i => ((IStatic) i).Background).Concat(items.Where(i=>!(i is IStatic)));
+      return items2.OrderBy(i => i.Id);
     }
     public bool CheckItemState()
     {

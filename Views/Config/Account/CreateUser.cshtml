@@ -84,10 +84,8 @@
             //$(document).ready(function() {
             //$('#btnRegisterUser').off().on('click',function(e){
             //e.preventDefault(); // avoid to execute the actual submit of the form.
-            console.log("clicked");
             var form = $("#newUser :input");
             var formData = form.serialize();
-            console.log(formData);
             var url = "/Config/RegisterUser";
 
             $.ajax({
@@ -97,12 +95,10 @@
                 success: function(response)
                 {
                     if(response.success) {
-                        console.log(response.gebruiker);
                         var frmUsername = response.gebruiker.username;//$("#Username").val();
                         var frmName = response.gebruiker.firstName + " " + response.gebruiker.lastName; //("#FirstName").val() + " " + $("#LastName").val();
                         var frmEmail = response.gebruiker.email; //$("#Email").val(); 
                         var frmLastLogin = "Nog niet ingelogd.";
-                        console.log(response.gebruiker.userRoles[0].role.name);
                         var admin = response.gebruiker.userRoles[0].role.name == "Admin";
                         var admintd = "<td></td>";
                         if(admin) admintd = '<td><span class="glyphicon glyphicon-wrench" aria-hidden="true" data-toggle="tooltip" data-placement="right" title="Administrator"></span></td>';

@@ -67,7 +67,6 @@
             editable: true,
             eventLimit: true, // allow "more" link when too many events
             // eventClick: function(calEvent, jsEvent, view) {
-            //     console.log("clicked");
             //     $('#calendar').fullCalendar('removeEvents', calEvent.id);
             // },
             eventRender: function(event, element) {
@@ -88,7 +87,6 @@
         function placeTimeSlots(screenEventListJSON){
             try {
                 var screenEventList = JSON.parse(screenEventListJSON); // this is how you parse a string into JSON 
-                console.log(screenEventList);
                 for (i = 0; i < screenEventList.screenOn.length; i++){
                     var start = screenEventList.screenOn[i];
                     var end = screenEventList.screenOff[i];
@@ -113,7 +111,6 @@
         
         
         function sendTimeSlots(eventList){
-            console.log(eventList);
 
             var screenOnList = [];
             var screenOffList = [];
@@ -138,8 +135,6 @@
                 screenOn: screenOnList.sort((a, b) => parseFloat(a.day) - parseFloat(b.day)),
                 screenOff: screenOffList.sort((a, b) => parseFloat(a.day) - parseFloat(b.day))
             };
-            console.log(screenEventList);
-            console.log(JSON.stringify(screenEventList))
         }
 
     });

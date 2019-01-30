@@ -52,7 +52,7 @@
                                 content2 = System.Text.RegularExpressions.Regex.Replace(content, "<.*?>", " ");
                             }
                         }
-                        @content2
+                        @(content2.Length > 50 ? content2.Substring(0, 50) + "..." : content2)
                     </td>
                     <td>
                         @{

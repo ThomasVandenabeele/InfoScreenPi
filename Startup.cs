@@ -114,7 +114,7 @@ namespace InfoScreenPi
 
             app.UseSignalR(routes =>
             {
-                routes.MapHub<WebSocketHub>("/signalr");
+                routes.MapHub<WebSocketHub>("/screenpiws");
             });
 
             app.UseMvc(routes =>

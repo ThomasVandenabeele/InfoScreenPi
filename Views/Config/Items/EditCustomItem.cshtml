@@ -87,7 +87,6 @@
                 url: '/Config/Items/EditItem',
                 data: postData,
                 success: function(response, textStatus, jqXHR){
-                    console.log(response);
                     if(response.success){
                         renewItemsGrid();
                         modal.close();

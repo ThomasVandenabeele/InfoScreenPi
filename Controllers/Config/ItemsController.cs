@@ -32,7 +32,7 @@ namespace InfoScreenPi.Controllers
                 item.Active = state;
                 _data.Edit(item);
                 _data.Commit();
-                return Success(state? "Item status verandert naar actief!" : "Item status verandert naar inactief!");
+                return Success(state? $"Status van item '{ item.Title }' veranderd naar actief!" : $"Status van item '{ item.Title }' veranderd naar inactief!");
             }
             return Fail();
         }
@@ -46,7 +46,7 @@ namespace InfoScreenPi.Controllers
                 ((IExpiring)item).Archieved = state;
                 _data.Edit(item);
                 _data.Commit();
-                return Success(state? "Item verwijderd" : "Item terug geactiveerd");
+                return Success(state? $"Item {item.Title} gearchiveerd" : $"Item '{item.Title}' terug geactiveerd");
             }
             return Fail();
         }

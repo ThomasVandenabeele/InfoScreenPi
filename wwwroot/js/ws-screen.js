@@ -1,23 +1,12 @@
 "use strict";
 
-var connection = new signalR.HubConnectionBuilder().withUrl("/signalr").build();
+var connection = new signalR.HubConnectionBuilder().withUrl("/screenpiws").build();
 
-connection.on("ReceiveMessage", function (user, message) {
-    var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    var encodedMsg = user + " says " + msg;
-    var li = document.createElement("li");
-    li.textContent = encodedMsg;
-    document.getElementById("messagesList").appendChild(li);
-});
 connection.on("RefreshScreens", function () {
-    console.log("on refresh");
     //location.reload();
 });
+
 connection.on("BroadcastSlide", function(currentSlide){
-    console.log("new slide ontvangen");
-    console.log(currentSlide);
-    //currentSlide.Title;
-    //currentSlide.background.url;
     $(document).ready(function() {
         
         var nextSlide = $('div.item').not('.active');
@@ -25,9 +14,7 @@ connection.on("BroadcastSlide", function(currentSlide){
         var soort = currentSlide.itemType;
         var item = currentSlide.item;
 
-        console.log(item.id);
         var currentId = $('div.item.active').attr("id");
-        console.log(currentId);
         nextSlide.attr("id", item.id);
         
         if(Number(item.id) !== Number(currentId)){

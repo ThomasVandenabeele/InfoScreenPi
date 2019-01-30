@@ -3,7 +3,6 @@
 @model List<Setting>
 
 @{
-    int SlideTimeSec = Convert.ToInt32(@Model.First(s => s.SettingName == "SlideTime").SettingValue)/1000;
     int TickerTimeSec = Convert.ToInt32(@Model.First(s => s.SettingName == "TickerTime").SettingValue)/1000;
 }
 
@@ -274,7 +273,7 @@
                 url: '/Config/SaveSettingsScreen',
                 data: postData,
                 success: function (response, textStatus, jqXHR) {
-                    console.log(response);
+                    
                     if (response.success) {
                         //modal.close();
                         alertify.success(response.message);
@@ -308,7 +307,6 @@
                 else {
                     //if (input.attr('type')=='number'){
                     if (input[0].id == 'TickerTime') {
-                        //console.log(input.attr('type') == 'number');
                         parameters[input[0].id] = String(parseInt(input[0].value) * 1000);
                     }
                     else if (input.is(':checkbox')) {
@@ -325,7 +323,7 @@
                 url: '/Config/SaveSettingsInfobalk',
                 data: parameters,
                 success: function (response, textStatus, jqXHR) {
-                    console.log(response);
+                   
                     if (response.success) {
                         //modal.close();
                         alertify.success(response.message);
@@ -392,9 +390,9 @@
         var userid = $(this).attr('id');
         var userUN = curRow.find('td:first').text();
         var postData = { userId: userid };
-        console.log(postData);
+        
         alertify.confirm("Bent u zeker dat u gebruiker " + userUN + " wilt verwijderen?", function (e) {
-            console.log(e);
+            
             if (e) {
                 $.ajax({
                     type: "POST",

@@ -52,17 +52,11 @@
                 <a asp-controller="Config" asp-action="Index" class="navbar-brand" id="progTitle"> <b>@ViewBag.TitleProg</b></a>
             </div>
             <div class="navbar-collapse collapse">
-                @*
-                <ul class="nav navbar-nav">
-                    <li><a asp-controller="Home" asp-action="Index">Home</a></li>
-                    <li><a asp-controller="Home" asp-action="About">About</a></li>
-                </ul>
-                *@
                 <form class="navbar-form form-inline"> @* Form gebruiken om het te aligneren met de navbar *@
                     <div class="btn-group btn-group-xs">
-                        <button type="button" class="btn btn-default" id="RefreshScreen" style="margin-top:6px; margin-left: 2px" data-toggle="tooltip" data-placement="bottom" title="Herlaad alle geconnecteerde schermen">
+                        @*<button type="button" class="btn btn-default" id="RefreshScreen" style="margin-top:6px; margin-left: 2px" data-toggle="tooltip" data-placement="bottom" title="Herlaad alle geconnecteerde schermen">
                             <i class="glyphicon glyphicon-refresh"> </i>&nbsp;&nbsp;Refresh Scherm
-                        </button>
+                        </button>*@
                         @{
                             Role r = ViewBag.CurrentRole;
                             if(r.Name.Equals("Admin")){
@@ -89,7 +83,7 @@
         </center>
         <hr />
         <footer>
-            <p style="text-align: center;">&copy; 2019 - Thomas Vandenabeele</p>
+            <p style="text-align: center;">&copy; 2019 - ScreenPi versie @ViewBag.ScreenPiVersion</p>
         </footer>
     </div>
 
@@ -112,7 +106,7 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/jquery.nu-context-menu.js" asp-append-version="true"></script>
     <script src="~/lib/signalr/dist/browser/signalr.js"></script>
-    <script src="~/js/ws-config.js"></script>
+    @* <script src="~/js/ws-config.js"></script> *@
     <script src='js/moment.min.js'></script>
     <script src='js/fullcalendar.js'></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.3.26/jquery.form-validator.min.js"></script>

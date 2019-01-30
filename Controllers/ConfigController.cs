@@ -54,6 +54,7 @@ namespace InfoScreenPi.Controllers
             ViewBag.RssAbo = _data.GetAll<RssFeed>(r => r.StandardBackground).ToList();
             ViewBag.Logo = _data.GetSettingByName("LogoUrl");
             ViewBag.TitleProg = _data.GetSettingByName("Title");
+            ViewBag.ScreenPiVersion = _data.GetSettingByName("ScreenPiVersion");
 
             string idString = "";
             if(HttpContext.User.Identity.IsAuthenticated)
@@ -97,6 +98,14 @@ namespace InfoScreenPi.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel user)
         {
+            ViewBag.Logo = _data.GetSettingByName("LogoUrl");
+            if (!ModelState.IsValid)
+            {
+                if(user.Username == null || user.Username.Equals("")) ModelState.AddModelError("", "Geef een gebruikersnaam op.");
+                if(user.Password == null || user.Password.Equals("")) ModelState.AddModelError("", "Geef een wachtwoord op.");
+                ModelState.AddModelError("", "Gegevens incorrect. Probeer opnieuw.");
+                return View(user);
+            }
             //User _user = _membershipService.CreateUser("TVDA", "thomas.vandenabeele@kuleuven.be", "i1n2f3o4", new int[] { 1 });
 
             IActionResult _result = new ObjectResult(false);
@@ -179,6 +188,8 @@ namespace InfoScreenPi.Controllers
                         Message = "Authentication failed"
                     };
                     ViewBag.Logo = _data.GetSettingByName("LogoUrl");
+                    ModelState.AddModelError("", "Geen correcte logingegevens.");
+
                     return View(user);
                 }
             }
@@ -192,8 +203,11 @@ namespace InfoScreenPi.Controllers
 
                 _data.Add(new Error() { Message = ex.Message, StackTrace = ex.StackTrace, DateCreated = DateTime.Now });
                 _data.Commit();
-            }
+                ModelState.AddModelError("", "Geen correcte logingegevens.");
 
+            }
+            
+            ModelState.AddModelError("", "Geen correcte logingegevens.");
             _result = new ObjectResult(_authenticationResult);
             ViewBag.Logo = _data.GetSettingByName("LogoUrl");
             return View(user);

@@ -40,7 +40,17 @@
     </div>
     <div class="form-group">
         <label for="background">Achtergrond</label>
-        @await Html.PartialAsync("~/Views/Config/Backgrounds/SelectionGrid.cshtml", Model)
+        <div class="input-group">
+            <label class="input-group-btn">
+                <span class="btn btn-primary">
+                    Browse &hellip; <input type="file" class="upload"  id="f_UploadImageNew" style="display: none;" multiple>
+                </span>
+            </label>
+            <input type="text" class="form-control" placeholder="Upload nieuwe achtergrond" id="placeholderUploadNew" readonly>
+        </div><br />
+        <div id="backselectiongrid">
+            @await Html.PartialAsync("~/Views/Config/Backgrounds/SelectionGrid.cshtml", Model)    
+        </div>
     </div>
     
     <hr>
@@ -89,7 +99,6 @@
             url: '/Config/Items/RegisterNewItem',
             data: postData,
             success: function(response, textStatus, jqXHR){
-                console.log(response);
                 if(response.success){
                     renewItemsGrid();
                     modal.close();
@@ -104,5 +113,74 @@
         });
 
     };
+    
+    var _URL = window.URL || window.webkitURL;
+
+    
+    $("#f_UploadImageNew").on('change', function () {
+    
+        var label = $(this).val().replace(/\\/g, '/').replace(/.*\//, '');
+        var input = $(this).parents('.input-group').find(':text');
+
+        if( input.length ) {
+            input.val(label);
+        } else {
+            if( label ) alert(log);
+        }
+
+        var file, img;
+        if ((file = this.files[0])) {
+            img = new Image();
+            img.onload = function () {
+                
+                
+                var formData = new FormData();
+                formData.append('file', file);//$('#f_UploadImage')[0].files[0]);
+                $.ajax({
+                    type: 'post',
+                    url: '/Config/Backgrounds/FileUpload',
+                    data: formData,
+                    success: function (response, textStatus, jqXHR) {
+                        if(response.success){
+                            
+                            $.get("/Config/Backgrounds/Grid", function (data) {
+                                $("#backgroundGrid").empty();
+                                $("#backgroundGrid").html(data);
+                                refreshGridMenu();
+                            });
+                            
+                            $.get("/Config/Backgrounds/SelectionGrid", function (data) {
+                                $("#backselectiongrid").empty();
+                                $("#backselectiongrid").html(data);
+
+                                $("#backselectiongrid").find("a").first().removeClass("selectedBg");
+                                $("#backselectiongrid").find("a").last().addClass("selectedBg");
+                                
+                            });
+                            
+                            $("#placeholderUploadNew").val("");
+                            alertify.success(response.message);
+                        }
+                        else{
+                            alertify.error(response.message);
+                        }
+                    },
+                    processData: false,
+                    contentType: false,
+                    error: function () {
+                        alert("Whoops something went wrong!");
+                    }
+                });
+                
+                
+                
+            };
+            img.onerror = function () {
+                alert("Not a valid file:" + file.type);
+            };
+            img.src = _URL.createObjectURL(file);
+        }
+    });
+
 
 </script>

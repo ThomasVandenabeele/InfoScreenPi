@@ -41,11 +41,12 @@
                                 <div class="form-group">
                                     <input asp-for="Password" class="form-control" placeholder="Wachtwoord" type="password" value="">
                                 </div>
-                                 <div class="checkbox">
+                                <div class="checkbox">
                                     <label>
                                         <input asp-for="RememberMe" type="checkbox"> Herinner me
                                     </label>
                                 </div>
+                                <div asp-validation-summary="@ValidationSummary.ModelOnly"></div>
                                 <!-- Change this to a button or input when using this as a form -->
                                 <div class="form-group">
                                     <button type="submit" class="btn btn-lg btn-info btn-block">Login</button>

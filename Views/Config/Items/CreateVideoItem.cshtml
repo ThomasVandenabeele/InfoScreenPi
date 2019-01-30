@@ -65,7 +65,6 @@
             data.append('expireDateTime', frm.find("#expireDateTime").val());
             data.append('displayTime', Math.round(document.getElementById("videoPrev").duration));
     
-            console.log(data);
     
             $.ajax({
                 type: 'post',
@@ -88,7 +87,14 @@
                 success: function (response, textStatus, jqXHR) {
                     if(response.success) {
                         
-                        renewItemsGrid();
+                        $.get("/Config/Items/Table", function (data) {
+                            $("#itemsTable").empty();
+                            $("#itemsTable").html(data);
+                            $('input.stateCheckItems:checkbox').each(function () {
+                                $(this).bootstrapToggle();
+                            });
+                            listenCheckState();
+                        });
                         
                         modal.close();
                         alertify.success(response.message);

@@ -20,7 +20,6 @@
             url: '/Config/RssFeeds/RegisterRss',
             data: postData,
             success: function(response, textStatus, jqXHR){
-                console.log(response);
                 if(response.success){
                     $.get("/Config/RssFeeds/Table", function (data) {
                         $("#rssFeedsTable").empty();

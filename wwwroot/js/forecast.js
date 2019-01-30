@@ -17,7 +17,6 @@ $(document).ready(function() {
             data.list.forEach(function(el){
                var date = new Date(el.dt_txt);
                if(date.getHours() === 12 && date.getMinutes() === 0 && !(today.getTime() === date.getTime())){
-                   console.log("gevonden");
                    list.push(el);
                    
                    var fc = "anim-flip-card-" + cardcounter;

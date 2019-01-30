@@ -269,7 +269,6 @@ function refreshGridMenu(){
                     url: '/Config/Backgrounds/Delete',
                     data: postData,
                     success: function(response, textStatus, jqXHR){
-                        console.log(response);
                         if(response.success){
                             refreshGrid();
                             alertify.success(response.message);
@@ -312,10 +311,8 @@ $(document).ready(function() {
         $('.stateCheckRss').change(function() {
         
             var stateBool =  Boolean($(this).is(":checked"));
-            console.log(stateBool);
 
             var rssId = parseInt((($(this).closest("tr").children("td"))[0]).innerHTML);
-            console.log(rssId);
 
             var postData = { id: rssId, state: stateBool };
 
@@ -324,7 +321,6 @@ $(document).ready(function() {
                 url: '/Config/RssFeeds/ChangeRssFeedState',
                 data: postData,
                 success: function(response, textStatus, jqXHR){
-                    console.log(response);
                     if(response.success){
                         alertify.success(response.message);
                     }
@@ -342,29 +338,7 @@ $(document).ready(function() {
 
     $( "#RenewRssFeedItems" ).click(function() {
         $.get("/Config/RssFeeds/RenewRssFeeds", function (response) {
-            //var lijst = response.data;
-            //console.log(response);
             alertify.success(response.message);
-            // lijst.forEach(function(entry) {
-            //     var postData = { rssFeedId: entry };
-            //     $.ajax({
-            //         type: "POST",
-            //         url: '/Config/RssFeeds/ExtractRssItems',
-            //         data: postData,
-            //         success: function(response, textStatus, jqXHR){
-            //             console.log(response);
-            //             if(response.success){
-            //                 alertify.success(response.message);
-            //             }
-            //             else{
-            //                 alertify.error(response.message);
-            //             }
-            //         },
-            //         dataType: "json",
-            //         traditional: true
-            //     });
-            // });
-
                     
         });
 
@@ -388,51 +362,13 @@ $(document).ready(function() {
                 });
         
         });
-/*
-        // prompt dialog
-        alertify.prompt("Geef een RSS url in:", function (e, str) {
-            if (e) {
-                // user clicked "ok"
-                var postData = { uri: str, bgId: parseInt(11)};
-                $.ajax({
-                    type: "POST",
-                    url: '/Config/RssFeeds/RegisterRss',
-                    data: postData,
-                    success: function(response, textStatus, jqXHR){
-                        console.log(response);
-                        if(response.success){
-                            $.get("/Config/RssFeeds/Table", function (data) {
-                                $("#rssFeedsTable").empty();
-                                $("#rssFeedsTable").html(data);
-                                $('input.stateCheckRss:checkbox').each(function () {
-                                    $(this).bootstrapToggle();
-                                });
-                                listenCheckStateRss();
-                            });
-                            alertify.success(response.message);
-                        }
-                        else{
-                            alertify.error(response.message);
-                        }
-                    },
-                    dataType: "json",
-                    traditional: true
-                });
-            } else {
-                // user clicked "cancel"
-            }
-        }, "RSS Url");*/
-    
-
+        
     $(document).on('click','.verwijderRss',function(){
-        console.log((($(this).closest("tr").children("td"))[2]));
         var td = (($(this).closest("tr").children("td"))[2]);
 
         var itemTitle = $(td).children("b").html();
 
         var rssId = parseInt((($(this).closest("tr").children("td"))[0]).innerHTML);
-        console.log(rssId);
-        console.log(itemTitle);
 
         var postData = { id: rssId };
 
@@ -443,7 +379,6 @@ $(document).ready(function() {
                     url: '/Config/RssFeeds/DeleteRssFeed',
                     data: postData,
                     success: function(response, textStatus, jqXHR){
-                        console.log(response);
                         if(response.success){
                             $.get("/Config/RssFeeds/Table", function (data) {
                                 $("#rssFeedsTable").empty();
@@ -496,7 +431,6 @@ $(document).ready(function() {
     });
 
     $(".delete-ticker-line").click(function(){
-        console.log("delete clicked");
         $(this).parents(".control-group").remove();
         delayedSendTickerLines();
     });
@@ -509,16 +443,13 @@ $(document).ready(function() {
         var tickerArray = $('#parentTickerArea input').map(function() {
             return this.value;
         }).get();
-        console.log(tickerArray);
         var postData = { listkey: tickerArray };
-        console.log(postData);
 
         $.ajax({
             type: "POST",
             url: '/Config/SaveTicker',
             data: postData,
             success: function(response, textStatus, jqXHR){
-                console.log(response);
                 if(response.success){
                     $("#parentTickerArea").addClass("has-success");
                     var timerTicker = setTimeout(function(){
@@ -564,25 +495,6 @@ $(document).ready(function() {
             });
         });
 
-        // $(document).on('click', '#RefreshScreen', function(){
-
-            // var postData = { status: true };
-            // $.ajax({
-            //     type: "POST",
-            //     url: '/Config/SetRefresh',
-            //     data: postData,
-            //     success: function(response, textStatus, jqXHR){
-            //         //console.log(response);
-            //         if(response.success){
-            //             alertify.success(response.message);
-            //         }
-            //     },
-            //     dataType: "json",
-            //     traditional: true
-            // });
-        // });
-
-       
 
 
 });

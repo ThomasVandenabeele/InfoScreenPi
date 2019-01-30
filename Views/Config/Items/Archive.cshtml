@@ -4,7 +4,7 @@
         <tr>
             <th style="display:none;">Id</th>
             <th width="10px"></th>
-            <th>Titel</th>
+            <th width="200px">Titel</th>
             <th width="100px">Achtergrond</th>
             <th>Inhoud</th>
             <th width="5px"></th>
@@ -20,39 +20,37 @@
                     <td>
                         @{
                             string url = "";
-                            string thumb = "";
-                            
-                            if (i is VideoItem)
-                            {
-                                <button type="button" class="btn btn-default" onClick="window.open('videos/@((VideoItem)i).URL');">
-                                    <span class="glyphicon glyphicon-film" aria-hidden="true"></span> &nbsp; VIDEO
-                                </button>
-                            }
-                            else
-                            {
-                                if(((IStatic)i).Background.Url.StartsWith("http://"))
+                            if (i is IStatic){
+                                string bg = ((IStatic) i).Background.Url;
+                                if(bg.StartsWith("http://"))
                                 {
-                                    url = ((IStatic)i).Background.Url;
-                                    thumb = url;
+                                    url = bg;
                                 }
                                 else
                                 {
-                                    url = "images/backgrounds/" + ((IStatic)i).Background.Url;
-                                    thumb = "images/backgrounds/thumbnails/" + ((IStatic)i).Background.Url;
+                                    url = "images/backgrounds/thumbnails/" + bg;
                                 }
+
                                 <a href="@url" target="new" ><img src="@url" width="100px" /></a>
+                            }
+                            else if (i is VideoItem)
+                            {
+                                VideoItem v = (VideoItem)i;
+                                <button type="button" class="btn btn-default" onClick="window.open('videos/@v.URL');">
+                                    <span class="glyphicon glyphicon-film" aria-hidden="true"></span> &nbsp; VIDEO
+                                </button>
                             }
                         }
                     </td>
                     <td>
                         @{
                             string content = "", content2 = "";
-                            if(((IStatic)i).Content != null){
+                            if(!(i is VideoItem) && ((IStatic)i).Content != null){
                                 content = System.Text.RegularExpressions.Regex.Replace(((IStatic)i).Content, "<.*?>", String.Empty);
                                 content2 = System.Text.RegularExpressions.Regex.Replace(content, "&.*?;", " ");
                             }
                         }
-                        @content2
+                        @(content2.Length > 50 ? content2.Substring(0, 50) + "..." : content2)
                     </td>
                     <td><span style="font-size:2em;" class="glyphicon glyphicon-level-up activateItem spanLink" aria-hidden="true"></span></td>
                 </tr>

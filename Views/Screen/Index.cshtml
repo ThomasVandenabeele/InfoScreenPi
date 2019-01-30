@@ -119,56 +119,14 @@
                 $(".loader").fadeOut("slow");
             }
         }
+
         $(window).load(function() {
 
             checkFlag();
-            //$(".loader").fadeOut("slow");
-        })
+        });
 
         $(document).ready(function()
         {
-    
-            /*
-            var ajax_call = function() {
-                //console.log("check refresh:");
-               $.get("/Config/GetRefresh", function (response, textStatus, jqXHR) {
-                    if(response.success){
-                        //console.log(response.status);
-                        if(response.status == true){
-                            var postData = { status: false };
-                            $.ajax({
-                                type: "POST",
-                                url: '/Config/SetRefresh',
-                                data: postData,
-                                success: function(response, textStatus, jqXHR){
-                                    //console.log(response);
-                                    if(response.success){
-                                        location.reload();
-                                    }
-                                },
-                                dataType: "json",
-                                traditional: true
-                            });
-                        }
-                    }
-                });
-    
-            };
-    
-            setInterval(ajax_call, 15000);
-            */
-        
-            /*
-            var refreshRss = function() {
-                $.get("/Config/RssFeeds/RenewRssFeeds", function (response) {
-                    //alertify.success(response.message);
-                    location.reload();
-                });
-    
-            };
-    
-            setInterval(refreshRss, 60000*30);
-            */
 
             function getWeather() {
                 $('.weather-temperature').openWeather({
@@ -228,11 +186,6 @@
             
         $('#screenSlider').carousel('pause');
     }); 
-        
-        
-    //document.getElementById("#myCarousel").focus();
-        
-    //document.body.style.cursor = 'none';
 
 </script>
 

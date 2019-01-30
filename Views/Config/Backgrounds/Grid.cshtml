@@ -102,20 +102,14 @@
         // store pagination container so we only select it once
         var $paginationContainer = $(".pagination-container-backgrounds"),
             $pagination = $paginationContainer.find('.pagination');
-        console.log("in pag fuunc");
-        console.log($paginationContainer);
-        console.log($pagination);
         var linkBut = $pagination.find("li a ");
-        console.log(linkBut);
         // click event
         linkBut.on('click.pageChange',function(e){
             e.preventDefault();
-            console.log("geklikt");
             // get parent li's data-page attribute and current page
             var parentLiPage = $(this).parent('li').data("page"),
                 currentPage = parseInt( $(".pagination-container-backgrounds div[data-page]:visible").data('page') ),
                 numPages = $paginationContainer.find("div[data-page]").length;
-            console.log(parentLiPage);
             // make sure they aren't clicking the current page
             if ( parseInt(parentLiPage) !== parseInt(currentPage) ) {
                 // hide the current page
@@ -147,11 +141,9 @@
                     $paginationContainer.find("div[data-page="+parseInt(parentLiPage)+"]").show();
                     
                     if (parentLiPage === 1) {
-                        console.log('- disabled');
                         $pagination.find('li[data-page="-"]').addClass("disabled");
                     }
                     if (parentLiPage === numPages) {
-                        console.log('+ disabled');
                         $pagination.find("li[data-page='+']").addClass("disabled");
                     }
                     

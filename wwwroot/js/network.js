@@ -48,14 +48,9 @@ $(function() {
             $('#fullCalendar').fullCalendar('unselect');
         },
         editable: true,
-        eventLimit: true, // allow "more" link when too many events
-        // eventClick: function(calEvent, jsEvent, view) {
-        //     console.log("clicked");
-        //     $('#calendar').fullCalendar('removeEvents', calEvent.id);
-        // },
+        eventLimit: true, 
         eventRender: function(event, element) {
             element.bind('dblclick', function() {
-                console.log(event._id);
                 //alert('double click!'); // BEVESTIGING NOODZAKELIJK?
                 $('#fullCalendar').fullCalendar('removeEvents', event._id);
                 //sendTimeSlots($("#fullCalendar").fullCalendar('clientEvents'));
@@ -63,7 +58,6 @@ $(function() {
         },
         eventOverlap: false,
         viewRender: function(view, element){
-            //console.log(tabelString);
             placeTimeSlots(tabelString);
         }
 
@@ -73,7 +67,6 @@ $(function() {
     function placeTimeSlots(screenEventListJSON){
         try {
             var screenEventList = JSON.parse(screenEventListJSON); // this is how you parse a string into JSON 
-            //console.log(screenEventList);
             for (i = 0; i < screenEventList.screenOn.length; i++){
                 var start = screenEventList.screenOn[i];
                 var end = screenEventList.screenOff[i];
@@ -98,7 +91,6 @@ $(function() {
 
 
     function sendTimeSlots(eventList){
-        //console.log(eventList);
 
         var screenOnList = [];
         var screenOffList = [];
@@ -123,27 +115,16 @@ $(function() {
             screenOn: screenOnList.sort(function(a, b) { return a.day - b.day}),
             screenOff: screenOffList.sort(function(a, b) { return a.day - b.day})
         };
-        // //console.log(screenEventList);
-        // console.log(JSON.stringify(screenEventList));
         var postData = {
             deviceId: deviceId,
             operatingString: JSON.stringify(screenEventList)
         };
-        // //var postData = { "operatingString": JSON.stringify(screenEventList), "deviceId": deviceId};
-        // console.log(postData);
-        // var operatingTimes = {
-        //     DeviceId: deviceId,
-        //     ScreenOnList: screenOnList.sort(function(a, b) { parseFloat(a.day) - parseFloat(b.day)}),
-        //     ScreenOffList: screenOffList.sort(function(a, b) { parseFloat(a.day) - parseFloat(b.day)})
-        // };
-        // console.log(operatingTimes);
         
         $.ajax({
             type: "POST",
             url: '/Config/SaveOperatingTimes',
             data: postData,
             success: function(response, textStatus, jqXHR){
-                console.log(response);
                 if(response.success){
                     alertify.success(response.message);
                 }
