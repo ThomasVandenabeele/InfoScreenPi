@@ -35,10 +35,10 @@ connection.on("BroadcastSlide", function(currentSlide){
                     '<source src="videos/' + item.url + '" type="video/mp4"/>\n' +
                     'Your browser does not support the video tag.\n' +
                     '</video>\n');
-		setTimeout(function(){
-  			document.getElementById("vidCar").play();
-		}, 1000);           
- 	    }
+                setTimeout(function(){
+                    document.getElementById("vidCar").play();
+                }, 250);           
+ 	        }
             else if(soort == "ClockItem"){
                 nextSlide.load('clock.html');
                 // nextSlide.html( '<div class="fill" style="background-color: #1FABD5;"></div>' +
