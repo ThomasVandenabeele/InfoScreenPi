@@ -43,6 +43,7 @@ namespace InfoScreenPi.Controllers
             Item item = _data.GetSingle<Item>(id);
             if (item != null)
             {
+                ((IExpiring)item).Active = !state;
                 ((IExpiring)item).Archieved = state;
                 _data.Edit(item);
                 _data.Commit();
@@ -148,6 +149,7 @@ namespace InfoScreenPi.Controllers
             string n = string.Format("vid-{0:yyyy-MM-dd_hh-mm-ss-tt}", DateTime.Now);
             var fileName = n + "-" + video.FileName.Replace(" ", "-");
             var fullFileName = Path.Combine(videoRoot, fileName);
+            
             if (video.Length > 0)
             {
                 using (var stream = new FileStream(fullFileName, FileMode.Create))
