@@ -21,7 +21,7 @@ build: root ## Build the container and delete intermediate untagged images.
 
 create: root ## Creates a writeable container from the image and prepares it for running.
 	#@docker create -v $(shell pwd)/InfoScreenDB.db:/app/InfoScreenDB.db -p 80:80 --name $(APP_NAME) $(IMAGE_NAME):latest
-	@docker create -v $(shell pwd)/db:/app/db -p 80:80 --name $(APP_NAME) $(IMAGE_NAME):latest
+	@docker create -v $(shell pwd)/db:/app/db -v $(shell pwd)/wwwroot:/app/wwwroot -p 80:80 --name $(APP_NAME) $(IMAGE_NAME):latest
 
 start: root ## Runs the container.
 	@echo "Starting docker container:"
@@ -31,7 +31,7 @@ stop: root ## Stops the container.
 	@echo "Stopping docker container:"
 	@docker stop $(APP_NAME)
 
-remove: root halt ## Stop and remove a running container.
+remove: root ## Stop and remove a running container.
 	@echo "Removing docker container:"
 	@docker rm $(APP_NAME)
 

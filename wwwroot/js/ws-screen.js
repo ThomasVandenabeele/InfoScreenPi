@@ -10,7 +10,8 @@ connection.on("BroadcastSlide", function(currentSlide){
     $(document).ready(function() {
         
         var nextSlide = $('div.item').not('.active');
-        nextSlide.empty();
+        var old = $('div.item.active')
+        //nextSlide.empty();
         var soort = currentSlide.itemType;
         var item = currentSlide.item;
 
@@ -30,11 +31,14 @@ connection.on("BroadcastSlide", function(currentSlide){
                     '</div>');
             }
             else if(soort == "VideoItem"){
-                nextSlide.html( '<video autoplay muted loop width="1920" height="1080">\n' +
+                nextSlide.html( '<video id="vidCar" autoplay="1" muted="1" loop="1" width="1920" height="1080">\n' +
                     '<source src="videos/' + item.url + '" type="video/mp4"/>\n' +
                     'Your browser does not support the video tag.\n' +
                     '</video>\n');
-            }
+		setTimeout(function(){
+  			document.getElementById("vidCar").play();
+		}, 1000);           
+ 	    }
             else if(soort == "ClockItem"){
                 nextSlide.load('clock.html');
                 // nextSlide.html( '<div class="fill" style="background-color: #1FABD5;"></div>' +
@@ -58,7 +62,8 @@ connection.on("BroadcastSlide", function(currentSlide){
 
 
             $('#screenSlider').carousel('next');
-            
+            old.empty();
+
         }
         
         if(firstItemReceived === false) firstItemReceived = true;
