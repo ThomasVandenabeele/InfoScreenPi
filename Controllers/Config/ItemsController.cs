@@ -13,6 +13,7 @@ using InfoScreenPi.Infrastructure.Core;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using System.Diagnostics;
 
 namespace InfoScreenPi.Controllers
 {
@@ -146,15 +147,32 @@ namespace InfoScreenPi.Controllers
         public async Task<IActionResult> UploadVideoItem(string itemTitle, string expireDateTime, int displayTime, IFormFile video)
         {
             var videoRoot = Path.Combine(_hostEnvironment.WebRootPath, "videos");
+            var videoRootTmp = Path.Combine(videoRoot, "tmp");
+
             string n = string.Format("vid-{0:yyyy-MM-dd_hh-mm-ss-tt}", DateTime.Now);
             var fileName = n + "-" + video.FileName.Replace(" ", "-");
-            var fullFileName = Path.Combine(videoRoot, fileName);
             
+            var fullFileName = Path.Combine(videoRoot, fileName);
+            var fullFileNameTmp = Path.Combine(videoRootTmp, fileName);
+            
+
             if (video.Length > 0)
             {
-                using (var stream = new FileStream(fullFileName, FileMode.Create))
+                using (var stream = new FileStream(fullFileNameTmp, FileMode.Create))
                 {
                     await video.CopyToAsync(stream);
+                }
+            }
+
+            // Converteer video naar lagere bitrate max 1Mbps
+            string ffmpegCommand = "ffmpeg -i " + fullFileNameTmp + " -b:v 1M -maxrate 1.5M -bufsize 0.5M " + fullFileName;
+            var outputFfmpeg = ffmpegCommand.Bash();
+
+            if(fullFileNameTmp != null || fullFileNameTmp != string.Empty)
+            {
+                if(System.IO.File.Exists(fullFileNameTmp))
+                {
+                    System.IO.File.Delete(fullFileNameTmp);
                 }
             }
 
@@ -171,7 +189,33 @@ namespace InfoScreenPi.Controllers
             );
             _data.Commit();
 
-            return Success();
+            return Success("Nieuwe video succesvol toegevoegd.");
         }
     }
+
+
+    // public static class ExtensionMethods
+    // {
+    //     public static string Bash(this string cmd)
+    //     {
+    //         var escapedArgs = cmd.Replace("\"", "\\\"");
+
+    //         var process = new Process()
+    //         {
+    //             StartInfo = new ProcessStartInfo
+    //             {
+    //                 FileName = "/bin/bash",
+    //                 Arguments = $"-c \"{escapedArgs}\"",
+    //                 RedirectStandardOutput = true,
+    //                 UseShellExecute = false,
+    //                 CreateNoWindow = true,
+    //             }
+    //         };
+    //         process.Start();
+    //         string result = process.StandardOutput.ReadToEnd();
+    //         process.WaitForExit();
+    //         return result;
+    //     }
+    // }
+
 }

@@ -1,6 +1,6 @@
 <form id="new_video_form">
     <div class="form-group">
-        <label for="title">Title</label>
+        <label for="title">Titel</label>
         <input type="text" class="form-control" id="ItemTitle" name="itemTitle" placeholder="Titel" data-validation="required">
     </div>
     <div class="form-group">
@@ -16,7 +16,7 @@
     <div class="input-group">
         <label class="input-group-btn">
             <span class="btn btn-primary">
-                Browse &hellip; <input type="file" class="upload" name="video" id="f_UploadVideo" style="display: none;" accept="video/*">
+                Browse &hellip; <input type="file" class="upload" name="video" id="f_UploadVideo" style="display: none;" accept="video/mp4">
             </span>
         </label>
         <input type="text" class="form-control" placeholder="Upload nieuwe video" id="placeholderUploadVideo" data-validation="required" readonly>
@@ -26,7 +26,7 @@
 
 
 <hr>
-<div class="row">
+<div class="row" id="beforeConv">
     <button class="col-xs-2 col-xs-offset-1 btn btn-primary" id="registerNewItem">Registreer</button>
     <div class="col-xs-6 col-xs-offset-1 progress">
         <div class="progress-bar progress-bar-striped active" id="progressBar" role="progressbar" aria-valuemin="0" aria-valuemax="100">
@@ -34,6 +34,14 @@
         </div>
     </div>
 
+</div>
+<div class="row" id="duringConv" style="display: none;">
+    <div class="col-xs-2 col-xs-offset-2">
+        <div class="loader" id="loader-1"></div>
+    </div>
+    <div class="col-xs-6 col-xs-offset-1">
+        <h4>Video converteren. Even geduld aub...</h4>
+    </div>
 </div>
 
 </form>
@@ -143,7 +151,10 @@
         $('#progressBar').css('width',value+'%').html(value+'%');
         if(value==0){
             $('.progress').hide();
-        }else{
+        } else if(value==100){
+            $('#duringConv').show();
+            $('#beforeConv').hide();
+        } else{
             $('.progress').show();
         }
     }
