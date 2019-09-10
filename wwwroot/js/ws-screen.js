@@ -62,6 +62,12 @@ connection.on("BroadcastSlide", function(currentSlide){
 
 
             $('#screenSlider').carousel('next');
+            if(old.find("video").length > 0){
+                var videoElement = old.find("video")[0];
+                videoElement.pause();
+                videoElement.removeAttribute('src'); // empty source
+                videoElement.load();
+            }
             old.empty();
 
         }
