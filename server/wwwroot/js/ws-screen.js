@@ -1,4 +1,4 @@
-"use strict";
+use strict";
 
 var connection = new signalR.HubConnectionBuilder().withUrl("/screenpiws").build();
 
@@ -31,7 +31,7 @@ connection.on("BroadcastSlide", function(currentSlide){
                     '</div>');
             }
             else if(soort == "VideoItem"){
-                nextSlide.html( '<video id="vidCar" autoplay="1" muted="1" loop="1" width="1920" height="1080">\n' +
+                nextSlide.html( '<video id="vidCar" autoplay="1" muted="1" width="1920" height="1080">\n' +
                     '<source src="videos/' + item.url + '" type="video/mp4"/>\n' +
                     'Your browser does not support the video tag.\n' +
                     '</video>\n');
