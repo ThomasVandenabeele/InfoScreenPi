@@ -78,7 +78,7 @@
         </form>
     </div>
     <div role="tabpanel" class="tab-pane fade" id="infobalk">
-    <form class="form-horizontal" id="SettingsFormInfobalk">
+    <form class="form-horizontal" id="InfoSettings">
       <h3 class="col-sm-offset-2">Ticker</h3>
       <div class="form-group">
         <label for="ShowTicker" class="col-sm-2 control-label">Toon Ticker</label>
@@ -148,7 +148,7 @@
       <hr/>
       <div class="form-group">
         <div class="col-md-5"><br>
-          <button class="btn btn-primary" id="SaveSettingsInfoBalk" >Opslaan</button>
+          <button class="btn btn-primary" >Opslaan</button>
         </div>
       </div>
     </form>
@@ -290,16 +290,16 @@
         }
     });
     $.validate({
-        form : '#SettingsFormInfoBalk',
+        form : '#InfoSettings',
         onError : function($form) {
-            //alert('Validation of form '+$form.attr('id')+' failed!');
+            alert('Validation of form '+$form.attr('id')+' failed!');
         },
         onSuccess : function($form) {
             //alert('The form '+$form.attr('id')+' is valid!');
             
             var parameters = new Object();
 
-            $("#SettingsFormInfobalk :input").each(function (index, item) {
+            $("#InfoSettings :input").each(function (index, item) {
                 var input = $(this);
 
                 if (input.is(":button")) {
@@ -316,7 +316,7 @@
                     else parameters[input[0].id] = input[0].value;
                 }
             });
-
+            console.log(parameters);
 
             $.ajax({
                 type: "POST",

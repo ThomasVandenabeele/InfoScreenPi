@@ -19,7 +19,7 @@ connection.on("BroadcastSlide", function(currentSlide){
         nextSlide.attr("id", item.id);
         
         if(Number(item.id) !== Number(currentId)){
-
+            
             if(soort == "CustomItem"){
                 var url = item.background.url;
                 if(!item.background.url.startsWith("http://") && !item.background.url.startsWith("https://")){
@@ -50,7 +50,11 @@ connection.on("BroadcastSlide", function(currentSlide){
                 //                 'CLOCK');
             }
             else if(soort == "RSSItem"){
-                nextSlide.html( '<div class="fill" style="background-image:url(\'' + item.background.url + '\')"></div>\n' +
+                var url = item.background.url;
+                if(!item.background.url.startsWith("http://") && !item.background.url.startsWith("https://")){
+                    url = "../images/backgrounds/" + item.background.url;
+                }
+                nextSlide.html( '<div class="fill" style="background-image:url(\'' + url + '\')"></div>\n' +
                     '<div class="carousel-caption" style="font-weight: 900;">\n' +
                     '<div style="display:flex;flex-direction: column;justify-content:center;align-items:center;width:930px;height:450px;">\n' +
                     '<h2 style="font-weight: 900;">' + item.title + '</h2>\n' +
