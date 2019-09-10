@@ -143,3 +143,9 @@ i.fa {
       transform: rotate(360deg);
     }
   }
+
+
+  div.overlayItem{
+    width: 100%;
+    height: 100%;
+  }

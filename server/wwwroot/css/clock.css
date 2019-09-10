@@ -1,8 +1,8 @@
-html {
+clockItem {
   height: 100%;
 }
 
-body {
+.clockItem {
   height: 100%;
   background: #85D8CE;
   background-color: #1D8DB0;

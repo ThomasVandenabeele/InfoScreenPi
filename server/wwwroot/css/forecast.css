@@ -1,10 +1,10 @@
 @charset "UTF-8";
 
-html,
-body{
+
+.forecastItem{
     min-height: 100vh;
 }
-body{
+.forecastItem{
     color: rgb(200,200,200);
     font-family: 'Titillium Web';
     font-weight: 400;
