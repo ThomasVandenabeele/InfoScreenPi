@@ -1,4 +1,4 @@
-use strict";
+"use strict";
 
 var connection = new signalR.HubConnectionBuilder().withUrl("/screenpiws").build();
 
