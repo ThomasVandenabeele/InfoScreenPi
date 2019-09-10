@@ -17,6 +17,18 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
+
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Oswald'>
+    <link rel="stylesheet" href="css/clock.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web:400,700" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+
+
+    <link rel="stylesheet" href="css/forecast.css">
+    <link rel="stylesheet" href="css/weather-icons.css">
+
+
     <title>Infoscherm</title>
 
     <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.6/css/bootstrap.min.css"
@@ -44,11 +56,130 @@
 
         <!-- Wrapper for Slides -->
         <div class="carousel-inner">
-            <div class="item active" >
-                
+            <div class="item active">
+                <div class="customItem">
+                  <div class="fill"></div> 
+                  <div class="carousel-caption customlayout">
+                  </div>
+                </div>
+  	            <video id="vidCar" autoplay="1" muted="1" width="1920" height="1080">     
+                    </video>
+                    <div class="fill" style="background-image:url(\'' + item.background.url + '\')"></div>\n' +
+                    <div class="carousel-caption" style="font-weight: 900;">\n' +
+                    '<div style="display:flex;flex-direction: column;justify-content:center;align-items:center;width:930px;height:450px;">\n' +
+                    '<h2 style="font-weight: 900;">' + item.title + '</h2>\n' +
+                    '<p>' + item.content + '</p>\n' +
+                    '</div>\n' +
+                    '<div class="test"><b>BRON:</b>' + item.rssFeed.title + '</div>\n' +
+                    '</div>'
+                    <div class="clock">
+
+                      <div class="digit tenhour">
+                        <span class="base"></span>
+                        <div class="flap over front"></div>
+                        <div class="flap over back"></div>
+                        <div class="flap under"></div>
+                      </div>
+
+                      <div class="digit hour">
+                        <span class="base"></span>
+                        <div class="flap over front"></div>
+                        <div class="flap over back"></div>
+                        <div class="flap under"></div>
+                      </div>
+
+                      <div class="digit tenmin">
+                        <span class="base"></span>
+                        <div class="flap over front"></div>
+                        <div class="flap over back"></div>
+                        <div class="flap under"></div>
+                      </div>
+
+                      <div class="digit min">
+                        <span class="base"></span>
+                        <div class="flap over front"></div>
+                        <div class="flap over back"></div>
+                        <div class="flap under"></div>
+                      </div>
+
+                      <div class="digit tensec secs">
+                        <span class="base"></span>
+                        <div class="flap over front"></div>
+                        <div class="flap over back"></div>
+                        <div class="flap under"></div>
+                      </div>
+
+                      <div class="digit sec secs">
+                        <span class="base"></span>
+                        <div class="flap over front"></div>
+                        <div class="flap over back"></div>
+                        <div class="flap under"></div>
+                      </div>
+                    </div>
+                    <div class="date">
+                  </div>
+                  <div class="container">
+                    <div class="card-wrapper">
+                    </div>
+                  </div>
+
             </div>
             <div class="item">
-                
+                <div class="fill" style="background-image:url(\'' + url + '\')"></div>\n' +
+                    <div class="carousel-caption customlayout">
+                    </div>
+                    <video id="vidCar" autoplay="1" muted="1" width="1920" height="1080">
+                    </video>
+                    <div class="clock">
+
+                      <div class="digit tenhour">
+                        <span class="base"></span>
+                        <div class="flap over front"></div>
+                        <div class="flap over back"></div>
+                        <div class="flap under"></div>
+                      </div>
+
+                      <div class="digit hour">
+                        <span class="base"></span>
+                        <div class="flap over front"></div>
+                        <div class="flap over back"></div>
+                        <div class="flap under"></div>
+                      </div>
+
+                      <div class="digit tenmin">
+                        <span class="base"></span>
+                        <div class="flap over front"></div>
+                        <div class="flap over back"></div>
+                        <div class="flap under"></div>
+                      </div>
+
+                      <div class="digit min">
+                        <span class="base"></span>
+                        <div class="flap over front"></div>
+                        <div class="flap over back"></div>
+                        <div class="flap under"></div>
+                      </div>
+
+                      <div class="digit tensec secs">
+                        <span class="base"></span>
+                        <div class="flap over front"></div>
+                        <div class="flap over back"></div>
+                        <div class="flap under"></div>
+                      </div>
+
+                      <div class="digit sec secs">
+                        <span class="base"></span>
+                        <div class="flap over front"></div>
+                        <div class="flap over back"></div>
+                        <div class="flap under"></div>
+                      </div>
+                    </div>
+                    <div class="date">
+                  </div>
+                  <div class="container">
+                    <div class="card-wrapper">
+                    </div>
+                  </div>
             </div>
         </div>
 
@@ -107,6 +238,8 @@
     <script src="~/js/inewsticker.js"></script>
     <script src="~/js/openWeather.js"></script>
 
+    <script  src="js/clock.js"></script>
+    <script  src="js/forecast.js"></script>
 
 
     <!-- Script to Activate the Carousel -->
