@@ -8,7 +8,7 @@ connection.on("RefreshScreens", function () {
 
 connection.on("BroadcastSlide", function(currentSlide){
     $(document).ready(function() {
-        console.log(currentSlide);
+        //console.log(currentSlide);
         var nextSlide = $('div.item').not('.active');
         var old = $('div.item.active')
         
@@ -53,14 +53,14 @@ connection.on("BroadcastSlide", function(currentSlide){
 
                 // element.show();
 
-                
-                nextSlide.html( '<video id="vid-' + item.id + '" muted="1" width="1920" height="1080">\n' +
-                    '<source src="videos/' + item.url + '" type="video/mp4"/>\n' +
-                    'Your browser does not support the video tag.\n' +
-                    '</video>\n');
-                setTimeout(function(){
-                    document.getElementById("vid-" + item.id).play();
-                }, 250);
+                nextSlide.html( '<iframe src="/video/' + item.id + '" width="1920" height="1080" style="border: none;" scrolling="no" ></iframe> ');
+                // nextSlide.html( '<video id="vid-' + item.id + '" muted="1" width="1920" height="1080">\n' +
+                //     '<source src="videos/' + item.url + '" type="video/mp4"/>\n' +
+                //     'Your browser does not support the video tag.\n' +
+                //     '</video>\n');
+                // setTimeout(function(){
+                //     document.getElementById("vid-" + item.id).play();
+                // }, 250);
                           
  	        }
             else if(soort == "ClockItem"){
@@ -117,13 +117,19 @@ connection.on("BroadcastSlide", function(currentSlide){
 
             //     old.children("div.customItem").find("div.fill").css('background-image', 'none');
             //     old.children("div.rssItem").find("div.fill").css('background-image', 'none');
-		var vidElements = old.find("video");
+		        var vidElements = old.find("video");
                 if(vidElements.length > 0){
                     var videoElement = vidElements[0];
                     videoElement.pause();
                     videoElement.removeAttribute('src'); // empty source
                     vidElements.children('source')[0].removeAttribute('src'); 
                     videoElement.load();
+                }
+                var iframe = old.find("iframe");
+                if(iframe.length > 0){
+                    var frame = iframe[0],
+                    frameDoc = frame.contentDocument || frame.contentWindow.document;
+                    frameDoc.removeChild(frameDoc.documentElement);
                 }
                 old.empty();
 

@@ -1,0 +1,34 @@
+@using InfoScreenPi.Entities
+@using InfoScreenPi.ViewModels
+@model VideoItem
+@{
+    Layout = null;
+    string fullurl = "/videos/" + Model.URL;
+    string fullid = "vid-" + Model.Id;
+ }
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Video</title>
+
+</head>
+
+<body style="padding-top: 0px; padding-bottom: 0px; overflow:hidden; margin: 0;">
+    
+   <video id="@fullid" muted="1" width="1920" height="1080">
+        <source src="@fullurl" type="video/mp4"/>
+    </video>
+</body>
+
+<script type="text/javascript">
+    
+    //var $ = jQuery.noConflict();
+    //$(document).ready(function() { 
+        document.getElementById("@fullid").play();
+    //}); 
+
+</script>
+
+</html>

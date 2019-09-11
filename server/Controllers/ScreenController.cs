@@ -76,5 +76,10 @@ namespace InfoScreenPi.Controllers
         {
             return _data.GetSingle<WeatherItem>().Forecast;
         }
+
+        [HttpGet("/video/{id}", Name = "Video_View")]
+        public IActionResult Video(int id){
+            return View("Video", _data.GetSingle<VideoItem>(id));
+        }
     }
 }
