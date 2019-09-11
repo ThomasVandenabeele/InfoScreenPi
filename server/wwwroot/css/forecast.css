@@ -1,7 +1,8 @@
 @charset "UTF-8";
 
 
-.forecastItem{
+html,
+body{
     min-height: 100vh;
 }
 .forecastItem{

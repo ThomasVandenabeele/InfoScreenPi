@@ -1,8 +1,8 @@
-clockItem {
+/* clockItem {
   height: 100%;
-}
+} */
 
-.clockItem {
+body {
   height: 100%;
   background: #85D8CE;
   background-color: #1D8DB0;

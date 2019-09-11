@@ -12,8 +12,7 @@ connection.on("BroadcastSlide", function(currentSlide){
         var nextSlide = $('div.item').not('.active');
         var old = $('div.item.active')
         
-        
-        
+               
         var soort = currentSlide.itemType;
         var item = currentSlide.item;
 
@@ -28,33 +27,33 @@ connection.on("BroadcastSlide", function(currentSlide){
                     url = "../images/backgrounds/" + item.background.url;
                 }
                 
-                var element = nextSlide.children("div.customItem");
-                element.find("div.fill").css('background-image', 'url(\'' + url + '\'');
-                element.find("div.customlayout").html($.trim(item.content));
+                // var element = nextSlide.children("div.customItem");
+                // element.find("div.fill").css('background-image', 'url(\'' + url + '\'');
+                // element.find("div.customlayout").html($.trim(item.content));
 
-                element.show();
+                // element.show();
 
-                /*nextSlide.html( '<div class="fill" style="background-image:url(\'' + url + '\')"></div>\n' +
+                nextSlide.html( '<div class="fill" style="background-image:url(\'' + url + '\')"></div>\n' +
                     '<div class="carousel-caption customlayout">\n' +
                     $.trim(item.content) +
                     '</div>');
-                    */
+                    
             }
             else if(soort == "VideoItem"){
-                var element = nextSlide.children("div.videoItem");
+                // var element = nextSlide.children("div.videoItem");
 
-                var videoElement = element.find("video")[0];
-                console.log(videoElement);
-                console.log(element.find('source')[0]);
-                videoElement.pause();
-                videoElement.removeAttribute('src'); // empty source
+                // var videoElement = element.find("video")[0];
+                // console.log(videoElement);
+                // console.log(element.find('source')[0]);
+                // videoElement.pause();
+                // videoElement.removeAttribute('src'); // empty source
 
-                element.find('source')[0].setAttribute('src', 'videos/' + item.url);
-                videoElement.load();
+                // element.find('source')[0].setAttribute('src', 'videos/' + item.url);
+                // videoElement.load();
 
-                element.show();
+                // element.show();
 
-                /*
+                
                 nextSlide.html( '<video id="vidCar" autoplay="1" muted="1" width="1920" height="1080">\n' +
                     '<source src="videos/' + item.url + '" type="video/mp4"/>\n' +
                     'Your browser does not support the video tag.\n' +
@@ -62,23 +61,23 @@ connection.on("BroadcastSlide", function(currentSlide){
                 setTimeout(function(){
                     document.getElementById("vidCar").play();
                 }, 250);
-                */           
+                          
  	        }
             else if(soort == "ClockItem"){
-                var element = nextSlide.children("div.clockItem");
-                element.show();
+                // var element = nextSlide.children("div.clockItem");
+                // element.show();
 
-                // nextSlide.load('clock.html');
-                // nextSlide.html( '<div class="fill" style="background-color: #1FABD5;"></div>' +
-                //                 'CLOCK');
+                nextSlide.load('clock.html');
+                nextSlide.html( '<div class="fill" style="background-color: #1FABD5;"></div>' +
+                                'CLOCK');
             }
             else if(soort == "WeatherItem"){
-                var element = nextSlide.children("div.forecastItem");
-                element.show();
+                // var element = nextSlide.children("div.forecastItem");
+                // element.show();
                 
-                // nextSlide.load('forecast.html');
-                // nextSlide.html( '<div class="fill" style="background-color: #1FABD5;"></div>' +
-                //                 'CLOCK');
+                nextSlide.load('forecast.html');
+                nextSlide.html( '<div class="fill" style="background-color: #1FABD5;"></div>' +
+                                'CLOCK');
             }
             else if(soort == "RSSItem"){
                 var url = item.background.url;
@@ -86,15 +85,15 @@ connection.on("BroadcastSlide", function(currentSlide){
                     url = "../images/backgrounds/" + item.background.url;
                 }
 
-                var element = nextSlide.children("div.rssItem");
-                element.find("div.fill").css('background-image', 'url(\'' + url + '\'');
-                element.find("h2.rssTitle").html(item.title);
-                element.find("p.rssContent").html(item.content);
-                element.find("span.rssSource").html(item.rssFeed.title);
+                // var element = nextSlide.children("div.rssItem");
+                // element.find("div.fill").css('background-image', 'url(\'' + url + '\'');
+                // element.find("h2.rssTitle").html(item.title);
+                // element.find("p.rssContent").html(item.content);
+                // element.find("span.rssSource").html(item.rssFeed.title);
 
-                element.show();
+                // element.show();
 
-                /*
+                
                 nextSlide.html( '<div class="fill" style="background-image:url(\'' + url + '\')"></div>\n' +
                     '<div class="carousel-caption" style="font-weight: 900;">\n' +
                     '<div style="display:flex;flex-direction: column;justify-content:center;align-items:center;width:930px;height:450px;">\n' +
@@ -103,7 +102,7 @@ connection.on("BroadcastSlide", function(currentSlide){
                     '</div>\n' +
                     '<div class="test"><b>BRON:</b>' + item.rssFeed.title + '</div>\n' +
                     '</div>');
-                */
+                
             }
 
 
@@ -111,15 +110,16 @@ connection.on("BroadcastSlide", function(currentSlide){
 
             //cleanup old slide           
             setTimeout(function(){
-                old.children("div").each(function(){
-                    var element = $(this);
-                    element.hide();
-                });
+            //     old.children("div").each(function(){
+            //         var element = $(this);
+            //         element.hide();
+            //     });
 
-                old.children("div.customItem").find("div.fill").css('background-image', 'none');
-                old.children("div.rssItem").find("div.fill").css('background-image', 'none');
+            //     old.children("div.customItem").find("div.fill").css('background-image', 'none');
+            //     old.children("div.rssItem").find("div.fill").css('background-image', 'none');
+                old.empty();
 
-		var vidElements = old.find("video");
+		        var vidElements = old.find("video");
                 if(vidElements.length > 0){
                     var videoElement = vidElements[0];
                     videoElement.pause();
