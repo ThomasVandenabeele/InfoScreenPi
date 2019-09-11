@@ -54,7 +54,7 @@ connection.on("BroadcastSlide", function(currentSlide){
                 // element.show();
 
                 
-                nextSlide.html( '<video id="vidCar" autoplay="1" muted="1" width="1920" height="1080">\n' +
+                nextSlide.html( '<video id="vidCar" muted="1" width="1920" height="1080">\n' +
                     '<source src="videos/' + item.url + '" type="video/mp4"/>\n' +
                     'Your browser does not support the video tag.\n' +
                     '</video>\n');
@@ -117,9 +117,7 @@ connection.on("BroadcastSlide", function(currentSlide){
 
             //     old.children("div.customItem").find("div.fill").css('background-image', 'none');
             //     old.children("div.rssItem").find("div.fill").css('background-image', 'none');
-                old.empty();
-
-		        var vidElements = old.find("video");
+		var vidElements = old.find("video");
                 if(vidElements.length > 0){
                     var videoElement = vidElements[0];
                     videoElement.pause();
@@ -127,6 +125,7 @@ connection.on("BroadcastSlide", function(currentSlide){
                     vidElements.children('source')[0].removeAttribute('src'); 
                     videoElement.load();
                 }
+                old.empty();
 
             }, 750);
             
