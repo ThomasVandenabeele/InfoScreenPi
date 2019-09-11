@@ -46,6 +46,8 @@ connection.on("BroadcastSlide", function(currentSlide){
                 var videoElement = element.find("video")[0];
                 console.log(videoElement);
                 console.log(element.find('source')[0]);
+                videoElement.pause();
+                videoElement.removeAttribute('src'); // empty source
 
                 element.find('source')[0].setAttribute('src', 'videos/' + item.url);
                 videoElement.load();
@@ -117,10 +119,12 @@ connection.on("BroadcastSlide", function(currentSlide){
                 old.children("div.customItem").find("div.fill").css('background-image', 'none');
                 old.children("div.rssItem").find("div.fill").css('background-image', 'none');
 
-                if(old.find("video").length > 0){
-                    var videoElement = old.find("video")[0];
+		var vidElements = old.find("video");
+                if(vidElements.length > 0){
+                    var videoElement = vidElements[0];
                     videoElement.pause();
                     videoElement.removeAttribute('src'); // empty source
+                    vidElements.children('source')[0].removeAttribute('src'); 
                     videoElement.load();
                 }
 
