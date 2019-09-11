@@ -54,12 +54,12 @@ connection.on("BroadcastSlide", function(currentSlide){
                 // element.show();
 
                 
-                nextSlide.html( '<video id="vidCar" muted="1" width="1920" height="1080">\n' +
+                nextSlide.html( '<video id="vid-' + item.id + '" muted="1" width="1920" height="1080">\n' +
                     '<source src="videos/' + item.url + '" type="video/mp4"/>\n' +
                     'Your browser does not support the video tag.\n' +
                     '</video>\n');
                 setTimeout(function(){
-                    document.getElementById("vidCar").play();
+                    document.getElementById("vid-" + item.id).play();
                 }, 250);
                           
  	        }
