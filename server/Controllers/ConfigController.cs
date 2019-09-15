@@ -279,11 +279,11 @@ namespace InfoScreenPi.Controllers
             }
 
             // copy cronlist to remote rpi screen
-            string scpCommand = "scp " + fileName + " pi@" + edit.IP + ":~/cron/" + fn;
+            string scpCommand = "scp -pr" + fileName + " root@" + edit.IP + ":~/cron/" + fn;
             //var outputScp = scpCommand.Bash();
 
             // renew crons on remote rpi with crontab
-            string sshCommand = "ssh pi@" + edit.IP + " '" + edit.CronCommand + " ~/cron/" + fn + "'";
+            string sshCommand = "ssh root@" + edit.IP + " '" + edit.CronCommand + " ~/cron/" + fn + "'";
             //var outputSsh = sshCommand.Bash();
 
 

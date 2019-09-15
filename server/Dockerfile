@@ -21,7 +21,7 @@ COPY --from=build-env /app/out .
 #USER root
 #RUN chmod 655 /app/InfoScreenDB.db
 RUN apt-get update \
- && apt-get install -y --no-install-recommends ffmpeg libgdiplus libc6-dev \
+ && apt-get install -y --no-install-recommends ffmpeg libgdiplus libc6-dev openssh-server \
  && rm -rf /var/lib/apt/lists/*
 
 
