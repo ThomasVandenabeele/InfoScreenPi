@@ -65,13 +65,6 @@ body{
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
 }
-.card:hover{
-    box-shadow: 0 0 20px 10px rgb(5,15,25);
-    z-index: 2;
-}
-.card:hover:not(span){
-    color: #FFAC33;
-}
 .card-header{
     padding-bottom: 8px;
     border-bottom: 1px solid rgb(200,200,200);
