@@ -20,16 +20,19 @@
                     <td>
                         @{
                             string url = "";
+                            string urlOri = "";
                             if(i.StandardBackground.Url.StartsWith("http://"))
                             {
                                 url = i.StandardBackground.Url;
+                                urlOri = i.StandardBackground.Url;
                             }
                             else
                             {
                                 url = "images/backgrounds/thumbnails/" + i.StandardBackground.Url;
+                                urlOri = "images/backgrounds/" + i.StandardBackground.Url;
                             }
                         }
-                        <center><a href="@url" target="new" ><img src="@url" width="100px" /></a></center>
+                        <center><a href="@urlOri" target="new" ><img src="@url" width="100px" /></a></center>
                     </td>
                     <td>
                         @if(i.Active){

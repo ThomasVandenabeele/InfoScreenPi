@@ -23,18 +23,21 @@
                     <td>
                         @{
                             string url = "";
+                            string urlOri = "";
                             if (i is IStatic){
                               string bg = ((IStatic) i).Background.Url;
                               if(bg.StartsWith("http://"))
                               {
                                  url = bg;
+                                 urlOri = bg;
                               }
                               else
                               {
                                  url = "images/backgrounds/thumbnails/" + bg;
+                                 urlOri = "images/backgrounds/" + bg;
                               }
 
-                              <a href="@url" target="new" ><img src="@url" width="100px" /></a>
+                              <a href="@urlOri" target="new" ><img src="@url" width="100px" /></a>
                             }
                             else if (i is VideoItem)
                             {
