@@ -3,3 +3,14 @@
 obj
 bin
 .idea
+
+### DotnetCore ###
+# .NET Core build folders
+/server/bin
+/server/obj
+
+/server/wwwroot/images/backgrounds
+/server/wwwroot/videos
+/server/wwwroot/data
+/server/crons
+

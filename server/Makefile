@@ -21,7 +21,7 @@ build: root ## Build the container and delete intermediate untagged images.
 
 create: root ## Creates a writeable container from the image and prepares it for running.
 	#@docker create -v $(shell pwd)/InfoScreenDB.db:/app/InfoScreenDB.db -p 80:80 --name $(APP_NAME) $(IMAGE_NAME):latest
-	@docker create -v $(shell pwd)/db:/app/db -v $(shell pwd)/wwwroot:/app/wwwroot -v $(shell pwd)/keys:/root/.ssh -p 80:80 --name $(APP_NAME) $(IMAGE_NAME):latest
+	@docker create -v $(shell pwd)/db:/app/db -v $(shell pwd)/wwwroot:/app/wwwroot -v $(shell pwd)/keys:/root/.ssh -v $(shell pwd)/crons:/app/crons -p 80:80 --name $(APP_NAME) $(IMAGE_NAME):latest
 
 start: root ## Runs the container.
 	@echo "Starting docker container:"
