@@ -9,6 +9,10 @@ sudo apt-get -y dist-upgrade
 sudo apt-get -y install chromium-browser lightdm 
 
 sed -i "s/#disable_overscan=1/disable_overscan=1/" /boot/config.txt
+echo "disable_splash=1" >> /boot/config.txt
+
+sed -i "s/console=tty1/console=tty3/" /boot/cmdline.txt
+sed ' 1 s/.*/& quiet splash loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
 
 #Install scripts
 mkdir $base
@@ -28,8 +32,9 @@ cat << EOF >> /home/pi/.Xsession
 xset s off
 xset -dpms
 xset s noblank
-sed -i 's/"exited_cleanly": false/"exited_cleanly": true/' ~/.config/chromium-browser Default/Preferences
-chromium-browser --noerrdialogs --kiosk http://193.190.58.21/screen  --disable-translate --window-size=1920,1080 --window-position=0,0
+sed -i 's/"exited_cleanly":false/"exited_cleanly":true/' /home/pi/.config/chromium/Default/Preferences
+sed -i 's/"exit_type":"Crashed"/"exit_type":"Normal"/' /home/pi/.config/chromium/Default/Preferences
+chromium-browser --noerrdialogs --kiosk --disable-infobars --disable-translate --window-size=1920,1080 --window-position=0,0 http://193.190.58.21/screen
 EOF
 
 #Cron jobs
