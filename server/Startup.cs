@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.HttpOverrides;
 using System;
 
 using InfoScreenPi;
@@ -87,6 +88,14 @@ namespace InfoScreenPi
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            //app.Use((context, next) => {
+            //  context.Request.PathBase = "/infoscreen";
+            //  return next();
+            //});
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+	    {
+	    	ForwardedHeaders = ForwardedHeaders.All
+	    });
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -96,7 +105,6 @@ namespace InfoScreenPi
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
-
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSession();
