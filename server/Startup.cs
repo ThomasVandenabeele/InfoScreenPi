@@ -89,16 +89,16 @@ namespace InfoScreenPi
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             
-            app.UsePathBase("/infoscreen");
-            app.Use((context, next) => {
-             context.Request.PathBase = "/infoscreen";
-             return next();
-            });
+            //app.UsePathBase("/infoscreen");
+            //app.Use((context, next) => {
+            // context.Request.PathBase = "/infoscreen";
+            // return next();
+            //});
             
-            app.UseForwardedHeaders(new ForwardedHeadersOptions
-                {
-                    ForwardedHeaders = ForwardedHeaders.All
-                });
+            //app.UseForwardedHeaders(new ForwardedHeadersOptions
+            //    {
+            //        ForwardedHeaders = ForwardedHeaders.All
+            //    });
 
             if (env.IsDevelopment())
             {
@@ -133,6 +133,9 @@ namespace InfoScreenPi
             {
                 routes.MapRoute(
                     name: "default",
+                    template: "infoscreen/{controller=Config}/{action=Index}/{id?}");
+                routes.MapRoute(
+                    name: "alternate",
                     template: "{controller=Config}/{action=Index}/{id?}");
             });
 

@@ -1,0 +1,7 @@
+tcp6       0      0 :::80                   :::*                    LISTEN      1/dotnet            
+tcp6       0      0 172.17.0.4:80           10.11.34.24:33000       ESTABLISHED 1/dotnet            
+tcp6       0      0 172.17.0.4:80           10.11.5.129:59044       ESTABLISHED 1/dotnet            
+tcp6       0      0 172.17.0.4:80           10.11.5.206:37428       ESTABLISHED 1/dotnet            
+tcp6       0      0 172.17.0.4:80           10.11.5.206:38540       ESTABLISHED 1/dotnet            
+tcp6       0      0 172.17.0.4:80           10.11.5.129:57910       ESTABLISHED 1/dotnet            
+tcp6       0      0 172.17.0.4:80           10.11.34.24:60368       ESTABLISHED 1/dotnet

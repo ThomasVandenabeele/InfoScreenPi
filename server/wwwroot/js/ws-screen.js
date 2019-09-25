@@ -24,7 +24,7 @@ connection.on("BroadcastSlide", function(currentSlide){
             if(soort == "CustomItem"){
                 var url = item.background.url;
                 if(!item.background.url.startsWith("http://") && !item.background.url.startsWith("https://")){
-                    url = "../images/backgrounds/" + item.background.url;
+                    url = "http://193.190.58.21/infoscreen/images/backgrounds/" + item.background.url;
                 }
                 
                 // var element = nextSlide.children("div.customItem");
@@ -53,7 +53,7 @@ connection.on("BroadcastSlide", function(currentSlide){
 
                 // element.show();
 
-                nextSlide.html( '<iframe src="/video/' + item.id + '" width="1920" height="1080" style="border: none;" scrolling="no" ></iframe> ');
+                nextSlide.html( '<iframe src="video/' + item.id + '" width="1920" height="1080" style="border: none;" scrolling="no" ></iframe> ');
                 // nextSlide.html( '<video id="vid-' + item.id + '" muted="1" width="1920" height="1080">\n' +
                 //     '<source src="videos/' + item.url + '" type="video/mp4"/>\n' +
                 //     'Your browser does not support the video tag.\n' +

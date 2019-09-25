@@ -45,6 +45,8 @@ namespace InfoScreenPi.Controllers
             _hostingEnvironment = hostEnvironment;
         }
 
+	//[Route("infoscreen")]
+	//[Route("")]
         public IActionResult Index()
         {
             if(HttpContext.Session.GetString("Username") != null) ViewBag.Username = HttpContext.Session.GetString("Username");
@@ -96,6 +98,8 @@ namespace InfoScreenPi.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
+	//[Route("infoscreen/Config/Login")]
+	//[Route("Config/Login")]
         public async Task<IActionResult> Login(LoginViewModel user)
         {
             ViewBag.Logo = _data.GetSettingByName("LogoUrl");
