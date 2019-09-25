@@ -88,14 +88,18 @@ namespace InfoScreenPi
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            //app.Use((context, next) => {
+            
+            app.UsePathBase("/infoscreen");
+            // app.Use((context, next) => {
             //  context.Request.PathBase = "/infoscreen";
             //  return next();
-            //});
+            // });
+            
             app.UseForwardedHeaders(new ForwardedHeadersOptions
-	    {
-	    	ForwardedHeaders = ForwardedHeaders.All
-	    });
+                {
+                    ForwardedHeaders = ForwardedHeaders.All
+                });
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

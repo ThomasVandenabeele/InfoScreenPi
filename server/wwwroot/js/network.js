@@ -1,3 +1,5 @@
+var baseUrl = document.baseURI;
+
 var defDate = $.fullCalendar.moment('2018-12-24');
 //var testInput = "{\"screenOn\":[{\"day\":2,\"hour\":9,\"minutes\":0},{\"day\":3,\"hour\":8,\"minutes\":45},{\"day\":4,\"hour\":9,\"minutes\":45},{\"day\":5,\"hour\":7,\"minutes\":30},{\"day\":6,\"hour\":10,\"minutes\":45}],\"screenOff\":[{\"day\":2,\"hour\":11,\"minutes\":15},{\"day\":3,\"hour\":10,\"minutes\":30},{\"day\":4,\"hour\":11,\"minutes\":0},{\"day\":5,\"hour\":9,\"minutes\":30},{\"day\":6,\"hour\":12,\"minutes\":15}]}";
 var defEventTitle = "SCHERM AAN";
@@ -122,7 +124,7 @@ $(function() {
         
         $.ajax({
             type: "POST",
-            url: '/Config/SaveOperatingTimes',
+            url: baseUrl + 'Config/SaveOperatingTimes',
             data: postData,
             success: function(response, textStatus, jqXHR){
                 if(response.success){

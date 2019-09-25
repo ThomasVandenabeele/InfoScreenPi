@@ -62,7 +62,7 @@
 
           $('#collapse-@i.Id').on('show.bs.collapse',
             function() {
-              $.get("/Config/GetOperatingTableView", { devideId: @i.Id },
+              $.get(document.baseURI + "Config/GetOperatingTableView", { devideId: @i.Id },
                 function(data) {
                   $("#body-@i.Id").html(data);
                   deviceId = @i.Id;

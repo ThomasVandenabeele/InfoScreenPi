@@ -270,7 +270,7 @@
             
             $.ajax({
                 type: "POST",
-                url: '/Config/SaveSettingsScreen',
+                url: document.baseURI + 'Config/SaveSettingsScreen',
                 data: postData,
                 success: function (response, textStatus, jqXHR) {
                     
@@ -320,7 +320,7 @@
 
             $.ajax({
                 type: "POST",
-                url: '/Config/SaveSettingsInfobalk',
+                url: document.baseURI + 'Config/SaveSettingsInfobalk',
                 data: parameters,
                 success: function (response, textStatus, jqXHR) {
                    
@@ -379,7 +379,7 @@
     $("#showRegisterUser").click(function(e) {
         e.preventDefault();
         
-        $.get( "/Config/CreateUserView", function( data ) {
+        $.get( document.baseURI + "Config/CreateUserView", function( data ) {
             $( "#registerPane" ).html( data );
             $('#showRegisterUser').hide();
         });
@@ -396,7 +396,7 @@
             if (e) {
                 $.ajax({
                     type: "POST",
-                    url: "/Config/DeleteUser",
+                    url: document.baseURI + "Config/DeleteUser",
                     data: postData,
                     success: function(response)
                     {
@@ -431,7 +431,7 @@
 
             $.ajax({
                 type: 'post',
-                url: '/Config/SaveProgSettings',
+                url: document.baseURI + 'Config/SaveProgSettings',
                 data: data,
                 processData: false,
                 contentType: false,

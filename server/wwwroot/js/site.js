@@ -1,3 +1,5 @@
+var baseUrl = document.baseURI;
+
 $( document ).ready( paginationHandler );
 
 
@@ -17,7 +19,7 @@ function listenCheckState(){
 
         $.ajax({
             type: "POST",
-            url: '/Config/Items/ChangeItemState',
+            url: baseUrl + 'Config/Items/ChangeItemState',
             data: postData,
             success: function(response, textStatus, jqXHR){
                 console.log(response);
@@ -36,7 +38,7 @@ function listenCheckState(){
 }
 
 window.renewItemsGrid = function(){
-    $.get("/Config/Items/Table", function (data) {
+    $.get(baseUrl + "Config/Items/Table", function (data) {
         $("#itemsTable").empty();
         $("#itemsTable").html(data);
         $('input.stateCheckItems:checkbox').each(function () {
@@ -51,7 +53,7 @@ listenCheckState();
     var dialogInstance = new BootstrapDialog();
     $("#openArchive").click(function(){
 
-        $.get("/Config/Items/ItemsArchive", function (data) {
+        $.get(baseUrl + "Config/Items/ItemsArchive", function (data) {
 
                 dialogInstance
                     .setTitle('Item Archief')
@@ -64,7 +66,7 @@ listenCheckState();
     });
 
     $( "#nieuwItem" ).click(function() {
-        $.get("/Config/Items/CreateItem", function (data) {
+        $.get(baseUrl + "Config/Items/CreateItem", function (data) {
                 modal
                     .setTitle('Nieuw Item')
                     .setMessage($('<div></div>').html(data))
@@ -75,7 +77,7 @@ listenCheckState();
     });
 
     $( "#nieuwVideoItem" ).click(function() {
-        $.get("/Config/Items/CreateVideoItem", function (data) {
+        $.get(baseUrl + "Config/Items/CreateVideoItem", function (data) {
             modal
                 .setTitle('Nieuwe video')
                 .setMessage($('<div></div>').html(data))
@@ -101,7 +103,7 @@ listenCheckState();
             if (e) {
                 $.ajax({
                     type: "POST",
-                    url: '/Config/Items/ArchiveItem',
+                    url: baseUrl + 'Config/Items/ArchiveItem',
                     data: postData,
                     success: function(response, textStatus, jqXHR){
                         console.log(response);
@@ -125,7 +127,7 @@ listenCheckState();
     $(document).on('click','.wijzigItem',function(){
         var itemId = parseInt((($(this).closest("tr").children("td"))[0]).innerHTML);
 
-        $.get("/Config/Items/EditCustomItem?id=" + itemId, function (data) {
+        $.get(baseUrl + "Config/Items/EditCustomItem?id=" + itemId, function (data) {
             modal
                 .setTitle('Wijzig Item')
                 .setMessage($('<div></div>').html(data))
@@ -155,7 +157,7 @@ listenCheckState();
                 dialogInstance.close();
                 $.ajax({
                     type: "POST",
-                    url: '/Config/Items/ArchiveItem',
+                    url: baseUrl + 'Config/Items/ArchiveItem',
                     data: postData,
                     success: function(response, textStatus, jqXHR){
                         console.log(response);
@@ -190,7 +192,7 @@ function sendFile(file) {
     formData.append('file', file);//$('#f_UploadImage')[0].files[0]);
     $.ajax({
         type: 'post',
-        url: '/Config/Backgrounds/FileUpload',
+        url: baseUrl + 'Config/Backgrounds/FileUpload',
         data: formData,
         success: function (response, textStatus, jqXHR) {
             if(response.success){
@@ -239,7 +241,7 @@ function sendFile(file) {
 
 function refreshGrid(){
 
-    $.get("/Config/Backgrounds/Grid", function (data) {
+    $.get(baseUrl + "Config/Backgrounds/Grid", function (data) {
         $("#backgroundGrid").empty();
         $("#backgroundGrid").html(data);
         refreshGridMenu();
@@ -318,7 +320,7 @@ $(document).ready(function() {
 
             $.ajax({
                 type: "POST",
-                url: '/Config/RssFeeds/ChangeRssFeedState',
+                url: baseUrl + 'Config/RssFeeds/ChangeRssFeedState',
                 data: postData,
                 success: function(response, textStatus, jqXHR){
                     if(response.success){
@@ -337,7 +339,7 @@ $(document).ready(function() {
     listenCheckStateRss();
 
     $( "#RenewRssFeedItems" ).click(function() {
-        $.get("/Config/RssFeeds/RenewRssFeeds", function (response) {
+        $.get(baseUrl + "Config/RssFeeds/RenewRssFeeds", function (response) {
             alertify.success(response.message);
                     
         });
@@ -349,7 +351,7 @@ $(document).ready(function() {
         modal = new BootstrapDialog();
         $("#registerRSS").click(function(){
 
-            $.get("/Config/RssFeeds/CreateRssFeed", function (data) {
+            $.get(baseUrl + "Config/RssFeeds/CreateRssFeed", function (data) {
 
                     modal
                         .setTitle('Nieuw RSS abonnement')
@@ -376,11 +378,11 @@ $(document).ready(function() {
             if (e) {
                 $.ajax({
                     type: "POST",
-                    url: '/Config/RssFeeds/DeleteRssFeed',
+                    url: baseUrl + 'Config/RssFeeds/DeleteRssFeed',
                     data: postData,
                     success: function(response, textStatus, jqXHR){
                         if(response.success){
-                            $.get("/Config/RssFeeds/Table", function (data) {
+                            $.get(baseUrl + "Config/RssFeeds/Table", function (data) {
                                 $("#rssFeedsTable").empty();
                                 $("#rssFeedsTable").html(data);
                                 $('input.stateCheckRss:checkbox').each(function () {
@@ -447,7 +449,7 @@ $(document).ready(function() {
 
         $.ajax({
             type: "POST",
-            url: '/Config/SaveTicker',
+            url: baseUrl + 'Config/SaveTicker',
             data: postData,
             success: function(response, textStatus, jqXHR){
                 if(response.success){
@@ -472,7 +474,7 @@ $(document).ready(function() {
 
     $(document).on('click','#userDetails',function(){
 
-            $.get("/Config/UserDetails", function (data) {
+            $.get(baseUrl + "Config/UserDetails", function (data) {
                 modal
                     .setTitle('Gebruiker Details')
                     .setMessage($('<div></div>').html(data))
@@ -485,7 +487,7 @@ $(document).ready(function() {
 
          $(document).on('click','#Settings',function(){
 
-            $.get("/Config/GetSettings", function (data) {
+            $.get(baseUrl + "Config/GetSettings", function (data) {
                 modal
                     .setTitle('Instellingen')
                     .setMessage($('<div></div>').html(data))

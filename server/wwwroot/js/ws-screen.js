@@ -1,6 +1,6 @@
 "use strict";
-
-var connection = new signalR.HubConnectionBuilder().withUrl("/screenpiws").build();
+var baseUrl = document.baseURI;
+var connection = new signalR.HubConnectionBuilder().withUrl(baseUrl + "screenpiws").build();
 
 connection.on("RefreshScreens", function () {
     //location.reload();

@@ -3,7 +3,7 @@
 @model VideoItem
 @{
     Layout = null;
-    string fullurl = "/videos/" + Model.URL;
+    string fullurl = "~/videos/" + Model.URL;
     string fullid = "vid-" + Model.Id;
  }
 
@@ -12,7 +12,7 @@
 
 <head>
     <title>Video</title>
-
+    <base href='@Url.AbsoluteContent("~/")'>
 </head>
 
 <body style="padding-top: 0px; padding-bottom: 0px; overflow:hidden; margin: 0;">

@@ -17,11 +17,11 @@
         var postData = { uri: $('#newRssFeedUrl').val(), bgId: bgid};
         $.ajax({
             type: "POST",
-            url: '/Config/RssFeeds/RegisterRss',
+            url: document.baseURI + 'Config/RssFeeds/RegisterRss',
             data: postData,
             success: function(response, textStatus, jqXHR){
                 if(response.success){
-                    $.get("/Config/RssFeeds/Table", function (data) {
+                    $.get(document.baseURI + "Config/RssFeeds/Table", function (data) {
                         $("#rssFeedsTable").empty();
                         $("#rssFeedsTable").html(data);
                         $('input.stateCheckRss:checkbox').each(function () {

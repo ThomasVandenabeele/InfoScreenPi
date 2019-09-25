@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <base href='@Url.AbsoluteContent("~/")'>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - InfoScreenPi</title>
@@ -16,7 +17,7 @@
               asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
         <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     </environment>
-     <script src="/ckeditor/ckeditor.js"></script>
+     <script src="~/ckeditor/ckeditor.js"></script>
      <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
      <!-- include the core styles -->
     <link rel="stylesheet" href="~/lib/alertify.js/themes/alertify.core.css" />
@@ -27,18 +28,17 @@
     <link rel="stylesheet" href="~/css/nu-context-menu.css" />
     <link rel="stylesheet" href="https://blueimp.github.io/Gallery/css/blueimp-gallery.min.css">
     <!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
-    <link rel="stylesheet" href="~lib/file-upload/css/jquery.fileupload.css">
-    <link rel="stylesheet" href="~lib/file-upload/css/jquery.fileupload-ui.css">
-    <link rel="stylesheet" href="~/css/loading.css" />
+    <!--<link rel="stylesheet" href="~/lib/file-upload/css/jquery.fileupload.css">
+    <link rel="stylesheet" href="~/lib/file-upload/css/jquery.fileupload-ui.css">-->
+    <!--<link rel="stylesheet" href="~/css/loading.css" />-->
     
-    <noscript><link rel="stylesheet" href="~lib/file-upload/css/jquery.fileupload-noscript.css"></noscript>
-    <noscript><link rel="stylesheet" href="~lib/file-upload/css/jquery.fileupload-ui-noscript.css"></noscript>
+    <!--<noscript><link rel="stylesheet" href="~/lib/file-upload/css/jquery.fileupload-noscript.css"></noscript>
+    <noscript><link rel="stylesheet" href="~/lib/file-upload/css/jquery.fileupload-ui-noscript.css"></noscript>-->
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.7.14/css/bootstrap-datetimepicker.min.css">
     
     
     <link rel='stylesheet' href='~/css/fullcalendar.css' />
-    <base href="http://193.190.58.21/infoscreen/">
 </head>
 <body style="padding-top: 50px; padding-bottom: 20px;">
     <div class="navbar navbar-default navbar-fixed-top">
@@ -50,7 +50,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button><img src="~/images/logo/@ViewBag.Logo" class="navbar-brand" id="progLogo" height="50px">
-                <a asp-controller="Config" asp-action="Index" class="navbar-brand" id="progTitle"> <b>@ViewBag.TitleProg</b></a>
+                <a asp-controller="~/Config" asp-action="Index" class="navbar-brand" id="progTitle"> <b>@ViewBag.TitleProg</b></a>
             </div>
             <div class="navbar-collapse collapse">
                 <form class="navbar-form form-inline"> @* Form gebruiken om het te aligneren met de navbar *@
@@ -108,8 +108,8 @@
     <script src="~/js/jquery.nu-context-menu.js" asp-append-version="true"></script>
     <script src="~/lib/signalr/dist/browser/signalr.js"></script>
     @* <script src="~/js/ws-config.js"></script> *@
-    <script src='js/moment.min.js'></script>
-    <script src='js/fullcalendar.js'></script>
+    <script src='~/js/moment.min.js'></script>
+    <script src='~/js/fullcalendar.js'></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.3.26/jquery.form-validator.min.js"></script>
 
 @RenderSection("scripts", required: false)

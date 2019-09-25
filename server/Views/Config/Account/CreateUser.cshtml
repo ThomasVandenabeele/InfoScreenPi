@@ -86,7 +86,7 @@
             //e.preventDefault(); // avoid to execute the actual submit of the form.
             var form = $("#newUser :input");
             var formData = form.serialize();
-            var url = "/Config/RegisterUser";
+            var url = document.baseURI + "Config/RegisterUser";
 
             $.ajax({
                 type: "POST",

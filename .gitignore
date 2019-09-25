@@ -9,8 +9,8 @@ bin
 /server/bin
 /server/obj
 
-/server/wwwroot/images/backgrounds
-/server/wwwroot/videos
-/server/wwwroot/data
-/server/crons
-
+#/server/wwwroot/images/**
+#/server/wwwroot/videos/**
+/server/wwwroot/**
+/server/crons/**
+/server/db/**

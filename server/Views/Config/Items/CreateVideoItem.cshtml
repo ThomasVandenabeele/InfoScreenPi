@@ -76,7 +76,7 @@
     
             $.ajax({
                 type: 'post',
-                url: '/Config/Items/UploadVideoItem',
+                url: document.baseURI + '/Config/Items/UploadVideoItem',
                 data: data,
                 processData: false,
                 contentType: false,
@@ -95,7 +95,7 @@
                 success: function (response, textStatus, jqXHR) {
                     if(response.success) {
                         
-                        $.get("/Config/Items/Table", function (data) {
+                        $.get(document.baseURI + "/Config/Items/Table", function (data) {
                             $("#itemsTable").empty();
                             $("#itemsTable").html(data);
                             $('input.stateCheckItems:checkbox').each(function () {

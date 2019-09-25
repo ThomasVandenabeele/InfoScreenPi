@@ -1,4 +1,4 @@
-
+var baseUrl = document.baseURI;
 
 var cardcounter = 1;
 
@@ -10,7 +10,7 @@ $(document).ready(function() {
 
     var today = new Date();
     $.getJSON(
-        encodeURI("/Screen/GetWeatherForecast"),
+        encodeURI(baseUrl + "Screen/GetWeatherForecast"),
         function(data) {
             var list = [];
             
