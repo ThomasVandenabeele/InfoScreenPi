@@ -49,7 +49,7 @@
             <input type="text" class="form-control" placeholder="Upload nieuwe achtergrond" id="placeholderUploadNew" readonly>
         </div><br />
         <div id="backselectiongrid">
-            @await Html.PartialAsync("~/Views/Config/Backgrounds/SelectionGrid.cshtml", Model)    
+            @await Html.PartialAsync("Views/Config/Backgrounds/SelectionGrid.cshtml", Model)    
         </div>
     </div>
     
@@ -96,7 +96,7 @@
 
         $.ajax({
             type: "POST",
-            url: document.baseURI + '/Config/Items/RegisterNewItem',
+            url: document.baseURI + 'Config/Items/RegisterNewItem',
             data: postData,
             success: function(response, textStatus, jqXHR){
                 if(response.success){
@@ -138,18 +138,18 @@
                 formData.append('file', file);//$('#f_UploadImage')[0].files[0]);
                 $.ajax({
                     type: 'post',
-                    url: document.baseURI + '/Config/Backgrounds/FileUpload',
+                    url: document.baseURI + 'Config/Backgrounds/FileUpload',
                     data: formData,
                     success: function (response, textStatus, jqXHR) {
                         if(response.success){
                             
-                            $.get(document.baseURI + "/Config/Backgrounds/Grid", function (data) {
+                            $.get(document.baseURI + "Config/Backgrounds/Grid", function (data) {
                                 $("#backgroundGrid").empty();
                                 $("#backgroundGrid").html(data);
                                 refreshGridMenu();
                             });
                             
-                            $.get(document.baseURI + "/Config/Backgrounds/SelectionGrid", function (data) {
+                            $.get(document.baseURI + "Config/Backgrounds/SelectionGrid", function (data) {
                                 $("#backselectiongrid").empty();
                                 $("#backselectiongrid").html(data);
 

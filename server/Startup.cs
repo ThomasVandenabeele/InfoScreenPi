@@ -90,10 +90,10 @@ namespace InfoScreenPi
         {
             
             app.UsePathBase("/infoscreen");
-            // app.Use((context, next) => {
-            //  context.Request.PathBase = "/infoscreen";
-            //  return next();
-            // });
+            app.Use((context, next) => {
+             context.Request.PathBase = "/infoscreen";
+             return next();
+            });
             
             app.UseForwardedHeaders(new ForwardedHeadersOptions
                 {

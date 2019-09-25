@@ -35,7 +35,7 @@
                         <h3 class="panel-title">Login</h3>
                     </div>
                     <div class="panel-body">
-                        <form asp-controller="Config" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" role="form">
+                        <form method="post" role="form" action="Config/Login" role="form">
                             <fieldset>
                                 <div class="form-group">
                                     <input asp-for="Username" class="form-control" placeholder="Gebruikersnaam" type="text">
@@ -61,20 +61,20 @@
     </div>
 
     <environment names="Development">
-        <script src="~/lib/jquery/dist/jquery.js"></script>
-        <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
-        <script src="~/js/site.js" asp-append-version="true"></script>
+        <script src="lib/jquery/dist/jquery.js"></script>
+        <script src="lib/bootstrap/dist/js/bootstrap.js"></script>
+        <script src="js/site.js" asp-append-version="true"></script>
     </environment>
     <environment names="Staging,Production">
         <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.3.min.js"
-                asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+                asp-fallback-src="lib/jquery/dist/jquery.min.js"
                 asp-fallback-test="window.jQuery">
         </script>
         <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.6/bootstrap.min.js"
-                asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
+                asp-fallback-src="lib/bootstrap/dist/js/bootstrap.min.js"
                 asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal">
         </script>
-        <script src="~/js/site.min.js" asp-append-version="true"></script>
+        <script src="js/site.min.js" asp-append-version="true"></script>
     </environment>
 </body>
 </html>

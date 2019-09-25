@@ -39,7 +39,7 @@
     </div>
     <div class="form-group">
         <label for="background">Achtergrond</label>
-        @await Html.PartialAsync("~/Views/Config/Backgrounds/SelectionGrid.cshtml", (List<Background>)ViewBag.SelectionGrid)
+        @await Html.PartialAsync("Views/Config/Backgrounds/SelectionGrid.cshtml", (List<Background>)ViewBag.SelectionGrid)
     </div>
 </form>
 <hr>
@@ -84,7 +84,7 @@
 
             $.ajax({
                 type: "POST",
-                url: '/Config/Items/EditItem',
+                url: document.baseURI + 'Config/Items/EditItem',
                 data: postData,
                 success: function(response, textStatus, jqXHR){
                     if(response.success){
